@@ -23,7 +23,7 @@ apply plugin: 'io.spring.dependency-management'
 
 apply plugin: 'jacoco'
 
-jacocoTestCoverageVerification {
+/*jacocoTestCoverageVerification {
     violationRules {
         rule {
             limit {
@@ -31,10 +31,10 @@ jacocoTestCoverageVerification {
             }
         }
     }
-}
+}/*
 //check.dependsOn jacocoTestCoverageVerification
 
-group = 'es.unizar.major'
+group = 'es.unizar.murcy'
 version = '0.0.1-SNAPSHOT'
 sourceCompatibility = '1.8'
 

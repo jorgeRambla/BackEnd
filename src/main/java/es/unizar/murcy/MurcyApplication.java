@@ -1,4 +1,4 @@
-package es.unizar.major.demo;
+package es.unizar.murcy;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
