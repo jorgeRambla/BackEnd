@@ -1,6 +1,6 @@
 package es.unizar.murcy.service;
 
-import es.unizar.murcy.model.Usuario;
+import es.unizar.murcy.model.User;
 import es.unizar.murcy.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -16,23 +16,31 @@ public class UserService {
     @Autowired
     UserRepository userRepository;
 
-    public List<Usuario> findAllUsers() {
+    public List<User> findAllUsers() {
         return userRepository.findAll();
     }
 
-    public Optional<Usuario> findUserById(long id) {
+    public Optional<User> findUserById(long id) {
         return userRepository.findById(id);
     }
 
-    public Usuario createUser(Usuario u) {
+    public User createUser(User u) {
         return userRepository.save(u);
     }
 
-    public Usuario updateUser(Usuario u) {
+    public User updateUser(User u) {
         return userRepository.save(u);
     }
 
     public void deleteUser(long id) {
         userRepository.deleteById(id);
+    }
+
+    public boolean existsByUsername(String username) {
+        return userRepository.existsByUsername(username);
+    }
+
+    public User create(User user) {
+        return userRepository.save(user);
     }
 }

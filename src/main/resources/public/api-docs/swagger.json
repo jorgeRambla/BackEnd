@@ -62,17 +62,43 @@
         },
         "responses" : {
           "201" : {
-            "description" : "User logged in",
-            "content" : {
-              "application/json" : {
-                "schema" : {
-                  "$ref" : "#/components/schemas/Auth"
-                }
-              }
-            }
+            "description" : "User logged created"
           },
           "400" : {
             "description" : "User already exists",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/user/confirm/{token}" : {
+      "post" : {
+        "tags" : [ "user" ],
+        "summary" : "Confirm user register",
+        "description" : "Confrim user register, from token send by email",
+        "parameters" : [ {
+          "name" : "token",
+          "in" : "path",
+          "description" : "token to be confirmed",
+          "required" : true,
+          "style" : "simple",
+          "explode" : false,
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "responses" : {
+          "201" : {
+            "description" : "User confirmed"
+          },
+          "404" : {
+            "description" : "token not found",
             "content" : {
               "application/json" : {
                 "schema" : {
@@ -179,7 +205,7 @@
         }
       },
       "body" : {
-        "required" : [ "email", "password", "username" ],
+        "required" : [ "email", "fullName", "password", "username" ],
         "type" : "object",
         "properties" : {
           "username" : {
@@ -193,6 +219,10 @@
           "email" : {
             "type" : "string",
             "description" : "User email"
+          },
+          "fullName" : {
+            "type" : "string",
+            "description" : "user fullName"
           }
         }
       },
