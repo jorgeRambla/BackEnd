@@ -146,6 +146,35 @@
           }
         }
       }
+    },
+    "/user/info" : {
+      "get" : {
+        "tags" : [ "user" ],
+        "summary" : "Get current user info",
+        "description" : "Get current logged user info",
+        "responses" : {
+          "201" : {
+            "description" : "User logged in",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/inline_response_201"
+                }
+              }
+            }
+          },
+          "403" : {
+            "description" : "Not authorized",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
     }
   },
   "components" : {
@@ -168,6 +197,10 @@
             "type" : "string"
           }
         }
+      },
+      "Rol" : {
+        "type" : "string",
+        "enum" : [ "USER", "EDITOR", "REVIEWER" ]
       },
       "body" : {
         "required" : [ "email", "fullName", "password", "username" ],
@@ -202,6 +235,34 @@
           "password" : {
             "type" : "string",
             "description" : "Password of the user to log in"
+          }
+        }
+      },
+      "inline_response_201" : {
+        "type" : "object",
+        "properties" : {
+          "id" : {
+            "type" : "integer",
+            "description" : "user id",
+            "format" : "int64"
+          },
+          "username" : {
+            "type" : "string",
+            "description" : "user username"
+          },
+          "email" : {
+            "type" : "string",
+            "description" : "User email"
+          },
+          "fullName" : {
+            "type" : "string",
+            "description" : "User full name"
+          },
+          "role" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/Rol"
+            }
           }
         }
       }
