@@ -43,6 +43,14 @@ public class RegisterUserDto {
         this.email = email;
     }
 
+    public String getFullName() {
+        return fullName;
+    }
+
+    public void setFullName(String fullName) {
+        this.fullName = fullName;
+    }
+
     public User toEntity() {
         User user = new User();
         user.setFullName(this.fullName);
@@ -51,5 +59,9 @@ public class RegisterUserDto {
         user.setEmail(this.email);
 
         return user;
+    }
+
+    public Boolean isComplete() {
+        return password != null && fullName != null && username != null && email != null;
     }
 }

@@ -8,6 +8,7 @@ import es.unizar.murcy.model.dto.JsonWebTokenRequest;
 import es.unizar.murcy.model.dto.JwtResponse;
 import es.unizar.murcy.model.dto.RegisterUserDto;
 import es.unizar.murcy.service.JwtUserDetailsService;
+import es.unizar.murcy.service.MailService;
 import es.unizar.murcy.service.TokenService;
 import es.unizar.murcy.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,6 +38,9 @@ public class UserController {
     private TokenService tokenService;
 
     @Autowired
+    private MailService mailService;
+
+    @Autowired
     private AuthenticationManager authenticationManager;
 
     @Autowired
@@ -47,6 +51,10 @@ public class UserController {
 
     @PostMapping("/api/user")
     public ResponseEntity create(@RequestBody RegisterUserDto registerUserDto) {
+        if(!registerUserDto.isComplete()) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).contentType(MediaType.APPLICATION_JSON).body(new ErrorMessage(HttpStatus.BAD_REQUEST, "Faltan campos"));
+        }
+
         if (userService.existsByUsername(registerUserDto.getUsername())){
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).contentType(MediaType.APPLICATION_JSON).body(new ErrorMessage(HttpStatus.BAD_REQUEST, "Ya existe un usuario con ese nombre"));
         }
@@ -55,7 +63,7 @@ public class UserController {
 
         Token token = tokenService.create(new Token(user, UUID.randomUUID().toString(), new Date(System.currentTimeMillis() + Token.DEFAULT_TOKEN_EXPIRATION_TIME)));
 
-
+        mailService.sendTokenConfirmationMail(token.getTokenValue(), user.getEmail());
 
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
