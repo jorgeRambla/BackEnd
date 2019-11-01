@@ -2,6 +2,10 @@ package es.unizar.murcy.model.dto;
 
 import es.unizar.murcy.model.User;
 
+import java.util.HashSet;
+import java.util.Set;
+import java.util.TreeSet;
+
 public class RegisterUserDto {
 
     private String username;
@@ -59,6 +63,10 @@ public class RegisterUserDto {
         user.setEmail(this.email);
         user.setConfirmed(false);
 
+        Set<User.Rol> roles = new HashSet<>();
+        roles.add(User.Rol.USER);
+
+        user.setRoles(roles);
         return user;
     }
 

@@ -1,11 +1,18 @@
 package es.unizar.murcy.model;
 
 import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashSet;
 import java.util.Set;
 
 @Entity
 @Table(name = "murcy_user")
 public class User {
+
+    public enum Rol {
+        USER, EDITOR, REVIEWER
+    }
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -23,12 +30,17 @@ public class User {
 
     private Boolean confirmed;
 
-    @ManyToMany
-    private Set<Role> roles;
+    @ElementCollection(targetClass=User.Rol.class)
+    @Enumerated(EnumType.STRING) // Possibly optional (I'm not sure) but defaults to ORDINAL.
+    @CollectionTable(name="murcy_user_rol")
+    private Set<Rol> roles;
 
-    public User() {}
+    public User() {
+        this.roles = new HashSet<>();
+    }
 
     public User(String username, String password, String email, String fullName) {
+        this();
         this.username = username;
         this.password = password;
         this.email = email;
@@ -58,14 +70,6 @@ public class User {
 
     public void setPassword(String password) {
         this.password = password;
-    }
-
-    public Set<Role> getRoles() {
-        return roles;
-    }
-
-    public void setRoles(Set<Role> roles) {
-        this.roles = roles;
     }
 
     public String getFullName() {
@@ -98,5 +102,21 @@ public class User {
 
     public void setConfirmed(Boolean confirmed) {
         this.confirmed = confirmed;
+    }
+
+    public void setId(long id) {
+        this.id = id;
+    }
+
+    public Set<Rol> getRoles() {
+        return roles;
+    }
+
+    public void setRoles(Set<Rol> roles) {
+        this.roles = roles;
+    }
+
+    public void addRol(Rol rol) {
+        this.roles.add(rol);
     }
 }

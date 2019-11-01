@@ -56,6 +56,7 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-mail'
 
     compile group: 'io.jsonwebtoken', name: 'jjwt', version: '0.9.1'
+    compileOnly 'org.projectlombok:lombok'
 
     implementation 'com.h2database:h2'
     testImplementation 'com.h2database:h2'

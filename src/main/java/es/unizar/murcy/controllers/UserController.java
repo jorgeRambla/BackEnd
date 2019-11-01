@@ -3,10 +3,7 @@ package es.unizar.murcy.controllers;
 import es.unizar.murcy.components.JsonWebTokenUtil;
 import es.unizar.murcy.model.Token;
 import es.unizar.murcy.model.User;
-import es.unizar.murcy.model.dto.ErrorMessage;
-import es.unizar.murcy.model.dto.JsonWebTokenRequest;
-import es.unizar.murcy.model.dto.JwtResponse;
-import es.unizar.murcy.model.dto.RegisterUserDto;
+import es.unizar.murcy.model.dto.*;
 import es.unizar.murcy.service.JwtUserDetailsService;
 import es.unizar.murcy.service.MailService;
 import es.unizar.murcy.service.TokenService;
@@ -19,10 +16,7 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.Date;
@@ -67,6 +61,19 @@ public class UserController {
         mailService.sendTokenConfirmationMail(token.getTokenValue(), user.getEmail());
 
         return ResponseEntity.status(HttpStatus.CREATED).build();
+    }
+
+    @GetMapping("/api/user/info")
+    public ResponseEntity getCurrentUser(HttpServletRequest request) {
+        final String authorization = request.getHeader("Authorization");
+
+        final String username = jsonWebTokenUtil.getUserNameFromToken(authorization.substring(7));
+
+        Optional<User> user = userService.findUserByUserName(username);
+        if(user.isPresent()) {
+            return ResponseEntity.ok().body(new UserDto(user.get()));
+        }
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ErrorMessage(HttpStatus.NOT_FOUND, "User not found"));
     }
 
     @PostMapping(value = "/api/user/login")
