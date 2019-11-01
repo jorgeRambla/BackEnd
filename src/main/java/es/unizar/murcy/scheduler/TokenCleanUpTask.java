@@ -2,6 +2,7 @@ package es.unizar.murcy.scheduler;
 
 import es.unizar.murcy.model.Token;
 import es.unizar.murcy.service.TokenService;
+import es.unizar.murcy.service.UserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,6 +20,9 @@ public class TokenCleanUpTask {
     @Autowired
     TokenService tokenService;
 
+    @Autowired
+    UserService userService;
+
     @Scheduled(cron = "0 0 0/1 ? * *")
     public void cleanExpiredTokens() {
         Date currentDate = new Date();
@@ -27,6 +31,7 @@ public class TokenCleanUpTask {
             log.info("-- [TAREA PROGRAMADA] [INICIO] LIMPIEZA DE TOKENS --");
             for(Token token : tokens) {
                 tokenService.delete(token);
+                userService.deleteUser(token.getUser());
             }
             log.info("-- [TAREA PROGRAMADA] [FIN] LIMPIEZA DE TOKENS --");
         }

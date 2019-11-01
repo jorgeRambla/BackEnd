@@ -72,6 +72,16 @@ public class UserController {
 
     @PostMapping(value = "/api/user/login")
     public ResponseEntity<?> createAuthenticationToken(@RequestBody JsonWebTokenRequest request) throws Exception {
+        Optional<User> user = userService.findUserByUserName(request.getUsername());
+
+        if(!user.isPresent()) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        }
+
+        if(!user.get().getConfirmed()) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(new ErrorMessage(HttpStatus.FORBIDDEN, "User not confirmed"));
+        }
+
         authenticate(request.getUsername(), request.getPassword());
 
         final UserDetails userDetails = userDetailsService

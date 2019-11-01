@@ -24,12 +24,20 @@ public class UserService {
         return userRepository.findById(id);
     }
 
+    public Optional<User> findUserByUserName(String userName) {
+        return userRepository.findByUsername(userName);
+    }
+
     public User createUser(User u) {
         return userRepository.save(u);
     }
 
     public User updateUser(User u) {
         return userRepository.save(u);
+    }
+
+    public void deleteUser(User user) {
+        deleteUser(user.getId());
     }
 
     public void deleteUser(long id) {

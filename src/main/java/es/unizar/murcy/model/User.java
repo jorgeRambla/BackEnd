@@ -21,7 +21,7 @@ public class User {
 
     private String lastIp;
 
-    private Boolean isConfirmed;
+    private Boolean confirmed;
 
     @ManyToMany
     private Set<Role> roles;
@@ -33,7 +33,7 @@ public class User {
         this.password = password;
         this.email = email;
         this.fullName = fullName;
-        this.isConfirmed = false;
+        this.confirmed = false;
     }
 
     public Long getId() {
@@ -93,10 +93,10 @@ public class User {
     }
 
     public Boolean getConfirmed() {
-        return isConfirmed;
+        return confirmed;
     }
 
     public void setConfirmed(Boolean confirmed) {
-        isConfirmed = confirmed;
+        this.confirmed = confirmed;
     }
 }
