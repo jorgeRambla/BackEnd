@@ -62,4 +62,7 @@ public class JsonWebTokenUtil implements Serializable {
         return (username.equals(userDetails.getUsername()) && !isTokenExpired(token));
     }
 
+    public void disableToken() {
+
+    }
 }
