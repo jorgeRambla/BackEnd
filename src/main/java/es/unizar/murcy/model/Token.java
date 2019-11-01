@@ -4,7 +4,7 @@ import javax.persistence.*;
 import java.util.Date;
 
 @Entity
-@Table(name = "token")
+@Table(name = "murcy_token")
 public class Token {
 
     public static final int DEFAULT_EXPIRATION_MAX_DAYS = 2;
