@@ -16,8 +16,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.BadCredentialsException;
-import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -26,6 +24,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.Date;
 import java.util.Optional;
 import java.util.UUID;
@@ -53,7 +52,7 @@ public class UserController {
 
     @PostMapping("/api/user")
     public ResponseEntity create(@RequestBody RegisterUserDto registerUserDto) {
-        if(!registerUserDto.isComplete()) {
+        if(Boolean.FALSE.equals(registerUserDto.isComplete())) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).contentType(MediaType.APPLICATION_JSON).body(new ErrorMessage(HttpStatus.BAD_REQUEST, "Faltan campos"));
         }
 
@@ -71,28 +70,33 @@ public class UserController {
     }
 
     @PostMapping(value = "/api/user/login")
-    public ResponseEntity<?> createAuthenticationToken(@RequestBody JsonWebTokenRequest request) throws Exception {
-        Optional<User> user = userService.findUserByUserName(request.getUsername());
+    public ResponseEntity createAuthenticationToken(@RequestBody JsonWebTokenRequest jsonWebTokenRequest, HttpServletRequest request) {
+        Optional<User> user = userService.findUserByUserName(jsonWebTokenRequest.getUsername());
 
         if(!user.isPresent()) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         }
 
-        if(!user.get().getConfirmed()) {
+        if(Boolean.FALSE.equals(user.get().getConfirmed())) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body(new ErrorMessage(HttpStatus.FORBIDDEN, "User not confirmed"));
         }
 
-        authenticate(request.getUsername(), request.getPassword());
+        authenticate(jsonWebTokenRequest.getUsername(), jsonWebTokenRequest.getPassword());
 
         final UserDetails userDetails = userDetailsService
-                .loadUserByUsername(request.getUsername());
+                .loadUserByUsername(jsonWebTokenRequest.getUsername());
 
         final String token = jsonWebTokenUtil.generateToken(userDetails);
+
+        User toUpdateUser = user.get();
+        toUpdateUser.setLastIp(request.getRemoteAddr());
+        userService.updateUser(toUpdateUser);
+
         return ResponseEntity.ok(new JwtResponse(token));
     }
 
     @PostMapping(value = "/api/user/confirm/{tokenValue}")
-    public ResponseEntity<?> confirmToken(@PathVariable String tokenValue) {
+    public ResponseEntity confirmToken(@PathVariable String tokenValue) {
         Optional<Token> token = tokenService.getTokenByValue(tokenValue);
 
         if(!token.isPresent()) {
@@ -108,14 +112,8 @@ public class UserController {
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
-    private void authenticate(String username, String password) throws Exception {
-        try {
-            authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(username, password));
-        } catch (DisabledException e) {
-            throw new Exception("USER_DISABLED", e);
-        } catch (BadCredentialsException e) {
-            throw new Exception("INVALID_CREDENTIALS", e);
-        }
+    private void authenticate(String username, String password) {
+        authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(username, password));
     }
 
 }

@@ -8,7 +8,7 @@ import java.util.Date;
 public class Token {
 
     public static final int DEFAULT_EXPIRATION_MAX_DAYS = 2;
-    public static final long DEFAULT_TOKEN_EXPIRATION_TIME = DEFAULT_EXPIRATION_MAX_DAYS * 24 * 3600 * 1000;
+    public static final long DEFAULT_TOKEN_EXPIRATION_TIME = DEFAULT_EXPIRATION_MAX_DAYS * 24L * 3600L * 1000L;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
