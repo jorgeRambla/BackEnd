@@ -38,11 +38,11 @@ public class Token {
         this.id = id;
     }
 
-    public User getUsername() {
+    public User getUser() {
         return user;
     }
 
-    public void setUsername(User username) {
+    public void setUser(User username) {
         this.user = username;
     }
 

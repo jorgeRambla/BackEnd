@@ -43,4 +43,17 @@ public class UserService {
     public User create(User user) {
         return userRepository.save(user);
     }
+
+    public User confirmUser(long userId) {
+        Optional<User> user = findUserById(userId);
+        if(user.isPresent()) {
+            return confirmUser(user.get());
+        }
+        return null;
+    }
+
+    public User confirmUser(User user) {
+        user.setConfirmed(true);
+        return user;
+    }
 }

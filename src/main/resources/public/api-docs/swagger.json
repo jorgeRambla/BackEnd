@@ -33,18 +33,6 @@
     "description" : "Everything about questions"
   } ],
   "paths" : {
-    "/test" : {
-      "get" : {
-        "responses" : {
-          "201" : {
-            "description" : "User logged in"
-          }
-        },
-        "security" : [ {
-          "bearerAuth" : [ ]
-        } ]
-      }
-    },
     "/user" : {
       "post" : {
         "tags" : [ "user" ],
@@ -157,29 +145,6 @@
             }
           }
         }
-      },
-      "delete" : {
-        "tags" : [ "user" ],
-        "summary" : "Log out in the app",
-        "description" : "Logs in in the application if the credentials are true",
-        "responses" : {
-          "201" : {
-            "description" : "User loggout succesfully"
-          },
-          "401" : {
-            "description" : "Invalid email, invalid password (or not confirmed user)",
-            "content" : {
-              "application/json" : {
-                "schema" : {
-                  "$ref" : "#/components/schemas/Error"
-                }
-              }
-            }
-          }
-        },
-        "security" : [ {
-          "bearerAuth" : [ ]
-        } ]
       }
     }
   },

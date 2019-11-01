@@ -21,11 +21,13 @@ import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.Date;
+import java.util.Optional;
 import java.util.UUID;
 
 @RestController
@@ -77,6 +79,23 @@ public class UserController {
 
         final String token = jsonWebTokenUtil.generateToken(userDetails);
         return ResponseEntity.ok(new JwtResponse(token));
+    }
+
+    @PostMapping(value = "/api/user/confirm/{tokenValue}")
+    public ResponseEntity<?> confirmToken(@PathVariable String tokenValue) {
+        Optional<Token> token = tokenService.getTokenByValue(tokenValue);
+
+        if(!token.isPresent()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).contentType(MediaType.APPLICATION_JSON).body(new ErrorMessage(HttpStatus.NOT_FOUND, "Token not found"));
+        }
+
+        User user = token.get().getUser();
+
+        userService.confirmUser(user);
+
+        tokenService.delete(token.get());
+
+        return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
     private void authenticate(String username, String password) throws Exception {

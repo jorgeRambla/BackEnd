@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 
 import javax.swing.text.html.Option;
 import javax.transaction.Transactional;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -26,8 +27,16 @@ public class TokenService {
         return tokenRepository.findTokenById(idToken);
     }
 
+    public Optional<Token> getTokenByValue(String tokenValue) {
+        return tokenRepository.findTokenByTokenValue(tokenValue);
+    }
+
     public Token update(Token token) {
         return tokenRepository.save(token);
+    }
+
+    public void delete(Token token)  {
+        delete(token.getId());
     }
 
     public void delete(long id) {
@@ -40,5 +49,9 @@ public class TokenService {
 
     public Optional<Token> getTokenByUser(User user) {
         return tokenRepository.findTokenByUser(user);
+    }
+
+    public List<Token> getExpiratedTokens(Date currentDate) {
+        return tokenRepository.findTokenByExpirationDateAfter(currentDate);
     }
 }
