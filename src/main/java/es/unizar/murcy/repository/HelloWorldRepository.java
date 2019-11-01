@@ -4,10 +4,15 @@ import es.unizar.murcy.model.HelloWorld;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
-import java.util.Optional;
+import javax.transaction.Transactional;
 
 @Repository
 public interface HelloWorldRepository extends JpaRepository<HelloWorld, Long>  {
-    Optional<HelloWorld> findById(long id);
+    boolean existsByUsername(String username);
+
+    HelloWorld findByUsername(String username);
+
+    @Transactional
+    void deleteByUsername(String username);
 
 }
