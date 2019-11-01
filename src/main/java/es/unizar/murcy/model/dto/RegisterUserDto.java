@@ -57,6 +57,7 @@ public class RegisterUserDto {
         user.setPassword(this.password);
         user.setUsername(this.username);
         user.setEmail(this.email);
+        user.setConfirmed(false);
 
         return user;
     }
