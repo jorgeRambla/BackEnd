@@ -2,9 +2,6 @@ package es.unizar.murcy.model.dto;
 
 import es.unizar.murcy.model.User;
 
-import java.util.HashSet;
-import java.util.Set;
-
 public class UserDto {
     private long id;
     private String userName;
