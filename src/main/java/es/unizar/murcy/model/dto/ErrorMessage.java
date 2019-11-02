@@ -4,8 +4,8 @@ import org.springframework.http.HttpStatus;
 
 public class ErrorMessage {
 
-    int status;
-    String message;
+    private int status;
+    private String message;
 
     public ErrorMessage() {
 
@@ -18,6 +18,21 @@ public class ErrorMessage {
     public ErrorMessage(HttpStatus status, String message) {
         this.status = status.value();
         this.message = message;
+    }
+
+    public ErrorMessage (HttpStatus status) {
+        this.status = status.value();
+        switch(this.status) {
+            case 400:
+                this.message = "Bad Request";
+                break;
+            case 403:
+                this.message = "User not authorized";
+                break;
+            default:
+                this.message = "";
+                break;
+        }
     }
 
     public int getStatus() {

@@ -56,7 +56,7 @@ public class MailService {
                 };
                 emailSender.send(preparation);
             } else {
-                logger.info("[FAKE EMAIL] From: " + email + ", body: " + token);
+                logger.info("[FAKE EMAIL] From: {}, body: {}", email, token);
             }
         } catch (IOException e) {
             logger.error(e.getMessage());

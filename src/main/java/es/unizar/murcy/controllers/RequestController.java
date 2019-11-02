@@ -1,7 +1,6 @@
 package es.unizar.murcy.controllers;
 
-import es.unizar.murcy.components.JsonWebTokenUtil;
-import es.unizar.murcy.controllers.Utilities.AuthUtilities;
+import es.unizar.murcy.controllers.utilities.AuthUtilities;
 import es.unizar.murcy.model.EditorRequest;
 import es.unizar.murcy.model.User;
 import es.unizar.murcy.model.Workflow;
@@ -45,7 +44,7 @@ public class RequestController {
         Optional<User> user = authUtilities.getUserFromRequest(request);
 
         if(!user.isPresent()) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ErrorMessage(HttpStatus.UNAUTHORIZED, "User not authorized"));
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ErrorMessage(HttpStatus.UNAUTHORIZED));
         }
 
         Optional<EditorRequest> editorRequest = editorRequestService.findEditorRequestByApplicant(user.get());
@@ -61,7 +60,7 @@ public class RequestController {
         Optional<User> user = authUtilities.getUserFromRequest(request);
 
         if(!user.isPresent()) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ErrorMessage(HttpStatus.UNAUTHORIZED, "User not authorized"));
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ErrorMessage(HttpStatus.UNAUTHORIZED));
         }
 
         Optional<EditorRequest> editorRequest = editorRequestService.findEditorRequestByApplicant(user.get());
@@ -90,7 +89,7 @@ public class RequestController {
         Optional<User> user = authUtilities.getUserFromRequest(request);
 
         if(!user.isPresent()) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ErrorMessage(HttpStatus.UNAUTHORIZED, "User not authorized"));
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ErrorMessage(HttpStatus.UNAUTHORIZED));
         }
 
         Optional<EditorRequest> editorRequest = editorRequestService.findEditorRequestByApplicant(user.get());

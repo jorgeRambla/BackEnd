@@ -61,4 +61,12 @@ public class EditorRequestDto {
     public void setWorkflow(WorkflowDto workflow) {
         this.workflow = workflow;
     }
+
+    public long getApplicantId() {
+        return applicantId;
+    }
+
+    public void setApplicantId(long applicantId) {
+        this.applicantId = applicantId;
+    }
 }

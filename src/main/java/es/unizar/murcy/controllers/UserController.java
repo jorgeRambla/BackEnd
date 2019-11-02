@@ -1,7 +1,7 @@
 package es.unizar.murcy.controllers;
 
 import es.unizar.murcy.components.JsonWebTokenUtil;
-import es.unizar.murcy.controllers.Utilities.AuthUtilities;
+import es.unizar.murcy.controllers.utilities.AuthUtilities;
 import es.unizar.murcy.model.Token;
 import es.unizar.murcy.model.User;
 import es.unizar.murcy.model.dto.*;
@@ -74,7 +74,7 @@ public class UserController {
         if(user.isPresent()) {
             return ResponseEntity.ok().body(new UserDto(user.get()));
         }
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ErrorMessage(HttpStatus.UNAUTHORIZED, "User not authorized"));
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ErrorMessage(HttpStatus.UNAUTHORIZED));
     }
 
     @GetMapping("/api/user/info/{id}")
@@ -82,7 +82,7 @@ public class UserController {
         Optional<User> user = authUtilities.getUserFromRequest(request);
 
         if(!user.isPresent()) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ErrorMessage(HttpStatus.UNAUTHORIZED, "User not authorized"));
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ErrorMessage(HttpStatus.UNAUTHORIZED));
         }
 
         if(id == user.get().getId() || user.get().getRoles().contains(User.Rol.REVIEWER)) {
@@ -92,7 +92,7 @@ public class UserController {
             }
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ErrorMessage(HttpStatus.NOT_FOUND, "User not found"));
         }
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ErrorMessage(HttpStatus.UNAUTHORIZED, "User not authorized"));
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ErrorMessage(HttpStatus.UNAUTHORIZED));
     }
 
     @PutMapping("/api/user/info")
