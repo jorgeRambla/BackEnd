@@ -97,7 +97,7 @@ public class UserController {
 
         User toUpdateUser = user.get();
         toUpdateUser.setLastIp(request.getRemoteAddr());
-        userService.updateUser(toUpdateUser);
+        userService.update(toUpdateUser);
 
         return ResponseEntity.ok(new JwtResponse(token));
     }

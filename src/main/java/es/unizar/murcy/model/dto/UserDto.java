@@ -2,6 +2,9 @@ package es.unizar.murcy.model.dto;
 
 import es.unizar.murcy.model.User;
 
+import java.util.HashSet;
+import java.util.Set;
+
 public class UserDto {
     private long id;
     private String userName;
@@ -27,7 +30,7 @@ public class UserDto {
         this.fullName = user.getFullName();
         this.email = user.getEmail();
 
-        this.role = (String[]) user.getRoles().stream().map(Enum::toString).toArray();
+        this.role = user.getRoles().stream().map(User.Rol::name).toArray(String[]::new);
     }
 
     public long getId() {
