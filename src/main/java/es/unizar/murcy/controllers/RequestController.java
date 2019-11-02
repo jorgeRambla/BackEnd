@@ -38,7 +38,7 @@ public class RequestController {
     @Autowired
     private WorkflowService workflowService;
 
-
+    @CrossOrigin
     @GetMapping("/api/request/editor")
     public ResponseEntity getCurrentUserEditorRequest(HttpServletRequest request) {
         Optional<User> user = authUtilities.getUserFromRequest(request);
@@ -55,6 +55,7 @@ public class RequestController {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ErrorMessage(HttpStatus.NOT_FOUND, "Request not found"));
     }
 
+    @CrossOrigin
     @PutMapping("/api/request/editor")
     public ResponseEntity putCurrentUserEditorRequest(HttpServletRequest request,@RequestBody EditorRequestRequest editorRequestRequest) {
         Optional<User> user = authUtilities.getUserFromRequest(request);
@@ -84,6 +85,7 @@ public class RequestController {
         }
     }
 
+    @CrossOrigin
     @PostMapping("/api/request/editor")
     public ResponseEntity createCurrentUserEditorRequest(HttpServletRequest request,@RequestBody EditorRequestRequest editorRequestRequest) {
         Optional<User> user = authUtilities.getUserFromRequest(request);

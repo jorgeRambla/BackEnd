@@ -43,6 +43,7 @@ public class UserController {
     @Autowired
     private AuthUtilities authUtilities;
 
+    @CrossOrigin
     @PostMapping("/api/user")
     public ResponseEntity create(@RequestBody RegisterUserDto registerUserDto) {
         if(Boolean.FALSE.equals(registerUserDto.isComplete())) {
@@ -67,6 +68,7 @@ public class UserController {
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
+    @CrossOrigin
     @GetMapping("/api/user/info")
     public ResponseEntity getCurrentUser(HttpServletRequest request) {
         Optional<User> user = authUtilities.getUserFromRequest(request);
@@ -77,6 +79,7 @@ public class UserController {
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ErrorMessage(HttpStatus.UNAUTHORIZED));
     }
 
+    @CrossOrigin
     @GetMapping("/api/user/info/{id}")
     public ResponseEntity getUserById(HttpServletRequest request, @PathVariable long id) {
         Optional<User> user = authUtilities.getUserFromRequest(request);
@@ -95,11 +98,13 @@ public class UserController {
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ErrorMessage(HttpStatus.UNAUTHORIZED));
     }
 
+    @CrossOrigin
     @PutMapping("/api/user/info")
     public ResponseEntity putCurrentUser(@PathVariable long id) {
         return ResponseEntity.status(HttpStatus.NOT_IMPLEMENTED).build();
     }
 
+    @CrossOrigin
     @PutMapping("/api/user/info/{id}")
     public ResponseEntity putUserById(@PathVariable long id) {
         return ResponseEntity.status(HttpStatus.NOT_IMPLEMENTED).build();
@@ -131,6 +136,7 @@ public class UserController {
         return ResponseEntity.ok(new JwtResponse(token));
     }
 
+    @CrossOrigin
     @PostMapping(value = "/api/user/confirm/{tokenValue}")
     public ResponseEntity confirmToken(@PathVariable String tokenValue) {
         Optional<Token> token = tokenService.getTokenByValue(tokenValue);
