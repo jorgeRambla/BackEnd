@@ -28,7 +28,6 @@ public class UserDto {
         this.email = user.getEmail();
 
         this.role = (String[]) user.getRoles().stream().map(Enum::toString).toArray();
-
     }
 
     public long getId() {

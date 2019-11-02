@@ -1,8 +1,7 @@
 package es.unizar.murcy.model;
 
 import javax.persistence.*;
-import java.util.ArrayList;
-import java.util.Collection;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -30,13 +29,19 @@ public class User {
 
     private Boolean confirmed;
 
+    private Date createDate;
+
+    private Date modifiedDate;
+
     @ElementCollection(targetClass=User.Rol.class)
-    @Enumerated(EnumType.STRING) // Possibly optional (I'm not sure) but defaults to ORDINAL.
+    @Enumerated(EnumType.STRING)
     @CollectionTable(name="murcy_user_rol")
     private Set<Rol> roles;
 
     public User() {
         this.roles = new HashSet<>();
+        this.createDate = new Date();
+        this.modifiedDate = new Date();
     }
 
     public User(String username, String password, String email, String fullName) {
@@ -118,5 +123,21 @@ public class User {
 
     public void addRol(Rol rol) {
         this.roles.add(rol);
+    }
+
+    public Date getCreateDate() {
+        return createDate;
+    }
+
+    public void setCreateDate(Date createDate) {
+        this.createDate = createDate;
+    }
+
+    public Date getModifiedDate() {
+        return modifiedDate;
+    }
+
+    public void setModifiedDate(Date modifiedDate) {
+        this.modifiedDate = modifiedDate;
     }
 }
