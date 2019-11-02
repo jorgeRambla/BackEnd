@@ -53,6 +53,11 @@ public class UserController {
         if (userService.existsByUsername(registerUserDto.getUsername())){
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).contentType(MediaType.APPLICATION_JSON).body(new ErrorMessage(HttpStatus.BAD_REQUEST, "Ya existe un usuario con ese nombre"));
         }
+
+        if (userService.existsByEmail(registerUserDto.getEmail())){
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).contentType(MediaType.APPLICATION_JSON).body(new ErrorMessage(HttpStatus.BAD_REQUEST, "Ya existe un usuario con ese email"));
+        }
+
         registerUserDto.setPassword(new BCryptPasswordEncoder().encode(registerUserDto.getPassword()));
         User user = userService.create(registerUserDto.toEntity());
 

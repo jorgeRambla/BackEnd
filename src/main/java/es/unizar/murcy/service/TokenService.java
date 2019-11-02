@@ -51,6 +51,6 @@ public class TokenService {
     }
 
     public List<Token> getExpiratedTokens(Date currentDate) {
-        return tokenRepository.findTokenByExpirationDateAfter(currentDate);
+        return tokenRepository.findTokenByExpirationDateBefore(currentDate);
     }
 }

@@ -23,12 +23,11 @@ public class TokenCleanUpTask {
     @Autowired
     UserService userService;
 
-    @Scheduled(cron = "0 0 0/1 ? * *")
+    @Scheduled(cron = "0 0/30 0 * * ?")
     public void cleanExpiredTokens() {
-        Date currentDate = new Date();
-        List<Token> tokens = tokenService.getExpiratedTokens(currentDate);
+        List<Token> tokens = tokenService.getExpiratedTokens(new Date());
         if(!tokens.isEmpty()) {
-            log.info("-- [TAREA PROGRAMADA] [INICIO] LIMPIEZA DE TOKENS --");
+            log.info("-- [TAREA PROGRAMADA] [INICIO] LIMPIEZA DE TOKENS [{}] --", tokens.size());
             for(Token token : tokens) {
                 tokenService.delete(token);
                 userService.deleteUser(token.getUser());
