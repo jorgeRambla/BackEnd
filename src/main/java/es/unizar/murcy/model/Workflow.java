@@ -32,12 +32,15 @@ public class Workflow {
     private Workflow nextWorkflow;
 
     @ManyToOne
-    public User statusUser;
+    private User statusUser;
 
     public Workflow() {
+        Date now = new Date();
         this.nextWorkflow = null;
-        this.createDate = new Date();
-        this.modifiedDate = new Date();
+        this.createDate = now;
+        this.modifiedDate = now;
+        this.status = Status.PENDING;
+        this.statusDate = now;
     }
 
     public long getId() {

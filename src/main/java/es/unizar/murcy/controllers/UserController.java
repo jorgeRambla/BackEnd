@@ -1,6 +1,7 @@
 package es.unizar.murcy.controllers;
 
 import es.unizar.murcy.components.JsonWebTokenUtil;
+import es.unizar.murcy.controllers.Utilities.AuthUtilities;
 import es.unizar.murcy.model.Token;
 import es.unizar.murcy.model.User;
 import es.unizar.murcy.model.dto.*;
@@ -12,8 +13,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.*;
@@ -36,13 +35,13 @@ public class UserController {
     private MailService mailService;
 
     @Autowired
-    private AuthenticationManager authenticationManager;
-
-    @Autowired
     private JsonWebTokenUtil jsonWebTokenUtil;
 
     @Autowired
     private JwtUserDetailsService userDetailsService;
+
+    @Autowired
+    private AuthUtilities authUtilities;
 
     @PostMapping("/api/user")
     public ResponseEntity create(@RequestBody RegisterUserDto registerUserDto) {
@@ -70,15 +69,40 @@ public class UserController {
 
     @GetMapping("/api/user/info")
     public ResponseEntity getCurrentUser(HttpServletRequest request) {
-        final String authorization = request.getHeader("Authorization");
+        Optional<User> user = authUtilities.getUserFromRequest(request);
 
-        final String username = jsonWebTokenUtil.getUserNameFromToken(authorization.substring(7));
-
-        Optional<User> user = userService.findUserByUserName(username);
         if(user.isPresent()) {
             return ResponseEntity.ok().body(new UserDto(user.get()));
         }
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ErrorMessage(HttpStatus.NOT_FOUND, "User not found"));
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ErrorMessage(HttpStatus.UNAUTHORIZED, "User not authorized"));
+    }
+
+    @GetMapping("/api/user/info/{id}")
+    public ResponseEntity getUserById(HttpServletRequest request, @PathVariable long id) {
+        Optional<User> user = authUtilities.getUserFromRequest(request);
+
+        if(!user.isPresent()) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ErrorMessage(HttpStatus.UNAUTHORIZED, "User not authorized"));
+        }
+
+        if(id == user.get().getId() || user.get().getRoles().contains(User.Rol.REVIEWER)) {
+            Optional<User> fetchedUser = userService.findUserById(id);
+            if(fetchedUser.isPresent()) {
+                return ResponseEntity.ok().body(new UserDto(fetchedUser.get()));
+            }
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ErrorMessage(HttpStatus.NOT_FOUND, "User not found"));
+        }
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ErrorMessage(HttpStatus.UNAUTHORIZED, "User not authorized"));
+    }
+
+    @PutMapping("/api/user/info")
+    public ResponseEntity putCurrentUser(@PathVariable long id) {
+        return ResponseEntity.status(HttpStatus.NOT_IMPLEMENTED).build();
+    }
+
+    @PutMapping("/api/user/info/{id}")
+    public ResponseEntity putUserById(@PathVariable long id) {
+        return ResponseEntity.status(HttpStatus.NOT_IMPLEMENTED).build();
     }
 
     @PostMapping(value = "/api/user/login")
@@ -93,7 +117,7 @@ public class UserController {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body(new ErrorMessage(HttpStatus.FORBIDDEN, "User not confirmed"));
         }
 
-        authenticate(jsonWebTokenRequest.getUsername(), jsonWebTokenRequest.getPassword());
+        authUtilities.authenticate(jsonWebTokenRequest.getUsername(), jsonWebTokenRequest.getPassword());
 
         final UserDetails userDetails = userDetailsService
                 .loadUserByUsername(jsonWebTokenRequest.getUsername());
@@ -123,9 +147,4 @@ public class UserController {
 
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
-
-    private void authenticate(String username, String password) {
-        authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(username, password));
-    }
-
 }

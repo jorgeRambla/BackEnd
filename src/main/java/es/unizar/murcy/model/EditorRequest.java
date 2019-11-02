@@ -23,12 +23,18 @@ public class EditorRequest {
     @ManyToOne
     private Workflow workflow;
 
+    private boolean closed;
+
+    private boolean approved;
+
     @ManyToOne
     private Workflow lastWorkflow;
 
     public EditorRequest() {
         this.createDate = new Date();
         this.modifiedDate = new Date();
+        this.closed = false;
+        this.approved = false;
     }
 
     public long getId() {
@@ -85,5 +91,21 @@ public class EditorRequest {
 
     public void setLastWorkflow(Workflow lastWorkflow) {
         this.lastWorkflow = lastWorkflow;
+    }
+
+    public boolean isClosed() {
+        return closed;
+    }
+
+    public void setClosed(boolean closed) {
+        this.closed = closed;
+    }
+
+    public boolean isApproved() {
+        return approved;
+    }
+
+    public void setApproved(boolean approved) {
+        this.approved = approved;
     }
 }
