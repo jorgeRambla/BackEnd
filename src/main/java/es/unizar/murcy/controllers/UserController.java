@@ -136,7 +136,7 @@ public class UserController {
         return ResponseEntity.ok(new JwtResponse(token));
     }
 
-    @CrossOrigin 
+    @CrossOrigin
     @PostMapping(value = "/api/user/confirm/{tokenValue}")
     public ResponseEntity confirmToken(@PathVariable String tokenValue) {
         Optional<Token> token = tokenService.getTokenByValue(tokenValue);
