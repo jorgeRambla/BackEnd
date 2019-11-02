@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 
 @Service
 public class MailService {
@@ -32,7 +33,7 @@ public class MailService {
     @Autowired
     private ResourceLoader resourceLoader;
 
-    Logger logger = LoggerFactory.getLogger(MailService.class);
+    private Logger logger = LoggerFactory.getLogger(MailService.class);
 
     public void sendTokenConfirmationMail(String token, String email) {
 
@@ -44,7 +45,7 @@ public class MailService {
             while ((length = inputStream.read(buffer)) != -1) {
                 result.write(buffer, 0, length);
             }
-            String template =  result.toString("UTF-8");
+            String template =  result.toString(StandardCharsets.UTF_8.name());
             final String finalTemplate = formatTemplate(template, token);
             if(mailEnabled.equals(Boolean.TRUE)) {
                 MimeMessagePreparator preparation = mimeMessage -> {

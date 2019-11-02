@@ -1,4 +1,4 @@
-package es.unizar.murcy.model.dto;
+package es.unizar.murcy.model.request;
 
 import java.io.Serializable;
 public class JsonWebTokenRequest implements Serializable {

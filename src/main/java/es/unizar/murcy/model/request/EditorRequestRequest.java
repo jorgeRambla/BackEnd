@@ -1,4 +1,4 @@
-package es.unizar.murcy.model.dto;
+package es.unizar.murcy.model.request;
 
 public class EditorRequestRequest {
     private String description;

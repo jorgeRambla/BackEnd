@@ -5,8 +5,8 @@ import es.unizar.murcy.model.EditorRequest;
 import es.unizar.murcy.model.User;
 import es.unizar.murcy.model.Workflow;
 import es.unizar.murcy.model.dto.EditorRequestDto;
-import es.unizar.murcy.model.dto.EditorRequestRequest;
-import es.unizar.murcy.model.dto.ErrorMessage;
+import es.unizar.murcy.model.dto.ErrorMessageDto;
+import es.unizar.murcy.model.request.EditorRequestRequest;
 import es.unizar.murcy.service.EditorRequestService;
 import es.unizar.murcy.service.MailService;
 import es.unizar.murcy.service.UserService;
@@ -18,6 +18,8 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @RestController
 public class RequestController {
@@ -43,30 +45,30 @@ public class RequestController {
     public ResponseEntity getCurrentUserEditorRequest(HttpServletRequest request) {
         Optional<User> user = authUtilities.getUserFromRequest(request);
 
-        if(!user.isPresent()) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ErrorMessage(HttpStatus.UNAUTHORIZED));
+        if (!user.isPresent()) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ErrorMessageDto(HttpStatus.UNAUTHORIZED));
         }
 
         Optional<EditorRequest> editorRequest = editorRequestService.findEditorRequestByApplicant(user.get());
 
-        if(editorRequest.isPresent()) {
+        if (editorRequest.isPresent()) {
             return ResponseEntity.ok().body(new EditorRequestDto(editorRequest.get()));
         }
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ErrorMessage(HttpStatus.NOT_FOUND, "Request not found"));
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ErrorMessageDto(HttpStatus.NOT_FOUND, "Request not found"));
     }
 
     @CrossOrigin
     @PutMapping("/api/request/editor")
-    public ResponseEntity putCurrentUserEditorRequest(HttpServletRequest request,@RequestBody EditorRequestRequest editorRequestRequest) {
+    public ResponseEntity putCurrentUserEditorRequest(HttpServletRequest request, @RequestBody EditorRequestRequest editorRequestRequest) {
         Optional<User> user = authUtilities.getUserFromRequest(request);
 
-        if(!user.isPresent()) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ErrorMessage(HttpStatus.UNAUTHORIZED));
+        if (!user.isPresent()) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ErrorMessageDto(HttpStatus.UNAUTHORIZED));
         }
 
         Optional<EditorRequest> editorRequest = editorRequestService.findEditorRequestByApplicant(user.get());
 
-        if(editorRequest.isPresent()) {
+        if (editorRequest.isPresent()) {
             String description = (editorRequestRequest.getDescription() == null) ? "" : editorRequestRequest.getDescription();
 
             EditorRequest finalEditorRequest = editorRequest.get();
@@ -81,24 +83,24 @@ public class RequestController {
 
             return ResponseEntity.status(HttpStatus.CREATED).build();
         } else {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ErrorMessage(HttpStatus.NOT_FOUND, "Request not found"));
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ErrorMessageDto(HttpStatus.NOT_FOUND, "Request not found"));
         }
     }
 
     @CrossOrigin
     @PostMapping("/api/request/editor")
-    public ResponseEntity createCurrentUserEditorRequest(HttpServletRequest request,@RequestBody EditorRequestRequest editorRequestRequest) {
+    public ResponseEntity createCurrentUserEditorRequest(HttpServletRequest request, @RequestBody EditorRequestRequest editorRequestRequest) {
         Optional<User> user = authUtilities.getUserFromRequest(request);
 
-        if(!user.isPresent()) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ErrorMessage(HttpStatus.UNAUTHORIZED));
+        if (!user.isPresent()) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ErrorMessageDto(HttpStatus.UNAUTHORIZED));
         }
 
         Optional<EditorRequest> editorRequest = editorRequestService.findEditorRequestByApplicant(user.get());
 
         String description = (editorRequestRequest.getDescription() == null) ? "" : editorRequestRequest.getDescription();
 
-        if(!editorRequest.isPresent()) {
+        if (!editorRequest.isPresent()) {
             EditorRequest finalEditorRequest = new EditorRequest();
             finalEditorRequest.setApplicant(user.get());
             finalEditorRequest.setDescription(description);
@@ -117,7 +119,7 @@ public class RequestController {
 
             return ResponseEntity.status(HttpStatus.CREATED).build();
         } else {
-            if(editorRequest.get().isClosed()) {
+            if (editorRequest.get().isClosed()) {
                 EditorRequest finalEditorRequest = editorRequest.get();
 
                 Workflow workflow = new Workflow();
@@ -138,11 +140,31 @@ public class RequestController {
                 editorRequestService.update(finalEditorRequest);
 
                 return ResponseEntity.status(HttpStatus.CREATED).build();
-            } else if(editorRequest.get().isApproved()) {
-                return ResponseEntity.status(HttpStatus.CONFLICT).body(new ErrorMessage(HttpStatus.CONFLICT, "Request is approved"));
+            } else if (editorRequest.get().isApproved()) {
+                return ResponseEntity.status(HttpStatus.CONFLICT).body(new ErrorMessageDto(HttpStatus.CONFLICT, "Request is approved"));
             } else {
-                return ResponseEntity.status(HttpStatus.CONFLICT).body(new ErrorMessage(HttpStatus.CONFLICT, "There is one pending request"));
+                return ResponseEntity.status(HttpStatus.CONFLICT).body(new ErrorMessageDto(HttpStatus.CONFLICT, "There is one pending request"));
             }
         }
+    }
+
+    @CrossOrigin
+    @GetMapping("/api/request/editor/list")
+    public ResponseEntity getOpenedEditorRequest(HttpServletRequest request,
+                                                 @RequestParam(value = "closed", defaultValue = "false") Boolean isClosed,
+                                                 @RequestParam(value = "approved", defaultValue = "false") Boolean isApproved) {
+        Optional<User> user = authUtilities.getUserFromRequest(request);
+
+        if (!user.isPresent()) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ErrorMessageDto(HttpStatus.UNAUTHORIZED));
+        }
+
+        if(!user.get().getRoles().contains(User.Rol.REVIEWER)) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ErrorMessageDto(HttpStatus.UNAUTHORIZED));
+        }
+
+        Set<EditorRequest> editorRequestSet = editorRequestService.findByClosedAndApproved(isClosed, isApproved);
+
+        return ResponseEntity.status(HttpStatus.OK).body(editorRequestSet.stream().map(EditorRequestDto::new).collect(Collectors.toList()));
     }
 }

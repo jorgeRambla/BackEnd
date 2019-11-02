@@ -2,6 +2,9 @@ package es.unizar.murcy.model.dto;
 
 import es.unizar.murcy.model.EditorRequest;
 
+import java.util.Collection;
+import java.util.Set;
+
 public class EditorRequestDto {
     private long id;
     private long applicantId;

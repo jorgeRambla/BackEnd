@@ -1,21 +1,21 @@
-package es.unizar.murcy.model.dto;
+package es.unizar.murcy.model.request;
 
 import es.unizar.murcy.model.User;
 
 import java.util.HashSet;
 import java.util.Set;
 
-public class RegisterUserDto {
+public class RegisterUserRequest {
 
     private String username;
     private String password;
     private String email;
     private String fullName;
 
-    public RegisterUserDto() {
+    public RegisterUserRequest() {
     }
 
-    public RegisterUserDto(String username, String password, String email, String fullName) {
+    public RegisterUserRequest(String username, String password, String email, String fullName) {
         this.username = username;
         this.password = password;
         this.email = email;

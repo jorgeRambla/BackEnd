@@ -150,11 +150,11 @@
         "description" : "Get current logged user info",
         "responses" : {
           "201" : {
-            "description" : "User logged in",
+            "description" : "User data",
             "content" : {
               "application/json" : {
                 "schema" : {
-                  "$ref" : "#/components/schemas/inline_response_201"
+                  "$ref" : "#/components/schemas/UserDto"
                 }
               }
             }
@@ -190,11 +190,11 @@
         },
         "responses" : {
           "201" : {
-            "description" : "User logged in",
+            "description" : "User updated",
             "content" : {
               "application/json" : {
                 "schema" : {
-                  "$ref" : "#/components/schemas/inline_response_201"
+                  "$ref" : "#/components/schemas/UserDto"
                 }
               }
             }
@@ -238,7 +238,7 @@
             "content" : {
               "application/json" : {
                 "schema" : {
-                  "$ref" : "#/components/schemas/inline_response_201"
+                  "$ref" : "#/components/schemas/UserDto"
                 }
               }
             }
@@ -300,7 +300,7 @@
             "content" : {
               "application/json" : {
                 "schema" : {
-                  "$ref" : "#/components/schemas/inline_response_201"
+                  "$ref" : "#/components/schemas/UserDto"
                 }
               }
             }
@@ -448,10 +448,93 @@
           "bearerAuth" : [ ]
         } ]
       }
+    },
+    "/request/editor/list" : {
+      "get" : {
+        "tags" : [ "request" ],
+        "summary" : "Get current user requests",
+        "description" : "Get current user request if exists",
+        "parameters" : [ {
+          "name" : "closed",
+          "in" : "query",
+          "description" : "editor request is closed",
+          "required" : false,
+          "style" : "form",
+          "explode" : true,
+          "schema" : {
+            "type" : "boolean",
+            "default" : false
+          }
+        }, {
+          "name" : "approved",
+          "in" : "query",
+          "description" : "editor request is approved",
+          "required" : false,
+          "style" : "form",
+          "explode" : true,
+          "schema" : {
+            "type" : "boolean",
+            "default" : false
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "Editor requests",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ArrayEditorRequest"
+                }
+              }
+            }
+          },
+          "403" : {
+            "description" : "Not authorized",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "security" : [ {
+          "bearerAuth" : [ ]
+        } ]
+      }
     }
   },
   "components" : {
     "schemas" : {
+      "UserDto" : {
+        "type" : "object",
+        "properties" : {
+          "id" : {
+            "type" : "integer",
+            "description" : "user id",
+            "format" : "int64"
+          },
+          "username" : {
+            "type" : "string",
+            "description" : "user username"
+          },
+          "email" : {
+            "type" : "string",
+            "description" : "User email"
+          },
+          "fullName" : {
+            "type" : "string",
+            "description" : "User full name"
+          },
+          "role" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/Rol"
+            }
+          }
+        }
+      },
       "Auth" : {
         "type" : "object",
         "properties" : {
@@ -494,6 +577,12 @@
           "workflow" : {
             "$ref" : "#/components/schemas/Workflow"
           }
+        }
+      },
+      "ArrayEditorRequest" : {
+        "type" : "array",
+        "items" : {
+          "$ref" : "#/components/schemas/EditorRequest"
         }
       },
       "Workflow" : {
@@ -561,34 +650,6 @@
           "password" : {
             "type" : "string",
             "description" : "Password of the user to log in"
-          }
-        }
-      },
-      "inline_response_201" : {
-        "type" : "object",
-        "properties" : {
-          "id" : {
-            "type" : "integer",
-            "description" : "user id",
-            "format" : "int64"
-          },
-          "username" : {
-            "type" : "string",
-            "description" : "user username"
-          },
-          "email" : {
-            "type" : "string",
-            "description" : "User email"
-          },
-          "fullName" : {
-            "type" : "string",
-            "description" : "User full name"
-          },
-          "role" : {
-            "type" : "array",
-            "items" : {
-              "$ref" : "#/components/schemas/Rol"
-            }
           }
         }
       },

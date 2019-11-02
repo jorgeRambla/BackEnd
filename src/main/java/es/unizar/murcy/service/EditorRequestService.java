@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 import javax.transaction.Transactional;
 import java.util.Date;
 import java.util.Optional;
+import java.util.Set;
 
 @Service
 @Transactional
@@ -31,5 +32,9 @@ public class EditorRequestService {
     public EditorRequest update(EditorRequest editorRequest) {
         editorRequest.setModifiedDate(new Date());
         return editorRequestRepository.save(editorRequest);
+    }
+
+    public Set<EditorRequest> findByClosedAndApproved(Boolean isClosed, Boolean isApproved) {
+        return editorRequestRepository.findEditorRequestByClosedAndAndApprovedOrderByCreateDateDesc(isClosed, isApproved);
     }
 }

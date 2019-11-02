@@ -5,6 +5,8 @@ import es.unizar.murcy.controllers.utilities.AuthUtilities;
 import es.unizar.murcy.model.Token;
 import es.unizar.murcy.model.User;
 import es.unizar.murcy.model.dto.*;
+import es.unizar.murcy.model.request.JsonWebTokenRequest;
+import es.unizar.murcy.model.request.RegisterUserRequest;
 import es.unizar.murcy.service.JwtUserDetailsService;
 import es.unizar.murcy.service.MailService;
 import es.unizar.murcy.service.TokenService;
@@ -45,21 +47,21 @@ public class UserController {
 
     @CrossOrigin
     @PostMapping("/api/user")
-    public ResponseEntity create(@RequestBody RegisterUserDto registerUserDto) {
-        if(Boolean.FALSE.equals(registerUserDto.isComplete())) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).contentType(MediaType.APPLICATION_JSON).body(new ErrorMessage(HttpStatus.BAD_REQUEST, "Faltan campos"));
+    public ResponseEntity create(@RequestBody RegisterUserRequest registerUserRequest) {
+        if(Boolean.FALSE.equals(registerUserRequest.isComplete())) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).contentType(MediaType.APPLICATION_JSON).body(new ErrorMessageDto(HttpStatus.BAD_REQUEST, "Faltan campos"));
         }
 
-        if (userService.existsByUsername(registerUserDto.getUsername())){
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).contentType(MediaType.APPLICATION_JSON).body(new ErrorMessage(HttpStatus.BAD_REQUEST, "Ya existe un usuario con ese nombre"));
+        if (userService.existsByUsername(registerUserRequest.getUsername())){
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).contentType(MediaType.APPLICATION_JSON).body(new ErrorMessageDto(HttpStatus.BAD_REQUEST, "Ya existe un usuario con ese nombre"));
         }
 
-        if (userService.existsByEmail(registerUserDto.getEmail())){
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).contentType(MediaType.APPLICATION_JSON).body(new ErrorMessage(HttpStatus.BAD_REQUEST, "Ya existe un usuario con ese email"));
+        if (userService.existsByEmail(registerUserRequest.getEmail())){
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).contentType(MediaType.APPLICATION_JSON).body(new ErrorMessageDto(HttpStatus.BAD_REQUEST, "Ya existe un usuario con ese email"));
         }
 
-        registerUserDto.setPassword(new BCryptPasswordEncoder().encode(registerUserDto.getPassword()));
-        User user = userService.create(registerUserDto.toEntity());
+        registerUserRequest.setPassword(new BCryptPasswordEncoder().encode(registerUserRequest.getPassword()));
+        User user = userService.create(registerUserRequest.toEntity());
 
         Token token = tokenService.create(new Token(user, UUID.randomUUID().toString(), new Date(System.currentTimeMillis() + Token.DEFAULT_TOKEN_EXPIRATION_TIME)));
 
@@ -76,7 +78,7 @@ public class UserController {
         if(user.isPresent()) {
             return ResponseEntity.ok().body(new UserDto(user.get()));
         }
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ErrorMessage(HttpStatus.UNAUTHORIZED));
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ErrorMessageDto(HttpStatus.UNAUTHORIZED));
     }
 
     @CrossOrigin
@@ -85,7 +87,7 @@ public class UserController {
         Optional<User> user = authUtilities.getUserFromRequest(request);
 
         if(!user.isPresent()) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ErrorMessage(HttpStatus.UNAUTHORIZED));
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ErrorMessageDto(HttpStatus.UNAUTHORIZED));
         }
 
         if(id == user.get().getId() || user.get().getRoles().contains(User.Rol.REVIEWER)) {
@@ -93,9 +95,9 @@ public class UserController {
             if(fetchedUser.isPresent()) {
                 return ResponseEntity.ok().body(new UserDto(fetchedUser.get()));
             }
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ErrorMessage(HttpStatus.NOT_FOUND, "User not found"));
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ErrorMessageDto(HttpStatus.NOT_FOUND, "User not found"));
         }
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ErrorMessage(HttpStatus.UNAUTHORIZED));
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ErrorMessageDto(HttpStatus.UNAUTHORIZED));
     }
 
     @CrossOrigin
@@ -120,7 +122,7 @@ public class UserController {
         }
 
         if(Boolean.FALSE.equals(user.get().getConfirmed())) {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(new ErrorMessage(HttpStatus.FORBIDDEN, "User not confirmed"));
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(new ErrorMessageDto(HttpStatus.FORBIDDEN, "User not confirmed"));
         }
 
         authUtilities.authenticate(jsonWebTokenRequest.getUsername(), jsonWebTokenRequest.getPassword());
@@ -134,7 +136,7 @@ public class UserController {
         toUpdateUser.setLastIp(request.getRemoteAddr());
         userService.update(toUpdateUser);
 
-        return ResponseEntity.ok(new JwtResponse(token));
+        return ResponseEntity.ok(new JsonWebTokenDto(token));
     }
 
     @CrossOrigin
@@ -143,7 +145,7 @@ public class UserController {
         Optional<Token> token = tokenService.getTokenByValue(tokenValue);
 
         if(!token.isPresent()) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).contentType(MediaType.APPLICATION_JSON).body(new ErrorMessage(HttpStatus.NOT_FOUND, "Token not found"));
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).contentType(MediaType.APPLICATION_JSON).body(new ErrorMessageDto(HttpStatus.NOT_FOUND, "Token not found"));
         }
 
         User user = token.get().getUser();
