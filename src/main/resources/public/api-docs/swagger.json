@@ -169,7 +169,10 @@
               }
             }
           }
-        }
+        },
+        "security" : [ {
+          "bearerAuth" : [ ]
+        } ]
       },
       "put" : {
         "tags" : [ "user" ],
@@ -206,7 +209,10 @@
               }
             }
           }
-        }
+        },
+        "security" : [ {
+          "bearerAuth" : [ ]
+        } ]
       }
     },
     "/user/info/{id}" : {
@@ -257,7 +263,10 @@
               }
             }
           }
-        }
+        },
+        "security" : [ {
+          "bearerAuth" : [ ]
+        } ]
       },
       "put" : {
         "tags" : [ "user" ],
@@ -316,7 +325,10 @@
               }
             }
           }
-        }
+        },
+        "security" : [ {
+          "bearerAuth" : [ ]
+        } ]
       }
     },
     "/request/editor" : {
@@ -355,7 +367,10 @@
               }
             }
           }
-        }
+        },
+        "security" : [ {
+          "bearerAuth" : [ ]
+        } ]
       },
       "put" : {
         "tags" : [ "request" ],
@@ -385,7 +400,10 @@
               }
             }
           }
-        }
+        },
+        "security" : [ {
+          "bearerAuth" : [ ]
+        } ]
       },
       "post" : {
         "tags" : [ "request" ],
@@ -425,7 +443,10 @@
               }
             }
           }
-        }
+        },
+        "security" : [ {
+          "bearerAuth" : [ ]
+        } ]
       }
     }
   },
