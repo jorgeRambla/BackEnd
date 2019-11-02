@@ -110,6 +110,7 @@ public class UserController {
         return ResponseEntity.status(HttpStatus.NOT_IMPLEMENTED).build();
     }
 
+    @CrossOrigin
     @PostMapping(value = "/api/user/login")
     public ResponseEntity createAuthenticationToken(@RequestBody JsonWebTokenRequest jsonWebTokenRequest, HttpServletRequest request) {
         Optional<User> user = userService.findUserByUserName(jsonWebTokenRequest.getUsername());
