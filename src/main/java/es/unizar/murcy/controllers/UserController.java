@@ -25,7 +25,6 @@ import java.util.Date;
 import java.util.Optional;
 import java.util.UUID;
 
-@CrossOrigin
 @RestController
 public class UserController {
 
@@ -47,7 +46,6 @@ public class UserController {
     @Autowired
     private AuthUtilities authUtilities;
 
-    @CrossOrigin
     @PostMapping("/api/user")
     public ResponseEntity create(@RequestBody RegisterUserRequest registerUserRequest) {
         if(Boolean.FALSE.equals(registerUserRequest.isComplete())) {
@@ -72,7 +70,6 @@ public class UserController {
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
-    @CrossOrigin
     @GetMapping("/api/user/info")
     public ResponseEntity getCurrentUser(HttpServletRequest request) {
         Optional<User> user = authUtilities.getUserFromRequest(request);
@@ -83,7 +80,6 @@ public class UserController {
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ErrorMessageDto(HttpStatus.UNAUTHORIZED));
     }
 
-    @CrossOrigin
     @GetMapping("/api/user/info/{id}")
     public ResponseEntity getUserById(HttpServletRequest request, @PathVariable long id) {
         Optional<User> user = authUtilities.getUserFromRequest(request);
@@ -102,7 +98,6 @@ public class UserController {
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ErrorMessageDto(HttpStatus.UNAUTHORIZED));
     }
 
-    @CrossOrigin
     @PutMapping("/api/user/info")
     public ResponseEntity putCurrentUser(HttpServletRequest request,
                                           @RequestBody UpdateUserRequest updateUserRequest) {
@@ -115,7 +110,6 @@ public class UserController {
         return putUserById(request, user.get().getId(), updateUserRequest);
     }
 
-    @CrossOrigin
     @PutMapping("/api/user/info/{id}")
     public ResponseEntity putUserById(HttpServletRequest request, @PathVariable long id, @RequestBody UpdateUserRequest updateUserRequest) {
         Optional<User> user = authUtilities.getUserFromRequest(request);
@@ -166,7 +160,6 @@ public class UserController {
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ErrorMessageDto(HttpStatus.UNAUTHORIZED));
     }
 
-    @CrossOrigin
     @PostMapping(value = "/api/user/login")
     public ResponseEntity createAuthenticationToken(@RequestBody JsonWebTokenRequest jsonWebTokenRequest, HttpServletRequest request) {
         Optional<User> user = userService.findUserByUserName(jsonWebTokenRequest.getUsername());
@@ -193,7 +186,6 @@ public class UserController {
         return ResponseEntity.ok(new JsonWebTokenDto(token));
     }
 
-    @CrossOrigin
     @PostMapping(value = "/api/user/confirm/{tokenValue}")
     public ResponseEntity confirmToken(@PathVariable String tokenValue) {
         Optional<Token> token = tokenService.getTokenByValue(tokenValue);
