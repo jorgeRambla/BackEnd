@@ -171,7 +171,7 @@ public class RequestController {
     }
 
     @CrossOrigin
-    @PutMapping
+    @PutMapping("/api/request/editor/manage")
     public ResponseEntity updateRequestStatus(HttpServletRequest request, @RequestBody ManageEditorRequestRequest manageEditorRequestRequest) {
 
         return ResponseEntity.status(HttpStatus.NOT_IMPLEMENTED).build();
