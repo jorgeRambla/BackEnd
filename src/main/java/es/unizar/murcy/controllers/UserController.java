@@ -7,6 +7,7 @@ import es.unizar.murcy.model.User;
 import es.unizar.murcy.model.dto.*;
 import es.unizar.murcy.model.request.JsonWebTokenRequest;
 import es.unizar.murcy.model.request.RegisterUserRequest;
+import es.unizar.murcy.model.request.UpdateUserRequest;
 import es.unizar.murcy.service.JwtUserDetailsService;
 import es.unizar.murcy.service.MailService;
 import es.unizar.murcy.service.TokenService;
@@ -24,6 +25,7 @@ import java.util.Date;
 import java.util.Optional;
 import java.util.UUID;
 
+@CrossOrigin
 @RestController
 public class UserController {
 
@@ -49,15 +51,15 @@ public class UserController {
     @PostMapping("/api/user")
     public ResponseEntity create(@RequestBody RegisterUserRequest registerUserRequest) {
         if(Boolean.FALSE.equals(registerUserRequest.isComplete())) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).contentType(MediaType.APPLICATION_JSON).body(new ErrorMessageDto(HttpStatus.BAD_REQUEST, "Faltan campos"));
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ErrorMessageDto(HttpStatus.BAD_REQUEST, "Faltan campos"));
         }
 
         if (userService.existsByUsername(registerUserRequest.getUsername())){
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).contentType(MediaType.APPLICATION_JSON).body(new ErrorMessageDto(HttpStatus.BAD_REQUEST, "Ya existe un usuario con ese nombre"));
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ErrorMessageDto(HttpStatus.BAD_REQUEST, "Ya existe un usuario con ese nombre"));
         }
 
         if (userService.existsByEmail(registerUserRequest.getEmail())){
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).contentType(MediaType.APPLICATION_JSON).body(new ErrorMessageDto(HttpStatus.BAD_REQUEST, "Ya existe un usuario con ese email"));
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ErrorMessageDto(HttpStatus.BAD_REQUEST, "Ya existe un usuario con ese email"));
         }
 
         registerUserRequest.setPassword(new BCryptPasswordEncoder().encode(registerUserRequest.getPassword()));
@@ -102,14 +104,66 @@ public class UserController {
 
     @CrossOrigin
     @PutMapping("/api/user/info")
-    public ResponseEntity putCurrentUser(@PathVariable long id) {
-        return ResponseEntity.status(HttpStatus.NOT_IMPLEMENTED).build();
+    public ResponseEntity putCurrentUser(HttpServletRequest request,
+                                          @RequestBody UpdateUserRequest updateUserRequest) {
+        Optional<User> user = authUtilities.getUserFromRequest(request);
+
+        if (!user.isPresent()) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ErrorMessageDto(HttpStatus.UNAUTHORIZED));
+        }
+
+        return putUserById(request, user.get().getId(), updateUserRequest);
     }
 
     @CrossOrigin
     @PutMapping("/api/user/info/{id}")
-    public ResponseEntity putUserById(@PathVariable long id) {
-        return ResponseEntity.status(HttpStatus.NOT_IMPLEMENTED).build();
+    public ResponseEntity putUserById(HttpServletRequest request, @PathVariable long id, @RequestBody UpdateUserRequest updateUserRequest) {
+        Optional<User> user = authUtilities.getUserFromRequest(request);
+
+        if (!user.isPresent()) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ErrorMessageDto(HttpStatus.UNAUTHORIZED));
+        }
+
+        Optional<User> finalUser = userService.findUserById(id);
+
+        if(!finalUser.isPresent()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ErrorMessageDto(HttpStatus.NOT_FOUND, "User not found"));
+        }
+
+        if(user.get().getId() == id || user.get().getRoles().contains(User.Rol.REVIEWER)) {
+            if(updateUserRequest.getEmail() != null) {
+                if(userService.existsByEmail(updateUserRequest.getEmail())) {
+                    return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ErrorMessageDto(HttpStatus.BAD_REQUEST, "Ya existe un usuario con ese email"));
+                } else {
+                    finalUser.get().setEmail(updateUserRequest.getEmail());
+                }
+            }
+
+            if(updateUserRequest.getUsername() != null) {
+                if(userService.existsByUsername(updateUserRequest.getUsername())) {
+                    return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ErrorMessageDto(HttpStatus.BAD_REQUEST, "Ya existe un usuario con ese nombre"));
+                } else {
+                    finalUser.get().setUsername(updateUserRequest.getUsername());
+                }
+            }
+
+            if(updateUserRequest.getFullName() != null) {
+                finalUser.get().setFullName(updateUserRequest.getFullName());
+            }
+
+            if(updateUserRequest.getPassword() != null) {
+                finalUser.get().setPassword(new BCryptPasswordEncoder().encode(updateUserRequest.getPassword()));
+            }
+
+            if(user.get().getRoles().contains(User.Rol.REVIEWER)) {
+                finalUser.get().setRoles(updateUserRequest.getRolSet());
+            }
+
+            User updatedUser = userService.update(finalUser.get());
+
+            return ResponseEntity.status(HttpStatus.CREATED).body(new UserDto(updatedUser));
+        }
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ErrorMessageDto(HttpStatus.UNAUTHORIZED));
     }
 
     @CrossOrigin

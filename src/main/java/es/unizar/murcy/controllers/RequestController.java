@@ -7,6 +7,7 @@ import es.unizar.murcy.model.Workflow;
 import es.unizar.murcy.model.dto.EditorRequestDto;
 import es.unizar.murcy.model.dto.ErrorMessageDto;
 import es.unizar.murcy.model.request.EditorRequestRequest;
+import es.unizar.murcy.model.request.ManageEditorRequestRequest;
 import es.unizar.murcy.service.EditorRequestService;
 import es.unizar.murcy.service.MailService;
 import es.unizar.murcy.service.UserService;
@@ -21,6 +22,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+@CrossOrigin
 @RestController
 public class RequestController {
 
@@ -166,5 +168,12 @@ public class RequestController {
         Set<EditorRequest> editorRequestSet = editorRequestService.findByClosedAndApproved(isClosed, isApproved);
 
         return ResponseEntity.status(HttpStatus.OK).body(editorRequestSet.stream().map(EditorRequestDto::new).collect(Collectors.toList()));
+    }
+
+    @CrossOrigin
+    @PutMapping
+    public ResponseEntity updateRequestStatus(HttpServletRequest request, @RequestBody ManageEditorRequestRequest manageEditorRequestRequest) {
+
+        return ResponseEntity.status(HttpStatus.NOT_IMPLEMENTED).build();
     }
 }
