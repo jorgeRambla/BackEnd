@@ -9,8 +9,6 @@ import es.unizar.murcy.model.dto.ErrorMessageDto;
 import es.unizar.murcy.model.request.EditorRequestRequest;
 import es.unizar.murcy.model.request.ManageEditorRequestRequest;
 import es.unizar.murcy.service.EditorRequestService;
-import es.unizar.murcy.service.MailService;
-import es.unizar.murcy.service.UserService;
 import es.unizar.murcy.service.WorkflowService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -26,12 +24,6 @@ import java.util.stream.Collectors;
 @RestController
 public class RequestController {
 
-
-    @Autowired
-    private UserService userService;
-
-    @Autowired
-    private MailService mailService;
 
     @Autowired
     private EditorRequestService editorRequestService;
