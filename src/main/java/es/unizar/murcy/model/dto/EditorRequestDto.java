@@ -2,9 +2,6 @@ package es.unizar.murcy.model.dto;
 
 import es.unizar.murcy.model.EditorRequest;
 
-import java.util.Collection;
-import java.util.Set;
-
 public class EditorRequestDto {
     private long id;
     private long applicantId;
@@ -12,6 +9,7 @@ public class EditorRequestDto {
     private boolean closed;
     private boolean approved;
     private WorkflowDto workflow;
+    private WorkflowDto lastWorkflow;
 
     public EditorRequestDto() {
     }
@@ -23,6 +21,7 @@ public class EditorRequestDto {
         this.closed = editorRequest.isClosed();
         this.approved = editorRequest.isApproved();
         this.workflow = new WorkflowDto(editorRequest.getWorkflow());
+        this.lastWorkflow = new WorkflowDto(editorRequest.getLastWorkflow());
     }
 
     public long getId() {
