@@ -64,12 +64,15 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(HttpSecurity httpSecurity) throws Exception {
 
-        httpSecurity.cors().and().csrf().disable()
+        httpSecurity.cors().and().csrf().disable().authorizeRequests()
 
-            .authorizeRequests().antMatchers("/api/user/login","/api/user", "/api/user/confirm/**").permitAll()
+            .antMatchers("/api/user/login").permitAll()
+            .antMatchers("/api/user").permitAll()
+            .antMatchers("/api/user/confirm/**").permitAll()
             .antMatchers("/h2-console/**/**").permitAll()
             .antMatchers("/").permitAll()
             .antMatchers("/*").permitAll()
+            .antMatchers("/api-docs/*").permitAll()
             .anyRequest().authenticated().and()
                 .exceptionHandling().authenticationEntryPoint(jwtAuthenticationEntryPoint).and()
                     .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
