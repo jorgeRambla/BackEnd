@@ -46,6 +46,8 @@ public class User {
 
     public User(String username, String password, String email, String fullName) {
         this();
+        this.createDate = new Date();
+        this.modifiedDate = new Date();
         this.username = username;
         this.password = password;
         this.email = email;

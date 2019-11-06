@@ -59,7 +59,11 @@ dependencies {
     compileOnly 'org.projectlombok:lombok'
 
     implementation 'com.h2database:h2'
-    testImplementation 'com.h2database:h2'
 
+    testImplementation 'com.h2database:h2'
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
+
+    // https://mvnrepository.com/artifact/com.icegreen/greenmail
+    testCompile group: 'com.icegreen', name: 'greenmail', version: '1.5.11'
+
 }

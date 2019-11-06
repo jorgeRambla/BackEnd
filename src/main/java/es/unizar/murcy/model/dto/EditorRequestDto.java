@@ -71,4 +71,12 @@ public class EditorRequestDto {
     public void setApplicantId(long applicantId) {
         this.applicantId = applicantId;
     }
+
+    public WorkflowDto getLastWorkflow() {
+        return lastWorkflow;
+    }
+
+    public void setLastWorkflow(WorkflowDto lastWorkflow) {
+        this.lastWorkflow = lastWorkflow;
+    }
 }
