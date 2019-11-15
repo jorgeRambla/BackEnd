@@ -11,7 +11,7 @@ public class UpdateUserRequest {
     private String password;
     private String email;
     private String fullName;
-    private String rol[];
+    private String[] rol;
 
     public UpdateUserRequest(String username) {
         this.username = username;
