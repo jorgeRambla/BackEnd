@@ -8,6 +8,7 @@ import java.util.List;
 @Entity
 @Table(name = "murcy_question")
 public class Question {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;

@@ -21,6 +21,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.validation.constraints.NotEmpty;
 import java.util.Date;
 import java.util.Optional;
 import java.util.UUID;
@@ -147,23 +148,27 @@ public class UserController {
                 }
             }
 
-            if(updateUserRequest.getFullName() != null) {
-                finalUser.get().setFullName(updateUserRequest.getFullName());
-            }
-
-            if(updateUserRequest.getPassword() != null) {
-                finalUser.get().setPassword(new BCryptPasswordEncoder().encode(updateUserRequest.getPassword()));
-            }
-
-            if(user.get().getRoles().contains(User.Rol.REVIEWER)) {
-                finalUser.get().setRoles(updateUserRequest.getRolSet());
-            }
-
-            User updatedUser = userService.update(finalUser.get());
+            User updatedUser = updateUserDataAuthorized(updateUserRequest, user.get(), finalUser.get());
 
             return ResponseEntity.status(HttpStatus.CREATED).body(new UserDto(updatedUser));
         }
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ErrorMessageDto(HttpStatus.UNAUTHORIZED));
+    }
+
+    private User updateUserDataAuthorized(@RequestBody UpdateUserRequest updateUserRequest, User user, User finalUser) {
+        if(updateUserRequest.getFullName() != null) {
+            finalUser.setFullName(updateUserRequest.getFullName());
+        }
+
+        if(updateUserRequest.getPassword() != null) {
+            finalUser.setPassword(new BCryptPasswordEncoder().encode(updateUserRequest.getPassword()));
+        }
+
+        if(user.getRoles().contains(User.Rol.REVIEWER)) {
+            finalUser.setRoles(updateUserRequest.getRolSet());
+        }
+
+        return userService.update(finalUser);
     }
 
     @CrossOrigin

@@ -29,13 +29,13 @@ public class QuestionService {
         return questionRepository.findQuestionByTitle(title);
     }
 
-    public Question update(Question q) {
-        q.setModifiedDate(new Date());
-        return questionRepository.save(q);
+    public Question update(Question question) {
+        question.setModifiedDate(new Date());
+        return questionRepository.save(question);
     }
 
-    public Question createQuestion(Question p) {
-        return questionRepository.save(p);
+    public Question createQuestion(Question question) {
+        return questionRepository.save(question);
     }
 
     public boolean existsByTitle(String title){
@@ -43,11 +43,11 @@ public class QuestionService {
     }
 
 
-    public void deleteQuestion(long questionId) {
+    public void deleteQuestionById(long questionId) {
         questionRepository.deleteById(questionId);
     }
 
-    public void deleteQuestion(Question q) {
-        deleteQuestion(q.getId());
+    public void deleteQuestion(Question question) {
+        questionRepository.delete(question);
     }
 }

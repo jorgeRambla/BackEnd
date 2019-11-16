@@ -1,113 +1,127 @@
 package es.unizar.murcy.service;
 
+import es.unizar.murcy.MurcyApplication;
 import es.unizar.murcy.model.User;
-import es.unizar.murcy.repository.UserRepository;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.junit.jupiter.DisabledIf;
+import org.springframework.test.context.junit4.SpringRunner;
 
+import java.util.Date;
 
-import static junit.framework.TestCase.assertFalse;
 import static junit.framework.TestCase.assertTrue;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 
-
-public class UserServiceTest {
-    private User user;
-    private User newUser1;
-    private User newConfirmedUser;
+@RunWith(SpringRunner.class)
+@SpringBootTest(classes = MurcyApplication.class)
+public class userServiceTest {
 
     @Autowired
-    private UserRepository userRepository;
+    UserService userService;
+
+    private User user;
     private User confirmedUser;
-    private UserService userService;
 
     @Before
     public void before() {
-        user = new User("Test", "testpass", "test@test.com", "Test Test");
-        user.addRol(User.Rol.USER);
-        this.user = userRepository.save(user);
+        User newUser = new User("Test", "testpass", "test@test.com", "Test Test");
+        newUser.addRol(User.Rol.USER);
+        this.user = userService.create(newUser);
 
-        newUser1 = new User("Test1", "testpass1", "test1@test.com", "Test1 Test1");
-        newUser1.addRol(User.Rol.USER);
-        this.user = userRepository.save(newUser1);
-
-        newConfirmedUser = new User("Confirmed", "testpass", "test2@test.com", "Test2 Test");
+        User newConfirmedUser = new User("Confirmed", "testpass", "test2@test.com", "Test2 Test");
         newConfirmedUser.setConfirmed(true);
-        this.confirmedUser = userRepository.save(newConfirmedUser);
+        this.confirmedUser = userService.create(newConfirmedUser);
     }
 
     @After
     public void after() {
-        userRepository.deleteAll();
+        userService.deleteUser(user);
+        userService.deleteUser(confirmedUser);
     }
 
     @Test
     public void testFindAllUsers() {
-
+        assertFalse(userService.findAllUsers().isEmpty());
+        assertEquals(userService.findAllUsers().size(), 2);
     }
 
     @Test
     public void testFindUserById() {
         assertTrue(userService.findUserById(user.getId()).isPresent());
-        assertFalse(userService.findUserById(12).isPresent());
+        assertTrue(userService.findUserById(confirmedUser.getId()).isPresent());
+        assertFalse(userService.findUserById(-1L).isPresent());
     }
 
     @Test
     public void testFindUserByUserName() {
         assertTrue(userService.findUserByUserName(user.getUsername()).isPresent());
+        assertTrue(userService.findUserByUserName(confirmedUser.getUsername()).isPresent());
         assertFalse(userService.findUserByUserName("NoExists").isPresent());
     }
 
     @Test
-    public void testUpdate(){
+    public void testUpdate() {
+        String prevUserName = user.getUsername();
+        assertTrue(userService.findUserByUserName(user.getUsername()).isPresent());
+        user.setUsername("newUserName");
+        Date updateDate = new Date();
+        user = userService.update(user);
 
+        assertFalse(userService.findUserByUserName(prevUserName).isPresent());
+        assertTrue(userService.findUserByUserName(user.getUsername()).isPresent());
+
+        assertTrue(Math.abs(user.getModifiedDate().getTime() - updateDate.getTime()) < 50);
     }
 
+    @Ignore
     @Test
-    public void testDeleteUser() {
+    public void testDelete() {
+        assertTrue(userService.findUserByUserName(user.getUsername()).isPresent());
         userService.deleteUser(user);
-        assertTrue(userService.findUserByUserName(user.getUsername()).isPresent()==false);
+        assertFalse(userService.findUserByUserName(user.getUsername()).isPresent());
+        assertTrue(userService.findUserByUserName(confirmedUser.getUsername()).isPresent());
     }
 
+    @Ignore
     @Test
-    public void testDeleteUserById() {
+    public void testDeleteById() {
+        assertTrue(userService.findUserByUserName(user.getUsername()).isPresent());
         userService.deleteUser(user.getId());
-        assertTrue(userService.findUserByUserName(user.getUsername()).isPresent()==false);
+        assertFalse(userService.findUserByUserName(user.getUsername()).isPresent());
+        assertTrue(userService.findUserByUserName(confirmedUser.getUsername()).isPresent());
     }
 
     @Test
-    public void testExistsByUsername() {
+    public void testExistsByUserName() {
         assertTrue(userService.existsByUsername(user.getUsername()));
-        assertFalse(userService.existsByUsername("Noexists"));
+        assertTrue(userService.existsByUsername(confirmedUser.getUsername()));
+        assertFalse(userService.existsByUsername("NotExists"));
+
     }
 
     @Test
     public void testExistsByEmail() {
-        assertTrue(userService.existsByEmail(user.getEmail()));
-        assertFalse(userService.existsByEmail("Noexists"));
+
     }
 
     @Test
     public void testCreate() {
-        User createdUser = new User("Test3", "testpass3", "test3@test.com", "Test3 Test3");
-        createdUser.addRol(User.Rol.USER);
-        userService.create(createdUser);
-        assertTrue(userService.existsByUsername(createdUser.getUsername()));
-    }
 
-    @Test
-    public void testConfirmUserById() {
-        User u=userService.confirmUser(user.getId());
-        assertTrue(u.equals(userRepository.findById(user.getId())));
-        assertFalse(u.equals(userRepository.findByUsername("Noexists")));
     }
 
     @Test
     public void testConfirmUser() {
-        User u=userService.confirmUser(user);
-        assertTrue(u.equals(userRepository.findById(user.getId())));
-        assertFalse(u.equals(userRepository.findByUsername("Noexists")));
+
     }
-    
+
+    @Test
+    public void testonfirmUserById() {
+
+    }
 }
