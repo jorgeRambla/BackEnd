@@ -2,10 +2,15 @@ package es.unizar.murcy.model.dto;
 
 import es.unizar.murcy.model.Option;
 import es.unizar.murcy.model.Question;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.util.List;
 
-
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class QuestionDto {
 
     private long id;
@@ -28,10 +33,6 @@ public class QuestionDto {
 
     private List<Option> options;
 
-
-    public QuestionDto(){
-    }
-
     public QuestionDto(Question question) {
         this.id = question.getId();
         this.title = question.getTitle();
@@ -43,85 +44,5 @@ public class QuestionDto {
         this.options = question.getOptions();
         this.approved = question.getApproved();
         this.closed = question.getClosed();
-    }
-
-    public long getId() {
-        return id;
-    }
-
-    public void setId(long id) {
-        this.id = id;
-    }
-
-    public String getTitle() {
-        return title;
-    }
-
-    public void setTitle(String title) {
-        this.title = title;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
-    public boolean isMultiple() {
-        return isMultiple;
-    }
-
-    public void setMultiple(boolean multiple) {
-        isMultiple = multiple;
-    }
-
-    public boolean isApproved() {
-        return approved;
-    }
-
-    public void setApproved(boolean approved) {
-        this.approved = approved;
-    }
-
-    public boolean isClosed() {
-        return closed;
-    }
-
-    public void setClosed(boolean closed) {
-        this.closed = closed;
-    }
-
-    public List<Option> getOptions() {
-        return options;
-    }
-
-    public void setOptions(List<Option> options) {
-        this.options = options;
-    }
-
-    public String getUserName() {
-        return userName;
-    }
-
-    public void setUserName(String userName) {
-        this.userName = userName;
-    }
-
-    public void setWorkflow(WorkflowDto workflow) {
-        this.workflow = workflow;
-    }
-
-    public void setLastWorkflow(WorkflowDto lastWorkflow) {
-        this.lastWorkflow = lastWorkflow;
-    }
-
-    public WorkflowDto getWorkflow() {
-        return workflow;
-    }
-
-    public WorkflowDto getLastWorkflow() {
-        return lastWorkflow;
     }
 }
