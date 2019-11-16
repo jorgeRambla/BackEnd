@@ -14,40 +14,41 @@ public class Question {
 
     private String title;
 
+    @ManyToOne
+    private User user;
+
     private String description;
 
     private Date createDate;
 
     private Date modifiedDate;
 
-    @ElementCollection(targetClass=Question.Option.class)
-    @OrderBy("number")
-    private List<Option> options;
+    private Boolean isMultiple;
 
-    public static class Option{
-        int number;
-        String optionTitle;
-        boolean correct;
-    }
+    @ManyToOne
+    private Workflow workflow;
+
+    @ManyToOne
+    private Workflow lastWorkflow;
+
+    private Boolean closed;
+
+    private Boolean approved;
+
+    @ManyToMany
+    @OrderColumn(name="INDEX")
+    private List<Option> options;
 
     public Question(){
         this.createDate = new Date();
         this.modifiedDate = new Date();
-        this.options = new ArrayList<Option>();
     }
 
-    public Question(long id, String t, String d, List<Option> a) {
-        this.id=id;
-        this.title=t;
-        this.description=d;
-        this.options=a;
-    }
-
-    public Long getId() {
+    public long getId() {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(long id) {
         this.id = id;
     }
 
@@ -55,24 +56,16 @@ public class Question {
         return title;
     }
 
-    public void setTitle(String t) {
-        this.title = t;
+    public void setTitle(String title) {
+        this.title = title;
     }
 
     public String getDescription() {
         return description;
     }
 
-    public void setDescription(String d) {
-        this.description = d;
-    }
-
-    public List<Option> getOptions() {
-        return this.options;
-    }
-
-    public void setOptions(List<Option> a) {
-        this.options = a;
+    public void setDescription(String description) {
+        this.description = description;
     }
 
     public Date getCreateDate() {
@@ -89,5 +82,61 @@ public class Question {
 
     public void setModifiedDate(Date modifiedDate) {
         this.modifiedDate = modifiedDate;
+    }
+
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
+    }
+
+    public List<Option> getOptions() {
+        return options;
+    }
+
+    public void setOptions(List<Option> options) {
+        this.options = options;
+    }
+
+    public Boolean getMultiple() {
+        return isMultiple;
+    }
+
+    public void setMultiple(Boolean multiple) {
+        isMultiple = multiple;
+    }
+
+    public Workflow getWorkflow() {
+        return workflow;
+    }
+
+    public void setWorkflow(Workflow workflow) {
+        this.workflow = workflow;
+    }
+
+    public Workflow getLastWorkflow() {
+        return lastWorkflow;
+    }
+
+    public void setLastWorkflow(Workflow lastWorkflow) {
+        this.lastWorkflow = lastWorkflow;
+    }
+
+    public Boolean getClosed() {
+        return closed;
+    }
+
+    public void setClosed(Boolean closed) {
+        this.closed = closed;
+    }
+
+    public Boolean getApproved() {
+        return approved;
+    }
+
+    public void setApproved(Boolean approved) {
+        this.approved = approved;
     }
 }

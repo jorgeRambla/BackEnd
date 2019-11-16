@@ -1,65 +1,55 @@
 package es.unizar.murcy.model.dto;
 
+import es.unizar.murcy.model.Option;
 import es.unizar.murcy.model.Question;
-import es.unizar.murcy.model.Workflow;
 
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
 import java.util.List;
 
 
 public class QuestionDto {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+
     private long id;
 
     private String title;
+
+    private String userName;
 
     private String description;
 
     private boolean isMultiple;
 
-    private Workflow wF;
+    private WorkflowDto workflow;
 
-    private Workflow lastwF;
-
-    private boolean isPublic;
+    private WorkflowDto lastWorkflow;
 
     private boolean approved;
 
     private boolean closed;
 
-    private List<Question.Option> options;
+    private List<Option> options;
 
 
     public QuestionDto(){
     }
 
-    public QuestionDto(long id, String t, String d, boolean isMult, boolean isP, boolean approv, boolean closed, List<Question.Option> op) {
-        this.id=id;
-        this.title=t;
-        this.description=d;
-        this.options=op;
-        this.isMultiple=isMult;
-        this.isPublic=isP;
-        this.approved=approv;
-        this.closed=closed;
-        this.wF=null;
-        this.lastwF=null;
-    }
-    public QuestionDto(Question q){
-        this.id=q.getId();
-        this.title=q.getTitle();
-        this.description=q.getDescription();
-        this.options=q.getOptions();
+    public QuestionDto(Question question) {
+        this.id = question.getId();
+        this.title = question.getTitle();
+        this.userName = question.getUser().getUsername();
+        this.isMultiple = question.getMultiple();
+        this.description = question.getDescription();
+        this.workflow = new WorkflowDto(question.getWorkflow());
+        this.lastWorkflow = new WorkflowDto(question.getLastWorkflow());
+        this.options = question.getOptions();
+        this.approved = question.getApproved();
+        this.closed = question.getClosed();
     }
 
-    public Long getId() {
+    public long getId() {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(long id) {
         this.id = id;
     }
 
@@ -67,57 +57,71 @@ public class QuestionDto {
         return title;
     }
 
-    public void setTitle(String t) {
-        this.title = t;
+    public void setTitle(String title) {
+        this.title = title;
     }
 
     public String getDescription() {
         return description;
     }
 
-    public void setDescription(String d) {
-        this.description = d;
+    public void setDescription(String description) {
+        this.description = description;
     }
 
-    public List<Question.Option> getOptions() {
-        return this.options;
+    public boolean isMultiple() {
+        return isMultiple;
     }
 
-    public void setOptions(List<Question.Option> a) {
-        this.options = a;
+    public void setMultiple(boolean multiple) {
+        isMultiple = multiple;
     }
 
-    public boolean getIsMultipleValue(){
-        return this.isMultiple;
+    public boolean isApproved() {
+        return approved;
     }
 
-    public void setIsMultipleValue(boolean isM){
-        this.isMultiple=isM;
+    public void setApproved(boolean approved) {
+        this.approved = approved;
     }
 
-    public Workflow getWorkflow(){
-        return this.wF;
+    public boolean isClosed() {
+        return closed;
     }
 
-    public void setWorkflow(Workflow workF){
-        this.wF=workF;
+    public void setClosed(boolean closed) {
+        this.closed = closed;
     }
 
-    public Workflow getLastWorkflow(){
-        return this.lastwF;
+    public List<Option> getOptions() {
+        return options;
     }
 
-    public void setLastWorkflow(Workflow lastworkF){
-        this.lastwF=lastworkF;
+    public void setOptions(List<Option> options) {
+        this.options = options;
     }
 
-    public boolean getIsPublicValue(){
-        return this.isPublic;
+    public String getUserName() {
+        return userName;
     }
 
-    public void setIsPublicValue(boolean isP){
-        this.isPublic=isP;
+    public void setUserName(String userName) {
+        this.userName = userName;
     }
 
+    public void setWorkflow(WorkflowDto workflow) {
+        this.workflow = workflow;
+    }
 
+    public void setLastWorkflow(WorkflowDto lastWorkflow) {
+        this.lastWorkflow = lastWorkflow;
+    }
+
+    public WorkflowDto getWorkflow() {
+        return workflow;
+    }
+
+    public WorkflowDto getLastWorkflow() {
+        return lastWorkflow;
+    }
 }

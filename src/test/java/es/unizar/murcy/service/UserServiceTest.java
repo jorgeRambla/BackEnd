@@ -7,15 +7,16 @@ import org.junit.Before;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import java.util.Optional;
 
 import static junit.framework.TestCase.assertFalse;
 import static junit.framework.TestCase.assertTrue;
+
 
 public class UserServiceTest {
     private User user;
     private User newUser1;
     private User newConfirmedUser;
+
     @Autowired
     private UserRepository userRepository;
     private User confirmedUser;
@@ -45,12 +46,14 @@ public class UserServiceTest {
     public void testFindAllUsers() {
 
     }
+
     @Test
     public void testFindUserById() {
         assertTrue(userService.findUserById(user.getId()).isPresent());
         assertFalse(userService.findUserById(12).isPresent());
     }
 
+    @Test
     public void testFindUserByUserName() {
         assertTrue(userService.findUserByUserName(user.getUsername()).isPresent());
         assertFalse(userService.findUserByUserName("NoExists").isPresent());
