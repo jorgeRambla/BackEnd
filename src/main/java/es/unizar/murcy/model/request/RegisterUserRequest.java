@@ -3,6 +3,7 @@ package es.unizar.murcy.model.request;
 import es.unizar.murcy.model.User;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.Generated;
 import lombok.NoArgsConstructor;
 
 import java.util.HashSet;
@@ -11,6 +12,7 @@ import java.util.Set;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@Generated
 public class RegisterUserRequest {
 
     private String username;

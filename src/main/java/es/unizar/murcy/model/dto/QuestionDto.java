@@ -4,6 +4,7 @@ import es.unizar.murcy.model.Option;
 import es.unizar.murcy.model.Question;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.Generated;
 import lombok.NoArgsConstructor;
 
 import java.util.List;
@@ -11,6 +12,7 @@ import java.util.List;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@Generated
 public class QuestionDto {
 
     private long id;
