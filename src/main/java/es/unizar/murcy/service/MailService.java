@@ -68,8 +68,7 @@ public class MailService {
         template = template.replace("${blank_gmail}", currentBackEndURL.concat("/blank.gif"));
         template = template.replace("${logotipo_URL}", currentBackEndURL.concat("/logotype.jpeg"));
 
-        // TODO: Change to FrontEndURL
-        template = template.replace("${confirmation_URL}", currentBackEndURL.concat("/api/user/confirm/").concat(token));
+        template = template.replace("${confirmation_URL}", currentFrontEndURL.concat("/check&token=").concat(token));
         template = template.replace(("${MURCY_URL}"), currentFrontEndURL);
 
         return template;
