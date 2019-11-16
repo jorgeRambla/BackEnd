@@ -20,7 +20,7 @@ import static org.junit.Assert.assertFalse;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = MurcyApplication.class)
-public class userServiceTest {
+public class UserServiceTest {
 
     @Autowired
     UserService userService;
