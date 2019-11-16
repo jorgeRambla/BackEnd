@@ -64,6 +64,6 @@ dependencies {
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
 
     // https://mvnrepository.com/artifact/com.icegreen/greenmail
-    testCompile group: 'com.icegreen', name: 'greenmail', version: '1.5.11'
+    testImplementation group: 'com.icegreen', name: 'greenmail', version: '1.5.11'
 
 }

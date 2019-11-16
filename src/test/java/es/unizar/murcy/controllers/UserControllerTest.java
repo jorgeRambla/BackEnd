@@ -4,7 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import es.unizar.murcy.model.request.RegisterUserRequest;
 import es.unizar.murcy.service.MailService;
-import es.unizar.murcy.service.SmtpServerRule;
+import es.unizar.murcy.service.MailServiceRule;
 import es.unizar.murcy.service.UserService;
 import org.junit.Rule;
 import org.junit.Test;
@@ -35,7 +35,7 @@ public class UserControllerTest {
     private UserService userService;
 
     @Rule
-    public SmtpServerRule smtpServerRule = new SmtpServerRule(2525);
+    public MailServiceRule mailServiceRule = new MailServiceRule();
 
     private TestRestTemplate restTemplate = new TestRestTemplate();
 

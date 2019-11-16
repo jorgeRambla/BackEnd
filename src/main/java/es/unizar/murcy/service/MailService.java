@@ -52,7 +52,6 @@ public class MailService {
                     MimeMessageHelper message = new MimeMessageHelper(mimeMessage);
                     message.setTo(email);
                     message.setSubject("Confirm account");
-                    message.setFrom("no-reply@murcy.es");
                     message.setText(finalTemplate, true);
                 };
                 emailSender.send(preparation);
@@ -67,10 +66,8 @@ public class MailService {
     private String formatTemplate(String template, String token) {
         template = template.replace("${blank_gmail}", currentBackEndURL.concat("/blank.gif"));
         template = template.replace("${logotipo_URL}", currentBackEndURL.concat("/logotype.jpeg"));
-
         template = template.replace("${confirmation_URL}", currentFrontEndURL.concat("/check&token=").concat(token));
         template = template.replace(("${MURCY_URL}"), currentFrontEndURL);
-
         return template;
     }
 

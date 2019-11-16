@@ -9,17 +9,18 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.junit.jupiter.DisabledIf;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import java.util.Date;
 
 import static junit.framework.TestCase.assertTrue;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.*;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = MurcyApplication.class)
+@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 public class UserServiceTest {
 
     @Autowired
@@ -37,12 +38,6 @@ public class UserServiceTest {
         User newConfirmedUser = new User("Confirmed", "testpass", "test2@test.com", "Test2 Test");
         newConfirmedUser.setConfirmed(true);
         this.confirmedUser = userService.create(newConfirmedUser);
-    }
-
-    @After
-    public void after() {
-        userService.deleteUser(user);
-        userService.deleteUser(confirmedUser);
     }
 
     @Test
@@ -79,7 +74,6 @@ public class UserServiceTest {
         assertTrue(Math.abs(user.getModifiedDate().getTime() - updateDate.getTime()) < 50);
     }
 
-    @Ignore
     @Test
     public void testDelete() {
         assertTrue(userService.findUserByUserName(user.getUsername()).isPresent());
@@ -88,7 +82,6 @@ public class UserServiceTest {
         assertTrue(userService.findUserByUserName(confirmedUser.getUsername()).isPresent());
     }
 
-    @Ignore
     @Test
     public void testDeleteById() {
         assertTrue(userService.findUserByUserName(user.getUsername()).isPresent());
@@ -107,21 +100,24 @@ public class UserServiceTest {
 
     @Test
     public void testExistsByEmail() {
-
-    }
-
-    @Test
-    public void testCreate() {
-
+        assertTrue(userService.existsByEmail(user.getEmail()));
+        assertFalse(userService.existsByEmail("NotExists@mail.com"));
     }
 
     @Test
     public void testConfirmUser() {
-
+        assertFalse(user.getConfirmed());
+        assertTrue(userService.confirmUser(user).getConfirmed());
     }
 
     @Test
-    public void testonfirmUserById() {
+    public void testConfirmUserById() {
+        assertFalse(user.getConfirmed());
+        assertTrue(userService.confirmUser(user.getId()).getConfirmed());
+    }
 
+    @Test
+    public void testConfirmUserById_notFound() {
+        assertNull(userService.confirmUser(-1));
     }
 }
