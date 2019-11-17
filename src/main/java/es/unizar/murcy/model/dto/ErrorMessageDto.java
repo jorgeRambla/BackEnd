@@ -1,8 +1,6 @@
 package es.unizar.murcy.model.dto;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.springframework.http.HttpStatus;
 
 @Data
@@ -10,8 +8,8 @@ import org.springframework.http.HttpStatus;
 @AllArgsConstructor
 public class ErrorMessageDto {
 
-    private int status;
-    private String message;
+    @Getter @Setter private @NonNull int status;
+    @Getter @Setter private @NonNull String message;
 
     public ErrorMessageDto(HttpStatus status, String message) {
         this.status = status.value();

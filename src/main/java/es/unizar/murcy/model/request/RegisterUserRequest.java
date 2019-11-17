@@ -1,9 +1,7 @@
 package es.unizar.murcy.model.request;
 
 import es.unizar.murcy.model.User;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -13,10 +11,10 @@ import java.util.Set;
 @AllArgsConstructor
 public class RegisterUserRequest {
 
-    private String username;
-    private String password;
-    private String email;
-    private String fullName;
+    @Getter @Setter private String username;
+    @Getter @Setter private String password;
+    @Getter @Setter private String email;
+    @Getter @Setter private String fullName;
 
     public User toEntity() {
         User user = new User();

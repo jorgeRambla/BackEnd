@@ -1,18 +1,17 @@
 package es.unizar.murcy.model.dto;
 
 import es.unizar.murcy.model.User;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 public class UserDto {
-    private long id;
-    private String userName;
-    private String email;
-    private String fullName;
+
+    @Getter @Setter private long id;
+    @Getter @Setter private String userName;
+    @Getter @Setter private String email;
+    @Getter @Setter private String fullName;
 
     private String[] role;
 

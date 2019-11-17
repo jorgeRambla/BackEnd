@@ -1,12 +1,11 @@
 package es.unizar.murcy.model.request;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 public class EditorRequestRequest {
-    private String description;
+    
+    @Getter @Setter private String description;
 }

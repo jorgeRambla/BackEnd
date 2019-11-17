@@ -1,9 +1,7 @@
 package es.unizar.murcy.model.request;
 
 import es.unizar.murcy.model.User;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.util.Arrays;
 import java.util.Set;
@@ -13,11 +11,12 @@ import java.util.stream.Collectors;
 @NoArgsConstructor
 @AllArgsConstructor
 public class UpdateUserRequest {
-    private String username;
-    private String password;
-    private String email;
-    private String fullName;
-    private String[] rol;
+
+    @Getter @Setter private String username;
+    @Getter @Setter private String password;
+    @Getter @Setter private String email;
+    @Getter @Setter private String fullName;
+    @Getter @Setter private String[] rol;
 
 
 

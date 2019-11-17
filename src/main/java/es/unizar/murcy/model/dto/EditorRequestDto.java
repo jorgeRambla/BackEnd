@@ -1,21 +1,26 @@
 package es.unizar.murcy.model.dto;
 
 import es.unizar.murcy.model.EditorRequest;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 public class EditorRequestDto {
-    private long id;
-    private long applicantId;
-    private String description;
-    private boolean closed;
-    private boolean approved;
-    private WorkflowDto workflow;
-    private WorkflowDto lastWorkflow;
+
+    @Getter @Setter private long id;
+
+    @Getter @Setter private long applicantId;
+
+    @Getter @Setter private String description;
+
+    @Getter @Setter private boolean closed;
+
+    @Getter @Setter private boolean approved;
+
+    @Getter @Setter private WorkflowDto workflow;
+
+    @Getter @Setter private WorkflowDto lastWorkflow;
 
 
     public EditorRequestDto(EditorRequest  editorRequest) {

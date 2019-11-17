@@ -1,9 +1,7 @@
 package es.unizar.murcy.model.dto;
 
 import es.unizar.murcy.model.Workflow;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.util.Date;
 
@@ -11,12 +9,13 @@ import java.util.Date;
 @NoArgsConstructor
 @AllArgsConstructor
 public class WorkflowDto {
-    private long id;
-    private String title;
-    private String description;
-    private String status;
-    private Date statusDate;
-    private String response;
+
+    @Getter @Setter private long id;
+    @Getter @Setter private String title;
+    @Getter @Setter private String description;
+    @Getter @Setter private String status;
+    @Getter @Setter private Date statusDate;
+    @Getter @Setter private String response;
 
     private WorkflowDto nextWorkflow;
 

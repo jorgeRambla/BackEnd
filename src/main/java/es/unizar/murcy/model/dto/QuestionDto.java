@@ -2,10 +2,7 @@ package es.unizar.murcy.model.dto;
 
 import es.unizar.murcy.model.Option;
 import es.unizar.murcy.model.Question;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.Generated;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.util.List;
 
@@ -14,25 +11,25 @@ import java.util.List;
 @AllArgsConstructor
 public class QuestionDto {
 
-    private long id;
+    @Getter @Setter private long id;
 
-    private String title;
+    @Getter @Setter private String title;
 
-    private String userName;
+    @Getter @Setter private String userName;
 
-    private String description;
+    @Getter @Setter private String description;
 
-    private boolean isMultiple;
+    @Getter @Setter private boolean isMultiple;
 
-    private WorkflowDto workflow;
+    @Getter @Setter private WorkflowDto workflow;
 
-    private WorkflowDto lastWorkflow;
+    @Getter @Setter private WorkflowDto lastWorkflow;
 
-    private boolean approved;
+    @Getter @Setter private boolean approved;
 
-    private boolean closed;
+    @Getter @Setter private boolean closed;
 
-    private List<Option> options;
+    @Getter @Setter private List<Option> options;
 
     public QuestionDto(Question question) {
         this.id = question.getId();
