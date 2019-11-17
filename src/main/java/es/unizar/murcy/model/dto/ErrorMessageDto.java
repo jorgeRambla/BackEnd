@@ -2,14 +2,12 @@ package es.unizar.murcy.model.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.Generated;
 import lombok.NoArgsConstructor;
 import org.springframework.http.HttpStatus;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@Generated
 public class ErrorMessageDto {
 
     private int status;

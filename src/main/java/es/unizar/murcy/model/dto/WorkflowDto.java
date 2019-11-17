@@ -3,7 +3,6 @@ package es.unizar.murcy.model.dto;
 import es.unizar.murcy.model.Workflow;
 import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.Generated;
 import lombok.NoArgsConstructor;
 
 import java.util.Date;
@@ -11,7 +10,6 @@ import java.util.Date;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@Generated
 public class WorkflowDto {
     private long id;
     private String title;
