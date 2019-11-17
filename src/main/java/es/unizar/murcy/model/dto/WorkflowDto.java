@@ -17,7 +17,7 @@ public class WorkflowDto {
     @Getter @Setter private Date statusDate;
     @Getter @Setter private String response;
 
-    private WorkflowDto nextWorkflow;
+    @Getter @Setter private WorkflowDto nextWorkflow;
 
     public WorkflowDto(Workflow workflow) {
         this.id = workflow.getId();

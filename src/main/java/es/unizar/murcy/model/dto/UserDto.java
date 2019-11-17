@@ -13,7 +13,7 @@ public class UserDto {
     @Getter @Setter private String email;
     @Getter @Setter private String fullName;
 
-    private String[] role;
+    @Getter @Setter private String[] role;
 
     public UserDto(User user) {
         this.id = user.getId();
