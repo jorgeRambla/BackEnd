@@ -5,7 +5,6 @@ import lombok.*;
 import javax.persistence.*;
 import java.util.Date;
 import java.util.List;
-import java.util.Objects;
 
 @Entity
 @Table(name = "murcy_question")
