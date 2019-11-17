@@ -14,8 +14,8 @@ import static org.junit.Assert.*;
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)*/
 public class QuestionRepositoryTest {
 
-    /*@Before
+    @Before
     public void before() {
 
-    }*/
+    }
 }

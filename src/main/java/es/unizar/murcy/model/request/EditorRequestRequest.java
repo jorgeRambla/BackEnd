@@ -6,6 +6,8 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 public class EditorRequestRequest {
-    
-    @Getter @Setter private String description;
+
+    @Getter
+    @Setter
+    private String description;
 }

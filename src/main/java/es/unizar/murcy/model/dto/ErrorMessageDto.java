@@ -8,8 +8,12 @@ import org.springframework.http.HttpStatus;
 @AllArgsConstructor
 public class ErrorMessageDto {
 
-    @Getter @Setter private int status;
-    @Getter @Setter private @NonNull String message;
+    @Getter
+    @Setter
+    private int status;
+    @Getter
+    @Setter
+    private @NonNull String message;
 
     public ErrorMessageDto(HttpStatus status, String message) {
         this.status = status.value();
@@ -18,7 +22,7 @@ public class ErrorMessageDto {
 
     public ErrorMessageDto(HttpStatus status) {
         this.status = status.value();
-        switch(this.status) {
+        switch (this.status) {
             case 400:
                 this.message = "Bad Request";
                 break;

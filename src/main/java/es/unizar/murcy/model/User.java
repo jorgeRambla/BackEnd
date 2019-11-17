@@ -1,5 +1,7 @@
 package es.unizar.murcy.model;
 
+import lombok.*;
+
 import javax.persistence.*;
 import java.util.Date;
 import java.util.HashSet;
@@ -8,35 +10,55 @@ import java.util.Set;
 
 @Entity
 @Table(name = "murcy_user")
+@Data
+@AllArgsConstructor
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public class User {
-
-    public enum Rol {
-        USER, EDITOR, REVIEWER
-    }
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Getter
+    @Setter
+    @EqualsAndHashCode.Include
     private long id;
 
+    @Getter
+    @Setter
     private String username;
 
+    @Getter
+    @Setter
     private String password;
 
+    @Getter
+    @Setter
     private String fullName;
 
+    @Getter
+    @Setter
     private String email;
 
+    @Getter
+    @Setter
     private String lastIp;
 
+    @Getter
+    @Setter
     private Boolean confirmed;
 
+    @Getter
+    @Setter
     private Date createDate;
 
+    @Getter
+    @Setter
     private Date modifiedDate;
 
-    @ElementCollection(targetClass=User.Rol.class)
+    @ElementCollection(targetClass = User.Rol.class)
     @Enumerated(EnumType.STRING)
-    @CollectionTable(name="murcy_user_rol")
+    @CollectionTable(name = "murcy_user_rol")
+    @Getter
+    @Setter
     private Set<Rol> roles;
 
     public User() {
@@ -47,8 +69,6 @@ public class User {
 
     public User(String username, String password, String email, String fullName) {
         this();
-        this.createDate = new Date();
-        this.modifiedDate = new Date();
         this.username = username;
         this.password = password;
         this.email = email;
@@ -56,104 +76,11 @@ public class User {
         this.confirmed = false;
     }
 
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public String getUsername() {
-        return username;
-    }
-
-    public void setUsername(String username) {
-        this.username = username;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
-    }
-
-    public String getFullName() {
-        return fullName;
-    }
-
-    public void setFullName(String fullName) {
-        this.fullName = fullName;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
-    public String getLastIp() {
-        return lastIp;
-    }
-
-    public void setLastIp(String lastIp) {
-        this.lastIp = lastIp;
-    }
-
-    public Boolean getConfirmed() {
-        return confirmed;
-    }
-
-    public void setConfirmed(Boolean confirmed) {
-        this.confirmed = confirmed;
-    }
-
-    public void setId(long id) {
-        this.id = id;
-    }
-
-    public Set<Rol> getRoles() {
-        return roles;
-    }
-
-    public void setRoles(Set<Rol> roles) {
-        this.roles = roles;
+    public enum Rol {
+        USER, EDITOR, REVIEWER
     }
 
     public void addRol(Rol rol) {
         this.roles.add(rol);
-    }
-
-    public Date getCreateDate() {
-        return createDate;
-    }
-
-    public void setCreateDate(Date createDate) {
-        this.createDate = createDate;
-    }
-
-    public Date getModifiedDate() {
-        return modifiedDate;
-    }
-
-    public void setModifiedDate(Date modifiedDate) {
-        this.modifiedDate = modifiedDate;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof User)) return false;
-        User user = (User) o;
-        return id == user.id;
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(id);
     }
 }

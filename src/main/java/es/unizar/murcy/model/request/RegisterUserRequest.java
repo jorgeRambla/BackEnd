@@ -11,10 +11,18 @@ import java.util.Set;
 @AllArgsConstructor
 public class RegisterUserRequest {
 
-    @Getter @Setter private String username;
-    @Getter @Setter private String password;
-    @Getter @Setter private String email;
-    @Getter @Setter private String fullName;
+    @Getter
+    @Setter
+    private String username;
+    @Getter
+    @Setter
+    private String password;
+    @Getter
+    @Setter
+    private String email;
+    @Getter
+    @Setter
+    private String fullName;
 
     public User toEntity() {
         User user = new User();

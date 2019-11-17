@@ -8,12 +8,22 @@ import lombok.*;
 @AllArgsConstructor
 public class UserDto {
 
-    @Getter @Setter private long id;
-    @Getter @Setter private String userName;
-    @Getter @Setter private String email;
-    @Getter @Setter private String fullName;
+    @Getter
+    @Setter
+    private long id;
+    @Getter
+    @Setter
+    private String userName;
+    @Getter
+    @Setter
+    private String email;
+    @Getter
+    @Setter
+    private String fullName;
 
-    @Getter @Setter private String[] role;
+    @Getter
+    @Setter
+    private String[] role;
 
     public UserDto(User user) {
         this.id = user.getId();

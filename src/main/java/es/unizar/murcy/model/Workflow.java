@@ -1,38 +1,62 @@
 package es.unizar.murcy.model;
 
+import lombok.*;
+
 import javax.persistence.*;
 import java.util.Date;
 import java.util.Objects;
 
 @Entity
 @Table(name = "murcy_workflow")
+@Data
+@AllArgsConstructor
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public class Workflow {
-    public enum Status {
-        APPROVED, PENDING, DENIED, DRAFT, DRAFT_FROM_APPROVED, EXPIRED, INCOMPLETE, SCHEDULED
-    }
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Getter
+    @Setter
+    @EqualsAndHashCode.Include
     private long id;
 
+    @Getter
+    @Setter
     private Status status;
 
+    @Getter
+    @Setter
     private Date statusDate;
 
+    @Getter
+    @Setter
     private Date createDate;
 
+    @Getter
+    @Setter
     private Date modifiedDate;
 
+    @Getter
+    @Setter
     private String title;
 
+    @Getter
+    @Setter
     private String description;
 
+    @Getter
+    @Setter
     private String response;
 
     @OneToOne
+    @Getter
+    @Setter
     private Workflow nextWorkflow;
 
+
     @ManyToOne
+    @Getter
+    @Setter
     private User statusUser;
 
     public Workflow() {
@@ -44,96 +68,7 @@ public class Workflow {
         this.statusDate = now;
     }
 
-    public long getId() {
-        return id;
-    }
-
-    public void setId(long id) {
-        this.id = id;
-    }
-
-    public Status getStatus() {
-        return status;
-    }
-
-    public void setStatus(Status status) {
-        this.status = status;
-    }
-
-    public Date getStatusDate() {
-        return statusDate;
-    }
-
-    public void setStatusDate(Date statusDate) {
-        this.statusDate = statusDate;
-    }
-
-    public Date getCreateDate() {
-        return createDate;
-    }
-
-    public void setCreateDate(Date createDate) {
-        this.createDate = createDate;
-    }
-
-    public Date getModifiedDate() {
-        return modifiedDate;
-    }
-
-    public void setModifiedDate(Date modifiedDate) {
-        this.modifiedDate = modifiedDate;
-    }
-
-    public String getTitle() {
-        return title;
-    }
-
-    public void setTitle(String title) {
-        this.title = title;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
-    public String getResponse() {
-        return response;
-    }
-
-    public void setResponse(String response) {
-        this.response = response;
-    }
-
-    public Workflow getNextWorkflow() {
-        return nextWorkflow;
-    }
-
-    public void setNextWorkflow(Workflow nextWorkflow) {
-        this.nextWorkflow = nextWorkflow;
-    }
-
-    public User getStatusUser() {
-        return statusUser;
-    }
-
-    public void setStatusUser(User statusUser) {
-        this.statusUser = statusUser;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof Workflow)) return false;
-        Workflow workflow = (Workflow) o;
-        return id == workflow.id;
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(id);
+    public enum Status {
+        APPROVED, PENDING, DENIED, DRAFT, DRAFT_FROM_APPROVED, EXPIRED, INCOMPLETE, SCHEDULED
     }
 }

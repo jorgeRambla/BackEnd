@@ -1,5 +1,7 @@
 package es.unizar.murcy.model;
 
+import lombok.*;
+
 import javax.persistence.*;
 import java.util.Date;
 import java.util.List;
@@ -7,150 +9,69 @@ import java.util.Objects;
 
 @Entity
 @Table(name = "murcy_question")
+@Data
+@AllArgsConstructor
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public class Question {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Getter
+    @Setter
+    @EqualsAndHashCode.Include
     private long id;
 
+    @Getter
+    @Setter
     private String title;
 
     @ManyToOne
+    @Getter
+    @Setter
     private User user;
 
+    @Getter
+    @Setter
     private String description;
 
+    @Getter
+    @Setter
     private Date createDate;
 
+    @Getter
+    @Setter
     private Date modifiedDate;
 
+    @Getter
+    @Setter
     private Boolean isMultiple;
 
     @ManyToOne
+    @Getter
+    @Setter
     private Workflow workflow;
 
     @ManyToOne
+    @Getter
+    @Setter
     private Workflow lastWorkflow;
 
+    @Getter
+    @Setter
     private Boolean closed;
 
+    @Getter
+    @Setter
     private Boolean approved;
 
     @ManyToMany
-    @OrderColumn(name="INDEX")
+    @OrderColumn(name = "INDEX")
+    @Getter
+    @Setter
     private List<Option> options;
 
-    public Question(){
+    public Question() {
         this.createDate = new Date();
         this.modifiedDate = new Date();
-    }
-
-    public long getId() {
-        return id;
-    }
-
-    public void setId(long id) {
-        this.id = id;
-    }
-
-    public String getTitle() {
-        return title;
-    }
-
-    public void setTitle(String title) {
-        this.title = title;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
-    public Date getCreateDate() {
-        return createDate;
-    }
-
-    public void setCreateDate(Date createDate) {
-        this.createDate = createDate;
-    }
-
-    public Date getModifiedDate() {
-        return modifiedDate;
-    }
-
-    public void setModifiedDate(Date modifiedDate) {
-        this.modifiedDate = modifiedDate;
-    }
-
-    public User getUser() {
-        return user;
-    }
-
-    public void setUser(User user) {
-        this.user = user;
-    }
-
-    public List<Option> getOptions() {
-        return options;
-    }
-
-    public void setOptions(List<Option> options) {
-        this.options = options;
-    }
-
-    public Boolean getMultiple() {
-        return isMultiple;
-    }
-
-    public void setMultiple(Boolean multiple) {
-        isMultiple = multiple;
-    }
-
-    public Workflow getWorkflow() {
-        return workflow;
-    }
-
-    public void setWorkflow(Workflow workflow) {
-        this.workflow = workflow;
-    }
-
-    public Workflow getLastWorkflow() {
-        return lastWorkflow;
-    }
-
-    public void setLastWorkflow(Workflow lastWorkflow) {
-        this.lastWorkflow = lastWorkflow;
-    }
-
-    public Boolean getClosed() {
-        return closed;
-    }
-
-    public void setClosed(Boolean closed) {
-        this.closed = closed;
-    }
-
-    public Boolean getApproved() {
-        return approved;
-    }
-
-    public void setApproved(Boolean approved) {
-        this.approved = approved;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof Question)) return false;
-        Question question = (Question) o;
-        return id == question.id;
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(id);
     }
 }

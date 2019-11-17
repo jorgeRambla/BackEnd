@@ -12,11 +12,21 @@ import java.util.stream.Collectors;
 @AllArgsConstructor
 public class UpdateUserRequest {
 
-    @Getter @Setter private String email;
-    @Getter @Setter private String fullName;
-    @Getter @Setter private String username;
-    @Getter @Setter private String password;
-    @Getter @Setter private String[] rol;
+    @Getter
+    @Setter
+    private String email;
+    @Getter
+    @Setter
+    private String fullName;
+    @Getter
+    @Setter
+    private String username;
+    @Getter
+    @Setter
+    private String password;
+    @Getter
+    @Setter
+    private String[] rol;
 
     public Set<User.Rol> getRolSet() {
         return Arrays.stream(rol).map(User.Rol::valueOf).collect(Collectors.toSet());

@@ -10,14 +10,28 @@ import java.util.Date;
 @AllArgsConstructor
 public class WorkflowDto {
 
-    @Getter @Setter private long id;
-    @Getter @Setter private String title;
-    @Getter @Setter private String description;
-    @Getter @Setter private String status;
-    @Getter @Setter private Date statusDate;
-    @Getter @Setter private String response;
+    @Getter
+    @Setter
+    private long id;
+    @Getter
+    @Setter
+    private String title;
+    @Getter
+    @Setter
+    private String description;
+    @Getter
+    @Setter
+    private String status;
+    @Getter
+    @Setter
+    private Date statusDate;
+    @Getter
+    @Setter
+    private String response;
 
-    @Getter @Setter private WorkflowDto nextWorkflow;
+    @Getter
+    @Setter
+    private WorkflowDto nextWorkflow;
 
     public WorkflowDto(Workflow workflow) {
         this.id = workflow.getId();
@@ -26,7 +40,7 @@ public class WorkflowDto {
         this.status = workflow.getStatus().name();
         this.statusDate = workflow.getStatusDate();
         this.response = workflow.getResponse();
-        if(workflow.getNextWorkflow() != null) {
+        if (workflow.getNextWorkflow() != null) {
             this.nextWorkflow = new WorkflowDto(workflow.getNextWorkflow());
         } else {
             this.nextWorkflow = null;
