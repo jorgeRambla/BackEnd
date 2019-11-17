@@ -54,18 +54,21 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-web'
     implementation 'org.springframework.boot:spring-boot-starter-security'
     implementation 'org.springframework.boot:spring-boot-starter-mail'
-    
-    implementation: 'io.jsonwebtoken:jjwt:0.9.1'
-    implementation 'org.projectlombok:lombok'
+
+    implementation 'org.projectlombok:lombok:1.18.10'
+
     implementation 'com.h2database:h2'
 
-    
+
+    compile group: 'io.jsonwebtoken', name: 'jjwt', version: '0.9.1'
+
+
     testImplementation 'com.h2database:h2'
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
 
     // https://mvnrepository.com/artifact/com.icegreen/greenmail
     testImplementation group: 'com.icegreen', name: 'greenmail', version: '1.5.11'
 
-    
+
     annotationProcessor 'org.projectlombok:lombok:1.18.10'
 }
