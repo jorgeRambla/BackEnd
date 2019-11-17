@@ -2,6 +2,7 @@ package es.unizar.murcy.model;
 
 import javax.persistence.*;
 import java.util.Date;
+import java.util.Objects;
 
 @Entity
 @Table(name = "murcy_workflow")
@@ -121,5 +122,18 @@ public class Workflow {
 
     public void setStatusUser(User statusUser) {
         this.statusUser = statusUser;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Workflow)) return false;
+        Workflow workflow = (Workflow) o;
+        return id == workflow.id;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
     }
 }

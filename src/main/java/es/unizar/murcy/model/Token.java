@@ -2,6 +2,7 @@ package es.unizar.murcy.model;
 
 import javax.persistence.*;
 import java.util.Date;
+import java.util.Objects;
 
 @Entity
 @Table(name = "murcy_token")
@@ -60,5 +61,18 @@ public class Token {
 
     public void setTokenValue(String tokenValue) {
         this.tokenValue = tokenValue;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Token)) return false;
+        Token token = (Token) o;
+        return id == token.id;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
     }
 }

@@ -2,6 +2,7 @@ package es.unizar.murcy.model;
 
 import javax.persistence.*;
 import java.util.Date;
+import java.util.Objects;
 
 @Entity
 @Table(name = "murcy_editor_request")
@@ -107,5 +108,18 @@ public class EditorRequest {
 
     public void setApproved(boolean approved) {
         this.approved = approved;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof EditorRequest)) return false;
+        EditorRequest that = (EditorRequest) o;
+        return id == that.id;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
     }
 }

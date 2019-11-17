@@ -2,6 +2,7 @@ package es.unizar.murcy.model;
 
 
 import javax.persistence.*;
+import java.util.Objects;
 
 @Entity
 @Table(name = "murcy_option")
@@ -39,5 +40,18 @@ public class Option {
 
     public void setId(long id) {
         this.id = id;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Option)) return false;
+        Option option = (Option) o;
+        return id == option.id;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
     }
 }

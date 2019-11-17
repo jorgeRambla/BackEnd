@@ -1,7 +1,6 @@
 package es.unizar.murcy.service;
 
 import es.unizar.murcy.MurcyApplication;
-import es.unizar.murcy.model.User;
 import es.unizar.murcy.model.request.RegisterUserRequest;
 import org.junit.Test;
 import org.junit.runner.RunWith;

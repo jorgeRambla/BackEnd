@@ -3,7 +3,6 @@ package es.unizar.murcy.service;
 import es.unizar.murcy.MurcyApplication;
 import es.unizar.murcy.model.EditorRequest;
 import es.unizar.murcy.model.User;
-import junit.framework.TestCase;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
