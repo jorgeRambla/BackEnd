@@ -50,7 +50,7 @@ public class Workflow extends AuditableEntity {
     @OneToMany
     @Getter
     @Setter
-    private Set<AuditableWorkflowEntity> auditableWorkflowEntities = new HashSet<>();
+    private Set<AuditableWorkflowEntity> auditableWorkflowEntities;
 
     public Workflow() {
         super();
@@ -58,6 +58,7 @@ public class Workflow extends AuditableEntity {
         this.nextWorkflow = null;
         this.status = Status.PENDING;
         this.statusDate = now;
+        this.auditableWorkflowEntities = new HashSet<>();
     }
 
     public enum Status {
