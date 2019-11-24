@@ -34,6 +34,10 @@ public class WorkflowController {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ErrorMessageDto(HttpStatus.UNAUTHORIZED));
         }
 
+        if(!user.get().getRoles().contains(User.Rol.REVIEWER)) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ErrorMessageDto(HttpStatus.UNAUTHORIZED));
+        }
+
         if(!updateWorkflowStatusRequest.isValid()) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ErrorMessageDto(HttpStatus.BAD_REQUEST));
         }
@@ -53,12 +57,16 @@ public class WorkflowController {
 
         Optional<User> user = authUtilities.getUserFromRequest(request);
 
-        if(!updateWorkflowStatusRequest.isValid()) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ErrorMessageDto(HttpStatus.BAD_REQUEST));
-        }
-
         if(!user.isPresent()) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ErrorMessageDto(HttpStatus.UNAUTHORIZED));
+        }
+
+        if(!user.get().getRoles().contains(User.Rol.REVIEWER)) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ErrorMessageDto(HttpStatus.UNAUTHORIZED));
+        }
+
+        if(!updateWorkflowStatusRequest.isValid()) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ErrorMessageDto(HttpStatus.BAD_REQUEST));
         }
 
 

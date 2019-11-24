@@ -29,6 +29,9 @@ public class ErrorMessageDto {
             case 401:
                 this.message = "User not authorized";
                 break;
+            case 404:
+                this.message = "Not found";
+                break;
             default:
                 this.message = "";
                 break;
