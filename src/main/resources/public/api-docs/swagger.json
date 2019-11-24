@@ -884,6 +884,118 @@
         } ]
       }
     },
+    "/workflow/{id}/approve" : {
+      "put" : {
+        "tags" : [ "workflow" ],
+        "summary" : "Aprrove workflow",
+        "description" : "Approve workflow with given ID",
+        "parameters" : [ {
+          "name" : "id",
+          "in" : "path",
+          "description" : "workflow id to be approved",
+          "required" : true,
+          "style" : "simple",
+          "explode" : false,
+          "schema" : {
+            "type" : "integer",
+            "format" : "int64"
+          }
+        } ],
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/WorkflowUpdateRequest"
+              }
+            }
+          }
+        },
+        "responses" : {
+          "201" : {
+            "description" : "Approved"
+          },
+          "403" : {
+            "description" : "Not authorized",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404" : {
+            "description" : "Not found",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "security" : [ {
+          "bearerAuth" : [ ]
+        } ]
+      }
+    },
+    "/workflow/{id}/deny" : {
+      "put" : {
+        "tags" : [ "workflow" ],
+        "summary" : "Deny workflow",
+        "description" : "Deny workflow with given ID",
+        "parameters" : [ {
+          "name" : "id",
+          "in" : "path",
+          "description" : "workflow id to be denied",
+          "required" : true,
+          "style" : "simple",
+          "explode" : false,
+          "schema" : {
+            "type" : "integer",
+            "format" : "int64"
+          }
+        } ],
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/WorkflowUpdateRequest"
+              }
+            }
+          }
+        },
+        "responses" : {
+          "201" : {
+            "description" : "Denied"
+          },
+          "403" : {
+            "description" : "Not authorized",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404" : {
+            "description" : "Not found",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "security" : [ {
+          "bearerAuth" : [ ]
+        } ]
+      }
+    },
     "/request/editor" : {
       "get" : {
         "tags" : [ "request" ],
@@ -1429,6 +1541,16 @@
           "fullName" : {
             "type" : "string",
             "description" : "User full name"
+          }
+        }
+      },
+      "WorkflowUpdateRequest" : {
+        "required" : [ "response" ],
+        "type" : "object",
+        "properties" : {
+          "response" : {
+            "type" : "string",
+            "description" : "response message"
           }
         }
       }
