@@ -47,7 +47,7 @@ public class JsonWebTokenRequestFilter extends OncePerRequestFilter {
         if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
             UserDetails userDetails = this.jwtUserDetailsService.loadUserByUsername(username);
 
-            if (jsonWebTokenUtil.validateToken(jwtToken, userDetails).equals(Boolean.TRUE)) {
+            if (userDetails != null && jsonWebTokenUtil.validateToken(jwtToken, userDetails).equals(Boolean.TRUE)) {
                 UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken = new UsernamePasswordAuthenticationToken(
                         userDetails, null, userDetails.getAuthorities());
                 usernamePasswordAuthenticationToken

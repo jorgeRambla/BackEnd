@@ -21,7 +21,7 @@ public class Option extends AuditableEntity{
 
     @Getter
     @Setter
-    private String text;
+    private String title;
 
     @Getter
     @Setter

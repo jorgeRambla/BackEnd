@@ -12,6 +12,9 @@ import java.util.List;
 @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
 public class Question extends AuditableWorkflowEntity{
 
+    public static final int MIN_OPTIONS = 2;
+    public static final int MAX_OPTIONS = 4;
+
     @Getter
     @Setter
     private String title;

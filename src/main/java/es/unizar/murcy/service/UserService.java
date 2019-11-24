@@ -57,10 +57,7 @@ public class UserService {
 
     public User confirmUser(long userId) {
         Optional<User> user = findUserById(userId);
-        if(user.isPresent()) {
-            return confirmUser(user.get());
-        }
-        return null;
+        return user.map(this::confirmUser).orElse(null);
     }
 
     public User confirmUser(User user) {
