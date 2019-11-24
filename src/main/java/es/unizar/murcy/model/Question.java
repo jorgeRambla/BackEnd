@@ -38,6 +38,8 @@ public class Question extends AuditableWorkflowEntity{
 
     public Question() {
         super();
+        super.setClassname(this.getClass().getName());
     }
+
 
 }

@@ -27,6 +27,9 @@ public class WorkflowDto {
     private Date statusDate;
     @Getter
     @Setter
+    private String statusBy;
+    @Getter
+    @Setter
     private String response;
 
     @Getter
@@ -39,6 +42,9 @@ public class WorkflowDto {
         this.description = workflow.getDescription();
         this.status = workflow.getStatus().name();
         this.statusDate = workflow.getStatusDate();
+        if(workflow.getStatusUser() != null) {
+            this.statusBy = workflow.getStatusUser().getUsername();
+        }
         this.response = workflow.getResponse();
         if (workflow.getNextWorkflow() != null) {
             this.nextWorkflow = new WorkflowDto(workflow.getNextWorkflow());

@@ -22,5 +22,7 @@ public class EditorRequest extends AuditableWorkflowEntity {
 
     public EditorRequest() {
         super();
+        super.setClassname(this.getClass().getName());
     }
+
 }

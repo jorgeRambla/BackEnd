@@ -30,6 +30,10 @@ public class AuditableWorkflowEntity extends AuditableEntity{
     @Setter
     private boolean approved;
 
+    @Getter
+    @Setter
+    private String classname;
+
     public AuditableWorkflowEntity() {
         super();
         this.approved = false;

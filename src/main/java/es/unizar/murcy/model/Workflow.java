@@ -4,12 +4,14 @@ import lombok.*;
 
 import javax.persistence.*;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.Set;
 
 @Entity
 @Table(name = "murcy_workflow")
 @Data
 @AllArgsConstructor
+@Builder
 @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
 public class Workflow extends AuditableEntity{
 
@@ -46,7 +48,7 @@ public class Workflow extends AuditableEntity{
     @OneToMany
     @Getter
     @Setter
-    private Set<AuditableWorkflowEntity> auditableWorkflowEntity;
+    private Set<AuditableWorkflowEntity> auditableWorkflowEntities = new HashSet<>();
 
     public Workflow() {
         super();
@@ -58,5 +60,9 @@ public class Workflow extends AuditableEntity{
 
     public enum Status {
         APPROVED, PENDING, DENIED, DRAFT, DRAFT_FROM_APPROVED, EXPIRED, INCOMPLETE, SCHEDULED
+    }
+
+    public void addAuditableWorkflowEntity(AuditableWorkflowEntity auditableWorkflowEntity) {
+        this.auditableWorkflowEntities.add(auditableWorkflowEntity);
     }
 }
