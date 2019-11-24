@@ -1,5 +1,6 @@
 package es.unizar.murcy.model;
 
+import es.unizar.murcy.model.extendable.jpa.AuditableEntity;
 import lombok.*;
 
 import javax.persistence.*;
@@ -11,7 +12,7 @@ import java.util.Set;
 @Data
 @AllArgsConstructor
 @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
-public class User extends AuditableEntity{
+public class User extends AuditableEntity {
 
     @Getter
     @Setter

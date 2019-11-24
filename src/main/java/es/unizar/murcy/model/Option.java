@@ -1,6 +1,7 @@
 package es.unizar.murcy.model;
 
 
+import es.unizar.murcy.model.extendable.jpa.AuditableEntity;
 import lombok.*;
 
 import javax.persistence.*;
@@ -10,14 +11,7 @@ import javax.persistence.*;
 @Data
 @AllArgsConstructor
 @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
-public class Option extends AuditableEntity{
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Getter
-    @Setter
-    @EqualsAndHashCode.Include
-    private long id;
+public class Option extends AuditableEntity {
 
     @Getter
     @Setter

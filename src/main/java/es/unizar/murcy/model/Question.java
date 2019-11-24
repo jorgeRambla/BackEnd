@@ -1,5 +1,6 @@
 package es.unizar.murcy.model;
 
+import es.unizar.murcy.model.extendable.jpa.AuditableWorkflowEntity;
 import lombok.*;
 
 import javax.persistence.*;
@@ -10,7 +11,7 @@ import java.util.List;
 @Data
 @AllArgsConstructor
 @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
-public class Question extends AuditableWorkflowEntity{
+public class Question extends AuditableWorkflowEntity {
 
     public static final int MIN_OPTIONS = 2;
     public static final int MAX_OPTIONS = 4;
@@ -32,7 +33,7 @@ public class Question extends AuditableWorkflowEntity{
     @Setter
     private Boolean isMultiple;
 
-    @ManyToMany
+    @OneToMany
     @OrderColumn(name = "INDEX")
     @Getter
     @Setter

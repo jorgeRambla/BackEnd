@@ -6,11 +6,11 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = MurcyApplication.class)
@@ -23,9 +23,9 @@ public class JwtUserDetailsServiceTest {
     @Autowired
     UserService userService;
 
-    @Test(expected = UsernameNotFoundException.class)
+    @Test
     public void testLoadUserByUsername_exception() {
-        jwtUserDetailsService.loadUserByUsername("NotExists");
+        assertNull(jwtUserDetailsService.loadUserByUsername("NotExists"));
     }
 
     @Test

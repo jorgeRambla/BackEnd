@@ -1,5 +1,6 @@
-package es.unizar.murcy.model;
+package es.unizar.murcy.model.extendable.jpa;
 
+import es.unizar.murcy.model.Workflow;
 import lombok.*;
 
 import javax.persistence.*;

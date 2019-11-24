@@ -1,5 +1,7 @@
 package es.unizar.murcy.model;
 
+import es.unizar.murcy.model.extendable.jpa.AuditableEntity;
+import es.unizar.murcy.model.extendable.jpa.AuditableWorkflowEntity;
 import lombok.*;
 
 import javax.persistence.*;
@@ -13,7 +15,7 @@ import java.util.Set;
 @AllArgsConstructor
 @Builder
 @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
-public class Workflow extends AuditableEntity{
+public class Workflow extends AuditableEntity {
 
     @Getter
     @Setter

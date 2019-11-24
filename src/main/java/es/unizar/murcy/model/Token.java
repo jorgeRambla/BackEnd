@@ -1,5 +1,6 @@
 package es.unizar.murcy.model;
 
+import es.unizar.murcy.model.extendable.jpa.AuditableEntity;
 import lombok.*;
 
 import javax.persistence.*;
@@ -10,7 +11,7 @@ import java.util.Date;
 @Data
 @AllArgsConstructor
 @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
-public class Token extends AuditableEntity{
+public class Token extends AuditableEntity {
 
     public static final int DEFAULT_EXPIRATION_MAX_DAYS = 2;
     public static final long DEFAULT_TOKEN_EXPIRATION_TIME = DEFAULT_EXPIRATION_MAX_DAYS * 24L * 3600L * 1000L;

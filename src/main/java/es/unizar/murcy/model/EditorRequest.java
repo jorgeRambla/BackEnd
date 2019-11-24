@@ -1,5 +1,6 @@
 package es.unizar.murcy.model;
 
+import es.unizar.murcy.model.extendable.jpa.AuditableWorkflowEntity;
 import lombok.*;
 
 import javax.persistence.*;

@@ -1,4 +1,4 @@
-package es.unizar.murcy.model;
+package es.unizar.murcy.model.extendable.jpa;
 
 import lombok.*;
 
@@ -7,10 +7,10 @@ import java.util.Date;
 
 @MappedSuperclass
 @AllArgsConstructor
-@EqualsAndHashCode(onlyExplicitlyIncluded = true)
-public class AuditableEntity {
+@EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
+public class AuditableEntity extends RemovableEntity{
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.AUTO)
     @Getter
     @Setter
     @EqualsAndHashCode.Include
@@ -25,6 +25,7 @@ public class AuditableEntity {
     private Date modifiedDate;
 
     public AuditableEntity() {
+        super();
         Date date = new Date();
         this.createDate = date;
         this.modifiedDate = date;

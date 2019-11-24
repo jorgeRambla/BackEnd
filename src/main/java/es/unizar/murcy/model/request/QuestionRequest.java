@@ -27,6 +27,12 @@ public class QuestionRequest {
                 && (options.size() >= Question.MIN_OPTIONS && options.size() <= Question.MAX_OPTIONS);
     }
 
+    public boolean isUpdateValid() {
+        return options == null || options.isEmpty() || (options.size() >= Question.MIN_OPTIONS && options.size() <= Question.MAX_OPTIONS);
+    }
+
+
+
     public Question toEntity() {
         Question question = new Question();
         question.setTitle(title);
@@ -36,7 +42,7 @@ public class QuestionRequest {
         return question;
     }
 
-    private Boolean isMultiple() {
+    public Boolean isMultiple() {
         long corrects = options.parallelStream().filter(OptionRequest::isCorrect).count();
         return corrects > 1 || corrects == 0;
     }

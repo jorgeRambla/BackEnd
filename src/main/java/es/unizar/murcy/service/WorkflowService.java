@@ -1,6 +1,7 @@
 package es.unizar.murcy.service;
 
 import es.unizar.murcy.model.*;
+import es.unizar.murcy.model.extendable.jpa.AuditableWorkflowEntity;
 import es.unizar.murcy.repository.AuditableWorkflowEntityRepository;
 import es.unizar.murcy.repository.WorkflowRepository;
 import org.springframework.beans.factory.annotation.Autowired;

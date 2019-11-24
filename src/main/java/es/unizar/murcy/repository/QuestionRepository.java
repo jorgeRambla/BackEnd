@@ -8,11 +8,13 @@ import java.util.Optional;
 import java.util.Set;
 
 public interface QuestionRepository extends JpaRepository<Question, Long> {
-    Optional<Question> findQuestionById(long idQuestion);
+    Optional<Question> findByIdAndDeletedIsFalse(long idQuestion);
 
-    boolean existsByTitle(String title);
+    boolean existsByTitleAndDeletedIsFalse(String title);
 
-    Optional<Question> findQuestionByTitle(String title);
+    Optional<Question> findQuestionByTitleAndDeletedIsFalse(String title);
 
-    List<Question> findQuestionsByUser_Id(long id);
+    List<Question> findQuestionsByUser_IdAndDeletedIsFalse(long id);
+
+    List<Question> findQuestionsByDeletedIsFalse();
 }
