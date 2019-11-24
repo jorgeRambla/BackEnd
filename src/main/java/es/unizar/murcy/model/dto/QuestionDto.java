@@ -60,7 +60,7 @@ public class QuestionDto {
         this.workflow = new WorkflowDto(question.getWorkflow());
         this.lastWorkflow = new WorkflowDto(question.getLastWorkflow());
         this.options = question.getOptions();
-        this.approved = question.getApproved();
-        this.closed = question.getClosed();
+        this.approved = question.isApproved();
+        this.closed = question.isClosed();
     }
 }

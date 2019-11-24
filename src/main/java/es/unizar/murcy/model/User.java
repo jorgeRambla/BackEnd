@@ -11,15 +11,8 @@ import java.util.Set;
 @Table(name = "murcy_user")
 @Data
 @AllArgsConstructor
-@EqualsAndHashCode(onlyExplicitlyIncluded = true)
-public class User {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Getter
-    @Setter
-    @EqualsAndHashCode.Include
-    private long id;
+@EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
+public class User extends AuditableEntity{
 
     @Getter
     @Setter
@@ -45,14 +38,6 @@ public class User {
     @Setter
     private Boolean confirmed;
 
-    @Getter
-    @Setter
-    private Date createDate;
-
-    @Getter
-    @Setter
-    private Date modifiedDate;
-
     @ElementCollection(targetClass = User.Rol.class)
     @Enumerated(EnumType.STRING)
     @CollectionTable(name = "murcy_user_rol")
@@ -61,9 +46,8 @@ public class User {
     private Set<Rol> roles;
 
     public User() {
+        super();
         this.roles = new HashSet<>();
-        this.createDate = new Date();
-        this.modifiedDate = new Date();
     }
 
     public User(String username, String password, String email, String fullName) {

@@ -9,9 +9,8 @@ import javax.persistence.*;
 @Table(name = "murcy_option")
 @Data
 @AllArgsConstructor
-@NoArgsConstructor
-@EqualsAndHashCode(onlyExplicitlyIncluded = true)
-public class Option {
+@EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
+public class Option extends AuditableEntity{
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -27,4 +26,8 @@ public class Option {
     @Getter
     @Setter
     private Boolean correct;
+
+    public Option() {
+        super();
+    }
 }

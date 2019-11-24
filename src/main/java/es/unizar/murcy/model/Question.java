@@ -10,15 +10,8 @@ import java.util.List;
 @Table(name = "murcy_question")
 @Data
 @AllArgsConstructor
-@EqualsAndHashCode(onlyExplicitlyIncluded = true)
-public class Question {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Getter
-    @Setter
-    @EqualsAndHashCode.Include
-    private long id;
+@EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
+public class Question extends AuditableWorkflowEntity{
 
     @Getter
     @Setter
@@ -35,33 +28,7 @@ public class Question {
 
     @Getter
     @Setter
-    private Date createDate;
-
-    @Getter
-    @Setter
-    private Date modifiedDate;
-
-    @Getter
-    @Setter
     private Boolean isMultiple;
-
-    @ManyToOne
-    @Getter
-    @Setter
-    private Workflow workflow;
-
-    @ManyToOne
-    @Getter
-    @Setter
-    private Workflow lastWorkflow;
-
-    @Getter
-    @Setter
-    private Boolean closed;
-
-    @Getter
-    @Setter
-    private Boolean approved;
 
     @ManyToMany
     @OrderColumn(name = "INDEX")
@@ -70,7 +37,7 @@ public class Question {
     private List<Option> options;
 
     public Question() {
-        this.createDate = new Date();
-        this.modifiedDate = new Date();
+        super();
     }
+
 }
