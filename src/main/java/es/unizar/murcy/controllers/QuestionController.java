@@ -147,7 +147,7 @@ public class QuestionController {
                 question.setDescription(questionRequest.getDescription());
             }
 
-            if (questionRequest.getOptions() != null && !questionRequest.getOptions().isEmpty() && questionRequest.getOptions().size() >= 2) {
+            if (questionRequest.getOptions() != null && !questionRequest.getOptions().isEmpty()) {
                 questionService.deleteOptions(question.getOptions());
                 question.setOptions(questionRequest.getOptions().stream().map(OptionRequest::toEntity).collect(Collectors.toList()));
                 question.setIsMultiple(questionRequest.isMultiple());
