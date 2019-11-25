@@ -1,0 +1,422 @@
+package es.unizar.murcy.controllers;
+
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import es.unizar.murcy.components.JsonWebTokenUtil;
+import es.unizar.murcy.model.User;
+import es.unizar.murcy.model.dto.QuestionDto;
+import es.unizar.murcy.model.request.OptionRequest;
+import es.unizar.murcy.model.request.QuestionRequest;
+import es.unizar.murcy.service.JwtUserDetailsService;
+import es.unizar.murcy.service.UserService;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.web.client.TestRestTemplate;
+import org.springframework.boot.web.server.LocalServerPort;
+import org.springframework.http.*;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.context.junit4.SpringRunner;
+
+import java.net.URI;
+import java.util.ArrayList;
+import java.util.List;
+
+import static org.junit.Assert.*;
+
+@RunWith(SpringRunner.class)
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
+public class QuestionControllerTest {
+
+    @LocalServerPort
+    private int port;
+
+    @Autowired
+    UserService userService;
+
+    @Autowired
+    private JwtUserDetailsService userDetailsService;
+
+    @Autowired
+    private JsonWebTokenUtil jsonWebTokenUtil;
+
+    private TestRestTemplate restTemplate = new TestRestTemplate();
+
+    private ObjectMapper objectMapper = new ObjectMapper();
+
+    private String randomToken;
+    private User userUser;
+    private String userUserToken;
+    private User editorUser;
+    private String editorUserToken;
+    private User reviewerUser;
+    private String reviewerUserToken;
+
+    @Before
+    public void setUp()  {
+        User user = new User("testUser", new BCryptPasswordEncoder().encode("test"), "testUser@test.com", "Test Test");
+        user.setConfirmed(true);
+        this.userUser = userService.create(user);
+
+        user = new User("testEditor", new BCryptPasswordEncoder().encode("test"), "testEditor@test.com", "Test Test");
+        user.setConfirmed(true);
+        user.addRol(User.Rol.EDITOR);
+        this.editorUser = userService.create(user);
+
+        user = new User("testReviewer", new BCryptPasswordEncoder().encode("test"), "testReviewer@test.com", "Test Test");
+        user.setConfirmed(true);
+        user.addRol(User.Rol.REVIEWER);
+        this.reviewerUser = userService.create(user);
+
+        this.userUserToken = jsonWebTokenUtil.generateToken(userDetailsService.loadUserByUsername(userUser.getUsername()));
+        this.editorUserToken = jsonWebTokenUtil.generateToken(userDetailsService.loadUserByUsername(editorUser.getUsername()));
+        this.reviewerUserToken = jsonWebTokenUtil.generateToken(userDetailsService.loadUserByUsername(reviewerUser.getUsername()));
+        this.randomToken = userUserToken.substring(0, userUserToken.length()-3).concat("aaa");
+    }
+
+    public void test_POST_API_QUESTION_401_1() {
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+
+        HttpEntity<String> entity = new HttpEntity<>(headers);
+        ResponseEntity response = restTemplate.postForEntity("http://localhost:" + port + "/api/question", entity, Object.class);
+
+        assertEquals(HttpStatus.UNAUTHORIZED, response.getStatusCode());
+    }
+
+    @Test
+    public void test_POST_API_QUESTION_401_2() {
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        headers.setBearerAuth(randomToken);
+
+        HttpEntity<String> entity = new HttpEntity<>(headers);
+        ResponseEntity response = restTemplate.postForEntity("http://localhost:" + port + "/api/question", entity, Object.class);
+
+        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
+    }
+
+    @Test
+    public void test_POST_API_QUESTION_401_3() throws Exception {
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        headers.setBearerAuth(userUserToken);
+
+        List<OptionRequest> options = new ArrayList<>();
+        options.add(new OptionRequest("pregunta 1", false));
+        options.add(new OptionRequest("pregunta 2", true));
+
+        QuestionRequest questionRequest = new QuestionRequest("title", "description", options);
+
+        HttpEntity<String> entity = new HttpEntity<>(new ObjectMapper().writeValueAsString(questionRequest), headers);
+        ResponseEntity response = restTemplate.postForEntity("http://localhost:" + port + "/api/question", entity, Object.class);
+
+        assertEquals(HttpStatus.UNAUTHORIZED, response.getStatusCode());
+    }
+
+    @Test
+    public void test_POST_API_QUESTION_400_1() {
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        headers.setBearerAuth(editorUserToken);
+
+        HttpEntity<String> entity = new HttpEntity<>(headers);
+        ResponseEntity response = restTemplate.postForEntity("http://localhost:" + port + "/api/question", entity, Object.class);
+
+        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+    }
+
+    @Test
+    public void test_POST_API_QUESTION_400_2() throws Exception {
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        headers.setBearerAuth(editorUserToken);
+
+        List<OptionRequest> options = new ArrayList<>();
+        options.add(new OptionRequest("pregunta 1", false));
+        options.add(new OptionRequest("pregunta 2", true));
+
+        QuestionRequest questionRequest = new QuestionRequest(null, "description", options);
+
+        HttpEntity<String> entity = new HttpEntity<>(objectMapper.writeValueAsString(questionRequest), headers);
+        ResponseEntity response = restTemplate.postForEntity("http://localhost:" + port + "/api/question", entity, Object.class);
+
+        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+    }
+
+    @Test
+    public void test_POST_API_QUESTION_400_3() throws Exception {
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        headers.setBearerAuth(editorUserToken);
+
+        List<OptionRequest> options = new ArrayList<>();
+        options.add(new OptionRequest("pregunta 1", false));
+        options.add(new OptionRequest("pregunta 2", true));
+
+        QuestionRequest questionRequest = new QuestionRequest("", "description", options);
+
+        HttpEntity<String> entity = new HttpEntity<>(objectMapper.writeValueAsString(questionRequest), headers);
+        ResponseEntity response = restTemplate.postForEntity("http://localhost:" + port + "/api/question", entity, Object.class);
+
+        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+    }
+
+    @Test
+    public void test_POST_API_QUESTION_400_4() throws Exception {
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        headers.setBearerAuth(editorUserToken);
+
+        List<OptionRequest> options = new ArrayList<>();
+        options.add(new OptionRequest("pregunta 1", false));
+
+        QuestionRequest questionRequest = new QuestionRequest("title", "description", options);
+
+        HttpEntity<String> entity = new HttpEntity<>(objectMapper.writeValueAsString(questionRequest), headers);
+        ResponseEntity response = restTemplate.postForEntity("http://localhost:" + port + "/api/question", entity, Object.class);
+
+        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+    }
+
+    @Test
+    public void test_POST_API_QUESTION_400_5() throws Exception {
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        headers.setBearerAuth(editorUserToken);
+
+        List<OptionRequest> options = new ArrayList<>();
+        options.add(new OptionRequest("pregunta 1", false));
+        options.add(new OptionRequest("pregunta 2", false));
+        options.add(new OptionRequest("pregunta 3", false));
+        options.add(new OptionRequest("pregunta 4", false));
+        options.add(new OptionRequest("pregunta 5", false));
+
+
+        QuestionRequest questionRequest = new QuestionRequest("title", "description", options);
+
+        HttpEntity<String> entity = new HttpEntity<>(objectMapper.writeValueAsString(questionRequest), headers);
+        ResponseEntity response = restTemplate.postForEntity("http://localhost:" + port + "/api/question", entity, Object.class);
+
+        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+    }
+
+    @Test
+    public void test_POST_API_QUESTION_201_1() throws Exception {
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        headers.setBearerAuth(editorUserToken);
+
+        List<OptionRequest> options = new ArrayList<>();
+        options.add(new OptionRequest("pregunta 1", false));
+        options.add(new OptionRequest("pregunta 2", false));
+        options.add(new OptionRequest("pregunta 3", false));
+        options.add(new OptionRequest("pregunta 4", false));
+
+        QuestionRequest questionRequest = new QuestionRequest("title", "description", options);
+
+        HttpEntity<String> entity = new HttpEntity<>(objectMapper.writeValueAsString(questionRequest), headers);
+        ResponseEntity response = restTemplate.postForEntity("http://localhost:" + port + "/api/question", entity, Object.class);
+
+        assertEquals(HttpStatus.CREATED, response.getStatusCode());
+    }
+
+    @Test
+    public void test_POST_API_QUESTION_201_2() throws Exception {
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        headers.setBearerAuth(reviewerUserToken);
+
+        List<OptionRequest> options = new ArrayList<>();
+        options.add(new OptionRequest("pregunta 1", false));
+        options.add(new OptionRequest("pregunta 2", false));
+        options.add(new OptionRequest("pregunta 3", false));
+        options.add(new OptionRequest("pregunta 4", false));
+
+        QuestionRequest questionRequest = new QuestionRequest("title", "description", options);
+
+        HttpEntity<String> entity = new HttpEntity<>(objectMapper.writeValueAsString(questionRequest), headers);
+        ResponseEntity response = restTemplate.postForEntity("http://localhost:" + port + "/api/question", entity, Object.class);
+
+        assertEquals(HttpStatus.CREATED, response.getStatusCode());
+    }
+
+    @Test
+    public void test_GET_API_QUESTION_LIST_401_2() {
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        headers.setBearerAuth(randomToken);
+
+        ResponseEntity response = restTemplate.exchange(URI.create("http://localhost:" + port + "/api/question/list"), HttpMethod.GET, new HttpEntity<>(headers), Object.class);
+
+        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
+    }
+
+    @Test
+    public void test_GET_API_QUESTION_LIST_401_3() {
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        headers.setBearerAuth(userUserToken);
+
+        ResponseEntity response = restTemplate.exchange(URI.create("http://localhost:" + port + "/api/question/list"), HttpMethod.GET, new HttpEntity<>(headers), Object.class);
+
+        assertEquals(HttpStatus.UNAUTHORIZED, response.getStatusCode());
+    }
+
+    @Test
+    public void test_GET_API_QUESTION_LIST_200_1() throws Exception {
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        headers.setBearerAuth(editorUserToken);
+
+        ResponseEntity response = restTemplate.exchange(URI.create("http://localhost:" + port + "/api/question/list"), HttpMethod.GET, new HttpEntity<>(headers), Object.class);
+
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        List<QuestionDto> returnData = objectMapper.readValue(objectMapper.writeValueAsString(response.getBody()), new TypeReference<List<QuestionDto>>(){});
+
+        assertEquals(0, returnData.size());
+    }
+
+    @Test
+    public void test_GET_API_QUESTION_LIST_200_2() throws Exception {
+        test_POST_API_QUESTION_201_1();
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        headers.setBearerAuth(editorUserToken);
+
+        ResponseEntity response = restTemplate.exchange(URI.create("http://localhost:" + port + "/api/question/list"), HttpMethod.GET, new HttpEntity<>(headers), Object.class);
+
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        List<QuestionDto> returnData = objectMapper.readValue(objectMapper.writeValueAsString(response.getBody()), new TypeReference<List<QuestionDto>>(){});
+
+        assertEquals(1, returnData.size());
+    }
+
+    @Test
+    public void test_GET_API_QUESTION_LIST_200_3() throws Exception {
+        test_POST_API_QUESTION_201_1();
+        test_POST_API_QUESTION_201_2();
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        headers.setBearerAuth(editorUserToken);
+
+        ResponseEntity response = restTemplate.exchange(URI.create("http://localhost:" + port + "/api/question/list"), HttpMethod.GET, new HttpEntity<>(headers), Object.class);
+
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        List<QuestionDto> returnData = objectMapper.readValue(objectMapper.writeValueAsString(response.getBody()), new TypeReference<List<QuestionDto>>(){});
+
+        assertEquals(1, returnData.size());
+    }
+
+    @Test
+    public void test_GET_API_QUESTION_LIST_ID_401_1() {
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        headers.setBearerAuth(editorUserToken);
+
+        ResponseEntity response = restTemplate.exchange(URI.create("http://localhost:" + port + "/api/question/list/" + reviewerUser.getId()), HttpMethod.GET, new HttpEntity<>(headers), Object.class);
+
+        assertEquals(HttpStatus.UNAUTHORIZED, response.getStatusCode());
+    }
+
+    @Test
+    public void test_GET_API_QUESTION_LIST_ID_401_2() {
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        headers.setBearerAuth(randomToken);
+
+        ResponseEntity response = restTemplate.exchange(URI.create("http://localhost:" + port + "/api/question/list/" + reviewerUser.getId()), HttpMethod.GET, new HttpEntity<>(headers), Object.class);
+
+        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
+    }
+
+    @Test
+    public void test_GET_API_QUESTION_LIST_ID_401_3() {
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        headers.setBearerAuth(userUserToken);
+
+        ResponseEntity response = restTemplate.exchange(URI.create("http://localhost:" + port + "/api/question/list/" + reviewerUser.getId()), HttpMethod.GET, new HttpEntity<>(headers), Object.class);
+
+        assertEquals(HttpStatus.UNAUTHORIZED, response.getStatusCode());
+    }
+
+
+    @Test
+    public void test_GET_API_QUESTION_LIST_ID_200_1() throws Exception {
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        headers.setBearerAuth(editorUserToken);
+
+        ResponseEntity response = restTemplate.exchange(URI.create("http://localhost:" + port + "/api/question/list/" + editorUser.getId()), HttpMethod.GET, new HttpEntity<>(headers), Object.class);
+
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        List<QuestionDto> returnData = objectMapper.readValue(objectMapper.writeValueAsString(response.getBody()), new TypeReference<List<QuestionDto>>(){});
+
+        assertEquals(0, returnData.size());
+    }
+
+    @Test
+    public void test_GET_API_QUESTION_LIST_ID_200_2() throws Exception {
+        test_POST_API_QUESTION_201_1();
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        headers.setBearerAuth(editorUserToken);
+
+        ResponseEntity response = restTemplate.exchange(URI.create("http://localhost:" + port + "/api/question/list/" + editorUser.getId()), HttpMethod.GET, new HttpEntity<>(headers), Object.class);
+
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        List<QuestionDto> returnData = objectMapper.readValue(objectMapper.writeValueAsString(response.getBody()), new TypeReference<List<QuestionDto>>(){});
+
+        assertEquals(1, returnData.size());
+    }
+
+    @Test
+    public void test_GET_API_QUESTION_LIST_ID_200_3() throws Exception {
+        test_POST_API_QUESTION_201_1();
+        test_POST_API_QUESTION_201_2();
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        headers.setBearerAuth(editorUserToken);
+
+        ResponseEntity response = restTemplate.exchange(URI.create("http://localhost:" + port + "/api/question/list/" + editorUser.getId()), HttpMethod.GET, new HttpEntity<>(headers), Object.class);
+
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        List<QuestionDto> returnData = objectMapper.readValue(objectMapper.writeValueAsString(response.getBody()), new TypeReference<List<QuestionDto>>(){});
+
+        assertEquals(1, returnData.size());
+    }
+
+    @Test
+    public void test_GET_API_QUESTION_LIST_ID_200_4() throws Exception {
+        test_POST_API_QUESTION_201_1();
+        test_POST_API_QUESTION_201_2();
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        headers.setBearerAuth(reviewerUserToken);
+
+        ResponseEntity response = restTemplate.exchange(URI.create("http://localhost:" + port + "/api/question/list/" + editorUser.getId()), HttpMethod.GET, new HttpEntity<>(headers), Object.class);
+
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        List<QuestionDto> returnData = objectMapper.readValue(objectMapper.writeValueAsString(response.getBody()), new TypeReference<List<QuestionDto>>(){});
+
+        assertEquals(1, returnData.size());
+    }
+
+    @Test
+    public void test_GET_API_QUESTION_LIST_ID_404_1() throws Exception {
+        test_POST_API_QUESTION_201_1();
+        test_POST_API_QUESTION_201_2();
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        headers.setBearerAuth(reviewerUserToken);
+
+        ResponseEntity response = restTemplate.exchange(URI.create("http://localhost:" + port + "/api/question/list/" + -1), HttpMethod.GET, new HttpEntity<>(headers), Object.class);
+
+        assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
+    }
+}

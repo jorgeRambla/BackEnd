@@ -34,9 +34,9 @@ public class QuestionController {
     @CrossOrigin
     @PostMapping(value = "/api/question")
     public ResponseEntity create(HttpServletRequest request, @RequestBody QuestionRequest questionRequest) {
-        Optional<User> user = authUtilities.getUserFromRequest(request);
+        Optional<User> user = authUtilities.getUserFromRequest(request, User.Rol.EDITOR, true);
 
-        if (!user.isPresent()) {
+        if (!user.isPresent() || !(user.get().getRoles().contains(User.Rol.EDITOR) || user.get().getRoles().contains(User.Rol.REVIEWER))) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ErrorMessageDto(HttpStatus.UNAUTHORIZED));
         }
 
@@ -59,7 +59,7 @@ public class QuestionController {
     @CrossOrigin
     @GetMapping("/api/question/list")
     public ResponseEntity fetchCurrentUserQuestionList(HttpServletRequest request) {
-        Optional<User> user = authUtilities.getUserFromRequest(request);
+        Optional<User> user = authUtilities.getUserFromRequest(request, User.Rol.EDITOR, true);
 
         if (!user.isPresent()) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ErrorMessageDto(HttpStatus.UNAUTHORIZED));
@@ -71,7 +71,7 @@ public class QuestionController {
     @CrossOrigin
     @GetMapping("/api/question/list/{id}")
     public ResponseEntity fetchCurrentUserQuestionListByOwnerId(HttpServletRequest request, @PathVariable long id) {
-        Optional<User> user = authUtilities.getUserFromRequest(request);
+        Optional<User> user = authUtilities.getUserFromRequest(request, User.Rol.EDITOR, true);
 
         if (!user.isPresent()) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ErrorMessageDto(HttpStatus.UNAUTHORIZED));
@@ -84,7 +84,7 @@ public class QuestionController {
         Optional<User> fetchedUser = userService.findUserById(id);
 
         if (user.get().getRoles().contains(User.Rol.REVIEWER)) {
-            if (fetchedUser.isPresent()) {
+            if (!fetchedUser.isPresent()) {
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ErrorMessageDto(HttpStatus.NOT_FOUND));
             } else {
                 return ResponseEntity.status(HttpStatus.OK).body(questionService.findQuestionsByOwner(user.get()).stream().map(QuestionDto::new).collect(Collectors.toList()));
@@ -97,13 +97,13 @@ public class QuestionController {
     @CrossOrigin
     @GetMapping("/api/question/{id}")
     public ResponseEntity fetchQuestionById(HttpServletRequest request, @PathVariable long id) {
-        Optional<User> user = authUtilities.getUserFromRequest(request);
+        Optional<Question> question = questionService.findById(id);
+
+        Optional<User> user = authUtilities.getUserFromRequest(request, User.Rol.EDITOR, true);
 
         if (!user.isPresent()) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ErrorMessageDto(HttpStatus.UNAUTHORIZED));
         }
-
-        Optional<Question> question = questionService.findById(id);
 
         if (!question.isPresent()) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ErrorMessageDto(HttpStatus.NOT_FOUND));
@@ -119,7 +119,7 @@ public class QuestionController {
     @CrossOrigin
     @PutMapping(value = "/api/question/{id}")
     public ResponseEntity update(HttpServletRequest request, @RequestBody QuestionRequest questionRequest, @PathVariable long id) {
-        Optional<User> user = authUtilities.getUserFromRequest(request);
+        Optional<User> user = authUtilities.getUserFromRequest(request, User.Rol.EDITOR, true);
 
         Optional<Question> optionalQuestion = questionService.findById(id);
 
@@ -162,13 +162,13 @@ public class QuestionController {
     @CrossOrigin
     @DeleteMapping(value = "/api/question/{id}")
     public ResponseEntity delete(HttpServletRequest request, @PathVariable long id) {
-        Optional<User> user = authUtilities.getUserFromRequest(request);
-
-        Optional<Question> optionalQuestion = questionService.findById(id);
+        Optional<User> user = authUtilities.getUserFromRequest(request, User.Rol.EDITOR, true);
 
         if (!user.isPresent()) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ErrorMessageDto(HttpStatus.UNAUTHORIZED));
         }
+        Optional<Question> optionalQuestion = questionService.findById(id);
+
 
         if(!optionalQuestion.isPresent()) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ErrorMessageDto(HttpStatus.NOT_FOUND));

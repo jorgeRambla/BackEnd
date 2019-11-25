@@ -68,7 +68,7 @@ dependencies {
 
     // https://mvnrepository.com/artifact/com.icegreen/greenmail
     testImplementation group: 'com.icegreen', name: 'greenmail', version: '1.5.11'
-
+    testImplementation group: 'org.apache.httpcomponents', name: 'httpclient', version: '4.5.10'
 
     annotationProcessor 'org.projectlombok:lombok:1.18.10'
 }

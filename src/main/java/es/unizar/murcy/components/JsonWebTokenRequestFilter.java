@@ -41,6 +41,9 @@ public class JsonWebTokenRequestFilter extends OncePerRequestFilter {
                 logger.error("Unable to get JWT Token");
             } catch (ExpiredJwtException e) {
                 logger.error("JWT Token has expired");
+            } catch (Exception e) {
+                logger.error(e);
+                response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "The token is not valid.");
             }
         }
 
