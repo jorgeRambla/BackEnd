@@ -43,7 +43,10 @@ public class QuestionRequest {
     }
 
     public Boolean isMultiple() {
-        long corrects = options.parallelStream().filter(OptionRequest::isCorrect).count();
+        if(options == null) {
+            return false;
+        }
+        long corrects = options.stream().filter(OptionRequest::isCorrect).count();
         return corrects > 1 || corrects == 0;
     }
 }

@@ -33,7 +33,7 @@ public class Question extends AuditableWorkflowEntity {
     @Setter
     private Boolean isMultiple;
 
-    @OneToMany
+    @OneToMany(fetch = FetchType.EAGER)
     @OrderColumn(name = "INDEX")
     @Getter
     @Setter

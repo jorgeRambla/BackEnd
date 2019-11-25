@@ -139,7 +139,7 @@ public class QuestionController {
 
         if (question.getUser().equals(user.get()) || user.get().getRoles().contains(User.Rol.REVIEWER)) {
 
-            if (questionRequest.getTitle() != null) {
+            if (questionRequest.getTitle() != null && !questionRequest.getTitle().equals("")) {
                 question.setTitle(questionRequest.getTitle());
             }
 
@@ -150,9 +150,8 @@ public class QuestionController {
             if (questionRequest.getOptions() != null && !questionRequest.getOptions().isEmpty() && questionRequest.getOptions().size() >= 2) {
                 questionService.deleteOptions(question.getOptions());
                 question.setOptions(questionRequest.getOptions().stream().map(OptionRequest::toEntity).collect(Collectors.toList()));
+                question.setIsMultiple(questionRequest.isMultiple());
             }
-
-            question.setIsMultiple(questionRequest.isMultiple());
 
             return ResponseEntity.status(HttpStatus.CREATED).body(new QuestionDto(questionService.update(question)));
         }
