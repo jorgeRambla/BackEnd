@@ -845,4 +845,74 @@ public class QuestionControllerTest {
             assertEquals(question.getOptions().get(iterator).getCorrect(), questionDto.getOptions().get(iterator).isCorrect());
         }
     }
+
+    @Test
+    public void test_DELETE_API_QUESTION_ID_500_1() {
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        headers.setBearerAuth(randomToken);
+
+        ResponseEntity response = restTemplate.exchange(URI.create("http://localhost:" + port + "/api/question/" + -1), HttpMethod.DELETE, new HttpEntity<>(headers), Object.class);
+        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
+    }
+
+    @Test
+    public void test_DELETE_API_QUESTION_ID_401_1() {
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        headers.setBearerAuth(userUserToken);
+
+        ResponseEntity response = restTemplate.exchange(URI.create("http://localhost:" + port + "/api/question/" + -1), HttpMethod.DELETE, new HttpEntity<>(headers), Object.class);
+        assertEquals(HttpStatus.UNAUTHORIZED, response.getStatusCode());
+    }
+
+    @Test
+    public void test_DELETE_API_QUESTION_ID_404_1() throws Exception {
+        test_POST_API_QUESTION_201_1();
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        headers.setBearerAuth(editorUserToken);
+
+        ResponseEntity response = restTemplate.exchange(URI.create("http://localhost:" + port + "/api/question/" + -1), HttpMethod.DELETE, new HttpEntity<>(headers), Object.class);
+        assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
+    }
+
+    @Test
+    public void test_DELETE_API_QUESTION_ID_EDITOR_1() throws Exception {
+        test_POST_API_QUESTION_201_1();
+        test_POST_API_QUESTION_201_2();
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        headers.setBearerAuth(editorUserToken);
+
+        List<Question> questions = questionService.findAll();
+
+        for(Question question : questions) {
+            ResponseEntity response = restTemplate.exchange(URI.create("http://localhost:" + port + "/api/question/" + question.getId()), HttpMethod.DELETE, new HttpEntity<>(headers), Object.class);
+            if(question.getUser().equals(editorUser)) {
+                assertEquals(HttpStatus.ACCEPTED, response.getStatusCode());
+            } else {
+                assertEquals(HttpStatus.UNAUTHORIZED, response.getStatusCode());
+            }
+        }
+    }
+
+    @Test
+    public void test_DELETE_API_QUESTION_ID_REVIEWER_1() throws Exception {
+        test_POST_API_QUESTION_201_1();
+        test_POST_API_QUESTION_201_2();
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        headers.setBearerAuth(reviewerUserToken);
+
+        List<Question> questions = questionService.findAll();
+
+        for(Question question : questions) {
+            ResponseEntity response = restTemplate.exchange(URI.create("http://localhost:" + port + "/api/question/" + question.getId()), HttpMethod.DELETE, new HttpEntity<>(headers), Object.class);
+            assertEquals(HttpStatus.ACCEPTED, response.getStatusCode());
+        }
+
+        assertEquals(0, questionService.findAll().size());
+    }
 }
