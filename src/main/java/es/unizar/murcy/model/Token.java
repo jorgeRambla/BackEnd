@@ -5,11 +5,12 @@ import lombok.*;
 
 import javax.persistence.*;
 import java.util.Date;
+import java.util.Objects;
 
 @Entity
 @Table(name = "murcy_token")
-@Data
 @AllArgsConstructor
+@ToString(callSuper = true)
 public class Token extends AuditableEntity {
 
     public static final int DEFAULT_EXPIRATION_MAX_DAYS = 2;
@@ -42,6 +43,11 @@ public class Token extends AuditableEntity {
     @Override
     public boolean equals(Object o) {
         return super.equals(o);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(super.hashCode());
     }
 
 }

@@ -5,12 +5,13 @@ import lombok.*;
 
 import javax.persistence.*;
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Set;
 
 @Entity
 @Table(name = "murcy_user")
-@Data
 @AllArgsConstructor
+@ToString(callSuper = true)
 public class User extends AuditableEntity {
 
     @Getter
@@ -69,5 +70,10 @@ public class User extends AuditableEntity {
     @Override
     public boolean equals(Object o) {
         return super.equals(o);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(super.hashCode());
     }
 }

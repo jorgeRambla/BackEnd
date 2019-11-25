@@ -4,12 +4,13 @@ import es.unizar.murcy.model.Workflow;
 import lombok.*;
 
 import javax.persistence.*;
+import java.util.Objects;
 
 @Entity
 @Table(name = "murcy_auditableWorkflow")
 @Inheritance(strategy = InheritanceType.JOINED)
-@Data
 @AllArgsConstructor
+@ToString(callSuper = true)
 public class AuditableWorkflowEntity extends AuditableEntity{
 
     @ManyToOne
@@ -43,6 +44,11 @@ public class AuditableWorkflowEntity extends AuditableEntity{
     @Override
     public boolean equals(Object o) {
         return super.equals(o);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(super.hashCode());
     }
 
 }

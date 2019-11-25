@@ -4,11 +4,12 @@ import es.unizar.murcy.model.extendable.jpa.AuditableWorkflowEntity;
 import lombok.*;
 
 import javax.persistence.*;
+import java.util.Objects;
 
 @Entity
 @Table(name = "murcy_editor_request")
-@Data
 @AllArgsConstructor
+@ToString(callSuper = true)
 public class EditorRequest extends AuditableWorkflowEntity {
 
     @ManyToOne
@@ -30,4 +31,8 @@ public class EditorRequest extends AuditableWorkflowEntity {
         return super.equals(o);
     }
 
+    @Override
+    public int hashCode() {
+        return Objects.hash(super.hashCode());
+    }
 }

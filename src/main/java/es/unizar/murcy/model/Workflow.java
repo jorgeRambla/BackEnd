@@ -7,13 +7,13 @@ import lombok.*;
 import javax.persistence.*;
 import java.util.Date;
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Set;
 
 @Entity
 @Table(name = "murcy_workflow")
-@Data
 @AllArgsConstructor
-@Builder
+@ToString(callSuper = true)
 public class Workflow extends AuditableEntity {
 
     @Getter
@@ -71,5 +71,10 @@ public class Workflow extends AuditableEntity {
     @Override
     public boolean equals(Object o) {
         return super.equals(o);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(super.hashCode());
     }
 }

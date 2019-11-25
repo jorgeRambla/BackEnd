@@ -5,11 +5,12 @@ import lombok.*;
 
 import javax.persistence.*;
 import java.util.List;
+import java.util.Objects;
 
 @Entity
 @Table(name = "murcy_question")
-@Data
 @AllArgsConstructor
+@ToString(callSuper = true)
 public class Question extends AuditableWorkflowEntity {
 
     public static final int MIN_OPTIONS = 2;
@@ -47,4 +48,10 @@ public class Question extends AuditableWorkflowEntity {
     public boolean equals(Object o) {
         return super.equals(o);
     }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(super.hashCode());
+    }
+
 }

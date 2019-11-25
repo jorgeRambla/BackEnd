@@ -36,7 +36,7 @@ public class QuestionController {
     public ResponseEntity create(HttpServletRequest request, @RequestBody QuestionRequest questionRequest) {
         Optional<User> user = authUtilities.getUserFromRequest(request, User.Rol.EDITOR, true);
 
-        if (!user.isPresent() || !(user.get().getRoles().contains(User.Rol.EDITOR) || user.get().getRoles().contains(User.Rol.REVIEWER))) {
+        if (!user.isPresent()) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ErrorMessageDto(HttpStatus.UNAUTHORIZED));
         }
 
