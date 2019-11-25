@@ -10,7 +10,6 @@ import java.util.List;
 @Table(name = "murcy_question")
 @Data
 @AllArgsConstructor
-@EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
 public class Question extends AuditableWorkflowEntity {
 
     public static final int MIN_OPTIONS = 2;
@@ -44,5 +43,8 @@ public class Question extends AuditableWorkflowEntity {
         super.setClassname(this.getClass().getName());
     }
 
-
+    @Override
+    public boolean equals(Object o) {
+        return super.equals(o);
+    }
 }

@@ -1,7 +1,6 @@
 package es.unizar.murcy.controllers;
 
 import es.unizar.murcy.controllers.utilities.AuthUtilities;
-import es.unizar.murcy.model.Option;
 import es.unizar.murcy.model.Question;
 import es.unizar.murcy.model.User;
 import es.unizar.murcy.model.dto.ErrorMessageDto;

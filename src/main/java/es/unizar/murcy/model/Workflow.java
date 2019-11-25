@@ -14,7 +14,6 @@ import java.util.Set;
 @Data
 @AllArgsConstructor
 @Builder
-@EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
 public class Workflow extends AuditableEntity {
 
     @Getter
@@ -67,5 +66,10 @@ public class Workflow extends AuditableEntity {
 
     public void addAuditableWorkflowEntity(AuditableWorkflowEntity auditableWorkflowEntity) {
         this.auditableWorkflowEntities.add(auditableWorkflowEntity);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        return super.equals(o);
     }
 }

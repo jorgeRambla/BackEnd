@@ -9,7 +9,6 @@ import javax.persistence.*;
 @Table(name = "murcy_editor_request")
 @Data
 @AllArgsConstructor
-@EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
 public class EditorRequest extends AuditableWorkflowEntity {
 
     @ManyToOne
@@ -24,6 +23,11 @@ public class EditorRequest extends AuditableWorkflowEntity {
     public EditorRequest() {
         super();
         super.setClassname(this.getClass().getName());
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        return super.equals(o);
     }
 
 }

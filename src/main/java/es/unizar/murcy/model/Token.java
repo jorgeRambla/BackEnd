@@ -10,7 +10,6 @@ import java.util.Date;
 @Table(name = "murcy_token")
 @Data
 @AllArgsConstructor
-@EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
 public class Token extends AuditableEntity {
 
     public static final int DEFAULT_EXPIRATION_MAX_DAYS = 2;
@@ -39,4 +38,10 @@ public class Token extends AuditableEntity {
     public Token() {
         super();
     }
+
+    @Override
+    public boolean equals(Object o) {
+        return super.equals(o);
+    }
+
 }

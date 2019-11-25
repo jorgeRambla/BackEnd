@@ -10,7 +10,6 @@ import javax.persistence.*;
 @Inheritance(strategy = InheritanceType.JOINED)
 @Data
 @AllArgsConstructor
-@EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
 public class AuditableWorkflowEntity extends AuditableEntity{
 
     @ManyToOne
@@ -41,5 +40,9 @@ public class AuditableWorkflowEntity extends AuditableEntity{
         this.closed = false;
     }
 
+    @Override
+    public boolean equals(Object o) {
+        return super.equals(o);
+    }
 
 }

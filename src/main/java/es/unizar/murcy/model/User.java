@@ -11,7 +11,6 @@ import java.util.Set;
 @Table(name = "murcy_user")
 @Data
 @AllArgsConstructor
-@EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
 public class User extends AuditableEntity {
 
     @Getter
@@ -65,5 +64,10 @@ public class User extends AuditableEntity {
 
     public void addRol(Rol rol) {
         this.roles.add(rol);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        return super.equals(o);
     }
 }

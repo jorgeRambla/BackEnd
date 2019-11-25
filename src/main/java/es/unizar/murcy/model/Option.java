@@ -10,7 +10,6 @@ import javax.persistence.*;
 @Table(name = "murcy_option")
 @Data
 @AllArgsConstructor
-@EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
 public class Option extends AuditableEntity {
 
     @Getter
@@ -23,5 +22,10 @@ public class Option extends AuditableEntity {
 
     public Option() {
         super();
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        return super.equals(o);
     }
 }
