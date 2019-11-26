@@ -2,7 +2,6 @@ package es.unizar.murcy.model;
 
 
 import es.unizar.murcy.model.User.Rol;
-import es.unizar.murcy.repository.UserRepository;
 import org.junit.Test;
 
 import java.util.Arrays;
@@ -11,7 +10,6 @@ import java.util.HashSet;
 import java.util.Set;
 
 import static junit.framework.TestCase.assertEquals;
-import static junit.framework.TestCase.assertTrue;
 
 public class UserTest {
 

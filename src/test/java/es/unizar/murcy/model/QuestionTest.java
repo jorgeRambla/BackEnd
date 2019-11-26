@@ -20,22 +20,6 @@ import static junit.framework.TestCase.assertTrue;
 @SpringBootTest(classes = MurcyApplication.class)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 public class QuestionTest {
-    
-    @Test
-    public void testSetIdQuestion(){
-        Question question=new Question();
-        question.setId(1);
-        assertEquals(question.getId(), 1);
-    }
-
-    @Test
-    public void testGetIdQuestion(){
-        Question question=new Question();
-        question.setId(1);
-        long id=question.getId();
-        assertEquals(id,1);
-    }
-
     @Test
     public void testSetTitleQuestion(){
         Question question=new Question();
@@ -83,40 +67,6 @@ public class QuestionTest {
         question.setDescription("Descripcion");
         String description=question.getDescription();
         assertEquals(description,"Descripcion");
-    }
-
-    @Test
-    public void testSetCreateDateQuestion(){
-        Question question=new Question();
-        Date date=new Date();
-        question.setCreateDate(date);
-        assertEquals(question.getCreateDate(),date);
-    }
-
-    @Test
-    public void testGetCreateDateQuestion(){
-        Question question=new Question();
-        Date date=new Date();
-        question.setCreateDate(date);
-        Date testDate=question.getCreateDate();
-        assertEquals(testDate,date);
-    }
-
-    @Test
-    public void testSetModifiedDateQuestion(){
-        Question question=new Question();
-        Date date=new Date();
-        question.setModifiedDate(date);
-        assertEquals(question.getModifiedDate(),date);
-    }
-
-    @Test
-    public void testGetModifiedDateQuestion(){
-        Question question=new Question();
-        Date date=new Date();
-        question.setModifiedDate(date);
-        Date testDate=question.getModifiedDate();
-        assertEquals(testDate,date);
     }
 
     @Test
@@ -170,50 +120,17 @@ public class QuestionTest {
     }
 
     @Test
-    public void testSetClosedQuestion() {
-        Question question=new Question();
-        question.setClosed(true);
-        boolean testMultiple=question.getClosed();
-        assertEquals(testMultiple,true);
-    }
-
-    @Test
-    public void testGetClosedQuestion() {
-        Question question=new Question();
-        question.setClosed(true);
-        boolean closed = question.getClosed();
-        assertEquals(closed,true);
-    }
-
-    @Test
-    public void testSetApprovedQuestion() {
-        Question question=new Question();
-        question.setApproved(true);
-        boolean testMultiple=question.getApproved();
-        assertEquals(testMultiple,true);
-    }
-
-    @Test
-    public void testGetApprovedQuestion() {
-        Question question=new Question();
-        question.setApproved(true);
-        boolean approved =question.getApproved();
-        assertEquals(approved,true);
-    }
-
-    @Test
     public void testSetListQuestion() {
         Question question=new Question();
         Option option=new Option();
         option.setCorrect(true);
-        option.setId(1);
-        option.setText("Opcion 1");
+        option.setTitle("option1");
         List<Option> list= new ArrayList<>();
         list.add(option);
         question.setOptions(list);
         List<Option> listTest=question.getOptions();
         Option optionTest=listTest.get(0);
-        assertEquals(optionTest.getId(),1);
+        assertEquals(optionTest.getTitle(),"option1");
     }
 
     @Test
@@ -221,14 +138,13 @@ public class QuestionTest {
         Question question=new Question();
         Option option=new Option();
         option.setCorrect(true);
-        option.setId(1);
-        option.setText("Opcion 1");
+        option.setTitle("option1");
         List<Option> list= new ArrayList<>();
         list.add(option);
         question.setOptions(list);
         List<Option> listTest=question.getOptions();
         Option optionTest=listTest.get(0);
-        assertEquals(optionTest.getId(),1);
+        assertEquals(optionTest.getTitle(),"option1");
     }
 
 
