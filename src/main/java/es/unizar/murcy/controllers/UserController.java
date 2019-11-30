@@ -92,12 +92,14 @@ public class UserController {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ErrorMessageDto(HttpStatus.UNAUTHORIZED));
         }
 
-        if(id == user.get().getId() || user.get().getRoles().contains(User.Rol.REVIEWER)) {
-            Optional<User> fetchedUser = userService.findUserById(id);
-            if(fetchedUser.isPresent()) {
-                return ResponseEntity.ok().body(new UserDto(fetchedUser.get()));
-            }
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ErrorMessageDto(HttpStatus.NOT_FOUND, "User not found"));
+        Optional<User> optionalUser = userService.findUserById(id);
+
+        if(!optionalUser.isPresent()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ErrorMessageDto(HttpStatus.NOT_FOUND));
+        }
+
+        if(optionalUser.get().getId() == user.get().getId() || user.get().getRoles().contains(User.Rol.REVIEWER)) {
+            return ResponseEntity.status(HttpStatus.OK).body(new UserDto(optionalUser.get()));
         }
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ErrorMessageDto(HttpStatus.UNAUTHORIZED));
     }
@@ -132,7 +134,7 @@ public class UserController {
 
         if(user.get().getId() == id || user.get().getRoles().contains(User.Rol.REVIEWER)) {
             if(updateUserRequest.getEmail() != null) {
-                if(userService.existsByEmail(updateUserRequest.getEmail())) {
+                if(!user.get().getEmail().equals(updateUserRequest.getEmail()) && userService.existsByEmail(updateUserRequest.getEmail())) {
                     return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ErrorMessageDto(HttpStatus.BAD_REQUEST, "Ya existe un usuario con ese email"));
                 } else {
                     finalUser.get().setEmail(updateUserRequest.getEmail());
@@ -140,7 +142,7 @@ public class UserController {
             }
 
             if(updateUserRequest.getUsername() != null) {
-                if(userService.existsByUsername(updateUserRequest.getUsername())) {
+                if(!user.get().getUsername().equals(updateUserRequest.getUsername()) && userService.existsByUsername(updateUserRequest.getUsername())) {
                     return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ErrorMessageDto(HttpStatus.BAD_REQUEST, "Ya existe un usuario con ese nombre"));
                 } else {
                     finalUser.get().setUsername(updateUserRequest.getUsername());

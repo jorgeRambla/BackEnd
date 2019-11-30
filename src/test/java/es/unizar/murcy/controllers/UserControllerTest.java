@@ -7,6 +7,7 @@ import es.unizar.murcy.model.User;
 import es.unizar.murcy.model.dto.QuestionDto;
 import es.unizar.murcy.model.dto.UserDto;
 import es.unizar.murcy.model.request.RegisterUserRequest;
+import es.unizar.murcy.model.request.UpdateUserRequest;
 import es.unizar.murcy.service.JwtUserDetailsService;
 import es.unizar.murcy.service.MailService;
 import es.unizar.murcy.service.MailServiceRule;
@@ -283,4 +284,157 @@ public class UserControllerTest {
         assertEquals(reviewerUser.getEmail(), userDto.getEmail());
     }
 
+    @Test
+    public void test_GET_api_user_info_ID_500_1() {
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        headers.setBearerAuth(randomToken);
+
+        ResponseEntity response = restTemplate.exchange(URI.create("http://localhost:" + port + "/api/user/info/" + -1), HttpMethod.GET, new HttpEntity<>(headers), Object.class);
+
+        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
+    }
+
+    @Test
+    public void test_GET_api_user_info_ID_401_1() {
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+
+        ResponseEntity response = restTemplate.exchange(URI.create("http://localhost:" + port + "/api/user/info/" + -1), HttpMethod.GET, new HttpEntity<>(headers), Object.class);
+
+        assertEquals(HttpStatus.UNAUTHORIZED, response.getStatusCode());
+    }
+
+    @Test
+    public void test_GET_api_user_info_ID_401_2() {
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        headers.setBearerAuth(userUserToken);
+
+        ResponseEntity response = restTemplate.exchange(URI.create("http://localhost:" + port + "/api/user/info/" + editorUser.getId()), HttpMethod.GET, new HttpEntity<>(headers), Object.class);
+
+        assertEquals(HttpStatus.UNAUTHORIZED, response.getStatusCode());
+    }
+
+    @Test
+    public void test_GET_api_user_info_ID_401_3() {
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        headers.setBearerAuth(editorUserToken);
+
+        ResponseEntity response = restTemplate.exchange(URI.create("http://localhost:" + port + "/api/user/info/" + reviewerUser.getId()), HttpMethod.GET, new HttpEntity<>(headers), Object.class);
+
+        assertEquals(HttpStatus.UNAUTHORIZED, response.getStatusCode());
+    }
+
+    @Test
+    public void test_GET_api_user_info_ID_404_1() {
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        headers.setBearerAuth(editorUserToken);
+
+        ResponseEntity response = restTemplate.exchange(URI.create("http://localhost:" + port + "/api/user/info/" + -1), HttpMethod.GET, new HttpEntity<>(headers), Object.class);
+
+        assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
+    }
+
+    @Test
+    public void test_GET_api_user_info_ID_200_1() throws Exception{
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        headers.setBearerAuth(editorUserToken);
+
+        ResponseEntity response = restTemplate.exchange(URI.create("http://localhost:" + port + "/api/user/info/" + editorUser.getId()), HttpMethod.GET, new HttpEntity<>(headers), Object.class);
+
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+
+        UserDto userDto = objectMapper.readValue(objectMapper.writeValueAsString(response.getBody()), UserDto.class);
+
+        assertEquals(editorUser.getId(), userDto.getId());
+    }
+
+    @Test
+    public void test_GET_api_user_info_ID_200_2() throws Exception{
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        headers.setBearerAuth(reviewerUserToken);
+
+        ResponseEntity response = restTemplate.exchange(URI.create("http://localhost:" + port + "/api/user/info/" + editorUser.getId()), HttpMethod.GET, new HttpEntity<>(headers), Object.class);
+
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+
+        UserDto userDto = objectMapper.readValue(objectMapper.writeValueAsString(response.getBody()), UserDto.class);
+
+        assertEquals(editorUser.getId(), userDto.getId());
+    }
+
+    @Test
+    public void test_PUT_api_user_info_ID_500_1() {
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        headers.setBearerAuth(randomToken);
+
+        ResponseEntity response = restTemplate.exchange(URI.create("http://localhost:" + port + "/api/user/info/" + -1), HttpMethod.PUT, new HttpEntity<>(headers), Object.class);
+
+        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
+    }
+
+    @Test
+    public void test_PUT_api_user_info_ID_404_1() throws Exception {
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        headers.setBearerAuth(userUserToken);
+
+        UpdateUserRequest updateUserRequest = new UpdateUserRequest("newMail@mail.com", "Test test", "testTest", new BCryptPasswordEncoder().encode("newPass"), new String[]{"USER", "EDITOR"});
+
+        ResponseEntity response = restTemplate.exchange(URI.create("http://localhost:" + port + "/api/user/info/" + -1), HttpMethod.PUT, new HttpEntity<>(objectMapper.writeValueAsString(updateUserRequest), headers), Object.class);
+
+        assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
+    }
+
+    @Test
+    public void test_PUT_api_user_info_ID_401_1() {
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+
+        ResponseEntity response = restTemplate.exchange(URI.create("http://localhost:" + port + "/api/user/info/" + -1), HttpMethod.PUT, new HttpEntity<>(headers), Object.class);
+
+        assertEquals(HttpStatus.UNAUTHORIZED, response.getStatusCode());
+    }
+
+    @Test
+    public void test_PUT_api_user_info_ID_401_2() throws Exception{
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        headers.setBearerAuth(userUserToken);
+
+        UpdateUserRequest updateUserRequest = new UpdateUserRequest("newMail@mail.com", "Test test", "testTest", new BCryptPasswordEncoder().encode("newPass"), new String[]{"USER", "EDITOR"});
+
+        ResponseEntity response = restTemplate.exchange(URI.create("http://localhost:" + port + "/api/user/info/" + editorUser.getId()), HttpMethod.PUT, new HttpEntity<>(objectMapper.writeValueAsString(updateUserRequest), headers), Object.class);
+        assertEquals(HttpStatus.UNAUTHORIZED, response.getStatusCode());
+    }
+
+    @Test
+    public void test_PUT_api_user_info_ID_400_1() throws Exception {
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        headers.setBearerAuth(userUserToken);
+
+        UpdateUserRequest updateUserRequest = new UpdateUserRequest(editorUser.getEmail(), "Test test", "testTest", new BCryptPasswordEncoder().encode("newPass"), new String[]{"USER", "EDITOR"});
+
+        ResponseEntity response = restTemplate.exchange(URI.create("http://localhost:" + port + "/api/user/info/" + userUser.getId()), HttpMethod.PUT, new HttpEntity<>(objectMapper.writeValueAsString(updateUserRequest), headers), Object.class);
+        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+    }
+
+    @Test
+    public void test_PUT_api_user_info_ID_400_2() throws Exception{
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        headers.setBearerAuth(userUserToken);
+
+        UpdateUserRequest updateUserRequest = new UpdateUserRequest("newTest@test.com", "Test test", editorUser.getUsername(), new BCryptPasswordEncoder().encode("newPass"), new String[]{"USER", "EDITOR"});
+
+        ResponseEntity response = restTemplate.exchange(URI.create("http://localhost:" + port + "/api/user/info/" + userUser.getId()), HttpMethod.PUT, new HttpEntity<>(objectMapper.writeValueAsString(updateUserRequest), headers), Object.class);
+        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+    }
 }
