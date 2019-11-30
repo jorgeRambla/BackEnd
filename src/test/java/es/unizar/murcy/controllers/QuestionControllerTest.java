@@ -83,6 +83,7 @@ public class QuestionControllerTest {
         this.randomToken = userUserToken.substring(0, userUserToken.length()-3).concat("aaa");
     }
 
+    @Test
     public void test_POST_API_QUESTION_401_1() {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
@@ -682,7 +683,7 @@ public class QuestionControllerTest {
         assertEquals(question.getTitle(), questionDto.getTitle());
         assertEquals(question.getDescription(), questionDto.getDescription());
         assertEquals(question.getIsMultiple(), questionDto.isMultiple());
-        assertEquals(question.getUser().getUsername(), questionDto.getUserName());
+        assertEquals(question.getUser().getUsername(), questionDto.getOwnerUserName());
         assertEquals(question.getOptions().size(), questionDto.getOptions().size());
         for(int iterator = 0; iterator < questionDto.getOptions().size(); iterator++) {
             assertEquals(question.getOptions().get(iterator).getTitle(), questionDto.getOptions().get(iterator).getTitle());
@@ -712,7 +713,7 @@ public class QuestionControllerTest {
         assertEquals(question.getTitle(), questionDto.getTitle());
         assertEquals(question.getDescription(), questionDto.getDescription());
         assertEquals(question.getIsMultiple(), questionDto.isMultiple());
-        assertEquals(question.getUser().getUsername(), questionDto.getUserName());
+        assertEquals(question.getUser().getUsername(), questionDto.getOwnerUserName());
         assertEquals(question.getOptions().size(), questionDto.getOptions().size());
         for(int iterator = 0; iterator < questionDto.getOptions().size(); iterator++) {
             assertEquals(question.getOptions().get(iterator).getTitle(), questionDto.getOptions().get(iterator).getTitle());
@@ -747,7 +748,7 @@ public class QuestionControllerTest {
         assertEquals(question.getTitle(), questionDto.getTitle());
         assertEquals(question.getDescription(), questionDto.getDescription());
         assertEquals(question.getIsMultiple(), questionDto.isMultiple());
-        assertEquals(question.getUser().getUsername(), questionDto.getUserName());
+        assertEquals(question.getUser().getUsername(), questionDto.getOwnerUserName());
         assertEquals(2, questionDto.getOptions().size());
         for(int iterator = 0; iterator < questionDto.getOptions().size(); iterator++) {
             assertNotEquals(question.getOptions().get(iterator).getTitle(), questionDto.getOptions().get(iterator).getTitle());
@@ -778,7 +779,7 @@ public class QuestionControllerTest {
         assertEquals("new", questionDto.getTitle());
         assertEquals(question.getDescription(), questionDto.getDescription());
         assertEquals(question.getIsMultiple(), questionDto.isMultiple());
-        assertEquals(question.getUser().getUsername(), questionDto.getUserName());
+        assertEquals(question.getUser().getUsername(), questionDto.getOwnerUserName());
         assertEquals(question.getOptions().size(), questionDto.getOptions().size());
         for(int iterator = 0; iterator < questionDto.getOptions().size(); iterator++) {
             assertEquals(question.getOptions().get(iterator).getTitle(), questionDto.getOptions().get(iterator).getTitle());
@@ -808,7 +809,7 @@ public class QuestionControllerTest {
         assertNotEquals(question.getDescription(), questionDto.getDescription());
         assertEquals("new", questionDto.getDescription());
         assertEquals(question.getIsMultiple(), questionDto.isMultiple());
-        assertEquals(question.getUser().getUsername(), questionDto.getUserName());
+        assertEquals(question.getUser().getUsername(), questionDto.getOwnerUserName());
         assertEquals(question.getOptions().size(), questionDto.getOptions().size());
         for(int iterator = 0; iterator < questionDto.getOptions().size(); iterator++) {
             assertEquals(question.getOptions().get(iterator).getTitle(), questionDto.getOptions().get(iterator).getTitle());
@@ -838,7 +839,7 @@ public class QuestionControllerTest {
         assertEquals(question.getTitle(), questionDto.getTitle());
         assertEquals(question.getDescription(), questionDto.getDescription());
         assertEquals(question.getIsMultiple(), questionDto.isMultiple());
-        assertEquals(question.getUser().getUsername(), questionDto.getUserName());
+        assertEquals(question.getUser().getUsername(), questionDto.getOwnerUserName());
         assertEquals(question.getOptions().size(), questionDto.getOptions().size());
         for(int iterator = 0; iterator < questionDto.getOptions().size(); iterator++) {
             assertEquals(question.getOptions().get(iterator).getTitle(), questionDto.getOptions().get(iterator).getTitle());

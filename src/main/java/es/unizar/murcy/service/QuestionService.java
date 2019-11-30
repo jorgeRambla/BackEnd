@@ -58,9 +58,13 @@ public class QuestionService {
         update(question);
     }
 
-    public void deleteOptions(List<Option> options) {
-        options.forEach(Option::delete);
-        optionRepository.saveAll(options);
+    public void deleteOptions(List<Option> options, Boolean hardDelete) {
+        if(hardDelete.equals(Boolean.TRUE)) {
+            optionRepository.deleteInBatch(options);
+        } else {
+            options.forEach(Option::delete);
+            optionRepository.saveAll(options);
+        }
     }
 
     public List<Question> findQuestionsByOwner(User user) {

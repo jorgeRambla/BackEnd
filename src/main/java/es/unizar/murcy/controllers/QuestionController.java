@@ -148,7 +148,7 @@ public class QuestionController {
             }
 
             if (questionRequest.getOptions() != null && !questionRequest.getOptions().isEmpty()) {
-                questionService.deleteOptions(question.getOptions());
+                questionService.deleteOptions(question.getOptions(), false);
                 question.setOptions(questionRequest.getOptions().stream().map(OptionRequest::toEntity).collect(Collectors.toList()));
                 question.setIsMultiple(questionRequest.isMultiple());
             }
@@ -174,7 +174,7 @@ public class QuestionController {
         }
         if (optionalQuestion.get().getUser().equals(user.get()) || user.get().getRoles().contains(User.Rol.REVIEWER)) {
 
-            questionService.deleteOptions(optionalQuestion.get().getOptions());
+            questionService.deleteOptions(optionalQuestion.get().getOptions(), false);
             questionService.delete(optionalQuestion.get());
             return ResponseEntity.status(HttpStatus.ACCEPTED).build();
         }
