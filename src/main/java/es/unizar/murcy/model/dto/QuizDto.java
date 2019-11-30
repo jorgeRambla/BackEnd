@@ -17,11 +17,11 @@ public class QuizDto {
 
     @Getter
     @Setter
-    private String title;
+    private String ownerUserName;
 
     @Getter
     @Setter
-    private String ownerUserName;
+    private String title;
 
     @Getter
     @Setter

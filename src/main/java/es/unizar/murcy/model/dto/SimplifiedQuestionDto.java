@@ -17,6 +17,10 @@ public class SimplifiedQuestionDto {
 
     @Getter
     @Setter
+    private List<OptionDto> options;
+
+    @Getter
+    @Setter
     private String title;
 
     @Getter
@@ -26,10 +30,6 @@ public class SimplifiedQuestionDto {
     @Getter
     @Setter
     private Boolean isMultiple;
-
-    @Getter
-    @Setter
-    private List<OptionDto> options;
 
     public SimplifiedQuestionDto(Question question) {
         this.id = question.getId();
