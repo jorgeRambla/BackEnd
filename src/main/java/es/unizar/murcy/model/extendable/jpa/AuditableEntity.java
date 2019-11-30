@@ -10,8 +10,8 @@ import java.util.Date;
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public class AuditableEntity{
 
-    private static final int MAX_DELETION_DAYS = 4;
-    private static final long MAX_DELETION_MILLIS = MAX_DELETION_DAYS * 24L * 3600L * 1000L;
+    protected static final int MAX_DELETION_DAYS = 4;
+    protected static final long MAX_DELETION_MILLIS = MAX_DELETION_DAYS * 24L * 3600L * 1000L;
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)

@@ -9,50 +9,33 @@ import lombok.ToString;
 import javax.persistence.*;
 import java.util.List;
 import java.util.Objects;
-import java.util.Set;
 
 @Entity
-@Table(name = "murcy_question")
+@Table(name = "murcy_quiz")
 @AllArgsConstructor
 @ToString(callSuper = true)
-public class Question extends AuditableWorkflowEntity {
-
-    public static final int MIN_OPTIONS = 2;
-    public static final int MAX_OPTIONS = 4;
+public class Quiz extends AuditableWorkflowEntity {
 
     @Getter
     @Setter
     private String title;
+
+    @Getter
+    @Setter
+    private String description;
 
     @ManyToOne
     @Getter
     @Setter
     private User user;
 
-    @Getter
-    @Setter
-    private String description;
-
-    @Getter
-    @Setter
-    private Boolean isMultiple;
-
-    @OneToMany(fetch = FetchType.EAGER,
-            cascade = {
-                    CascadeType.PERSIST,
-                    CascadeType.REFRESH
-                    })
+    @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     @OrderColumn(name = "INDEX")
     @Getter
     @Setter
-    private List<Option> options;
+    private List<Question> questions;
 
-    @ManyToMany(fetch = FetchType.EAGER)
-    @Getter
-    @Setter
-    private Set<Quiz> quizzes;
-
-    public Question() {
+    public Quiz() {
         super();
         super.setClassname(this.getClass().getName());
     }
@@ -66,5 +49,4 @@ public class Question extends AuditableWorkflowEntity {
     public int hashCode() {
         return Objects.hash(super.hashCode());
     }
-
 }

@@ -30,9 +30,7 @@ public class QuestionRequest {
     public boolean isUpdateValid() {
         return options == null || options.isEmpty() || (options.size() >= Question.MIN_OPTIONS && options.size() <= Question.MAX_OPTIONS);
     }
-
-
-
+    
     public Question toEntity() {
         Question question = new Question();
         question.setTitle(title);

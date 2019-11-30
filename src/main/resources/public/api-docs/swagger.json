@@ -604,6 +604,62 @@
         } ]
       }
     },
+    "/quiz/request/list" : {
+      "get" : {
+        "tags" : [ "quiz" ],
+        "summary" : "Get quiz requests",
+        "description" : "Get quiz request",
+        "parameters" : [ {
+          "name" : "closed",
+          "in" : "query",
+          "description" : "quiz is closed",
+          "required" : false,
+          "style" : "form",
+          "explode" : true,
+          "schema" : {
+            "type" : "boolean",
+            "default" : false
+          }
+        }, {
+          "name" : "approved",
+          "in" : "query",
+          "description" : "quiz is approved",
+          "required" : false,
+          "style" : "form",
+          "explode" : true,
+          "schema" : {
+            "type" : "boolean",
+            "default" : false
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "quiz requests",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ArrayQuizDto"
+                }
+              }
+            }
+          },
+          "403" : {
+            "description" : "Not authorized",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "deprecated" : true,
+        "security" : [ {
+          "bearerAuth" : [ ]
+        } ]
+      }
+    },
     "/question" : {
       "post" : {
         "tags" : [ "question" ],
@@ -884,6 +940,62 @@
         } ]
       }
     },
+    "/question/request/list" : {
+      "get" : {
+        "tags" : [ "question" ],
+        "summary" : "Get question requests",
+        "description" : "Get question request",
+        "parameters" : [ {
+          "name" : "closed",
+          "in" : "query",
+          "description" : "question is closed",
+          "required" : false,
+          "style" : "form",
+          "explode" : true,
+          "schema" : {
+            "type" : "boolean",
+            "default" : false
+          }
+        }, {
+          "name" : "approved",
+          "in" : "query",
+          "description" : "question is approved",
+          "required" : false,
+          "style" : "form",
+          "explode" : true,
+          "schema" : {
+            "type" : "boolean",
+            "default" : false
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "Questions requests",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ArrayQuestionDto"
+                }
+              }
+            }
+          },
+          "403" : {
+            "description" : "Not authorized",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "deprecated" : true,
+        "security" : [ {
+          "bearerAuth" : [ ]
+        } ]
+      }
+    },
     "/workflow/{id}/approve" : {
       "put" : {
         "tags" : [ "workflow" ],
@@ -1117,8 +1229,8 @@
     "/request/editor/list" : {
       "get" : {
         "tags" : [ "request" ],
-        "summary" : "Get current user requests",
-        "description" : "Get current user request if exists",
+        "summary" : "Get users requests",
+        "description" : "Get users request",
         "parameters" : [ {
           "name" : "closed",
           "in" : "query",
@@ -1177,7 +1289,6 @@
         "properties" : {
           "id" : {
             "type" : "integer",
-            "description" : "user id",
             "format" : "int64"
           },
           "username" : {
@@ -1205,7 +1316,6 @@
         "properties" : {
           "id" : {
             "type" : "integer",
-            "description" : "user id",
             "format" : "int64"
           },
           "title" : {
@@ -1237,8 +1347,10 @@
           },
           "ownerId" : {
             "type" : "integer",
-            "description" : "user id",
             "format" : "int64"
+          },
+          "ownerUsername" : {
+            "type" : "string"
           }
         }
       },
@@ -1253,7 +1365,6 @@
         "properties" : {
           "id" : {
             "type" : "integer",
-            "description" : "user id",
             "format" : "int64"
           },
           "title" : {
@@ -1280,7 +1391,6 @@
         "properties" : {
           "id" : {
             "type" : "integer",
-            "description" : "user id",
             "format" : "int64"
           },
           "title" : {
@@ -1317,8 +1427,10 @@
           },
           "ownerId" : {
             "type" : "integer",
-            "description" : "user id",
             "format" : "int64"
+          },
+          "ownerUsername" : {
+            "type" : "string"
           }
         }
       },
@@ -1400,6 +1512,10 @@
           "statusDate" : {
             "type" : "string",
             "format" : "date-time"
+          },
+          "statusBy" : {
+            "type" : "string",
+            "description" : "reviewer username"
           },
           "nextWorkflow" : {
             "$ref" : "#/components/schemas/WorkflowDto"
