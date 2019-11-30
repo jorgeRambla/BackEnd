@@ -2,9 +2,11 @@ package es.unizar.murcy.service;
 
 import es.unizar.murcy.model.Option;
 import es.unizar.murcy.model.Question;
+import es.unizar.murcy.model.Quiz;
 import es.unizar.murcy.model.User;
 import es.unizar.murcy.repository.OptionRepository;
 import es.unizar.murcy.repository.QuestionRepository;
+import es.unizar.murcy.repository.QuizRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -15,34 +17,31 @@ import java.util.Optional;
 
 @Service
 @Transactional
-public class QuestionService {
+public class QuizService {
 
     @Autowired
-    QuestionRepository questionRepository;
+    QuizRepository quizRepository;
 
-    @Autowired
-    OptionRepository optionRepository;
-
-    public List<Question> findAll() {
+    /*public List<Quiz> findAll() {
         return questionRepository.findQuestionsByDeletedIsFalse();
     }
 
-    public Optional<Question> findById(long id) {
+    public Optional<Quiz> findById(long id) {
         return questionRepository.findByIdAndDeletedIsFalse(id);
     }
 
-    public Optional<Question> findByTitle(String title) {
+    public Optional<Quiz> findByTitle(String title) {
         return questionRepository.findQuestionByTitleAndDeletedIsFalse(title);
     }
 
-    public Question update(Question question) {
+    public Quiz update(Quiz quiz) {
         question.getOptions().forEach(option -> option.setCreateDate(question.getCreateDate()));
-        question.setOptions(optionRepository.saveAll(question.getOptions()));
+        optionRepository.saveAll(question.getOptions());
         question.setModifiedDate(new Date());
         return questionRepository.save(question);
     }
 
-    public Question create(Question question) {
+    public Quiz create(Question question) {
         question.setOptions(optionRepository.saveAll(question.getOptions()));
         return questionRepository.save(question);
     }
@@ -52,7 +51,7 @@ public class QuestionService {
     }
 
 
-    public void delete(Question question) {
+    public void delete(Quiz quiz) {
         optionRepository.saveAll(question.getOptions());
         question.delete();
         update(question);
@@ -63,11 +62,11 @@ public class QuestionService {
         optionRepository.saveAll(options);
     }
 
-    public List<Question> findQuestionsByOwner(User user) {
+    public List<Quiz> findQuestionsByOwner(User user) {
         return findQuestionsByOwnerId(user.getId());
     }
 
-    public List<Question> findQuestionsByOwnerId(long userId) {
+    public List<Quiz> findQuestionsByOwnerId(long userId) {
         return questionRepository.findQuestionsByUser_IdAndDeletedIsFalse(userId);
-    }
+    }*/
 }

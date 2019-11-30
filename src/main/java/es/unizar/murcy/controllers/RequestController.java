@@ -115,7 +115,7 @@ public class RequestController {
 
             return ResponseEntity.status(HttpStatus.CREATED).build();
         } else {
-            if (editorRequest.get().isClosed()) {
+            if (editorRequest.get().isClosed() && !editorRequest.get().isApproved()) {
                 EditorRequest finalEditorRequest = editorRequest.get();
 
                 Workflow workflow = new Workflow();

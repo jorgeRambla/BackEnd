@@ -46,7 +46,7 @@ public class Workflow extends AuditableEntity {
     @Setter
     private User statusUser;
 
-    @OneToMany
+    @ManyToMany
     @Getter
     @Setter
     private Set<AuditableWorkflowEntity> auditableWorkflowEntities;

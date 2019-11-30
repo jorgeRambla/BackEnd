@@ -69,7 +69,6 @@ public class WorkflowController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ErrorMessageDto(HttpStatus.BAD_REQUEST));
         }
 
-
         Optional<Workflow> workflow = workflowService.denyById(id, user.get(), updateWorkflowStatusRequest.getResponse());
 
         if(workflow.isPresent()) {
