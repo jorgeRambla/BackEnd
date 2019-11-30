@@ -78,7 +78,7 @@ public class UserController {
         Optional<User> user = authUtilities.getUserFromRequest(request);
 
         if(user.isPresent()) {
-            return ResponseEntity.ok().body(new UserDto(user.get()));
+            return ResponseEntity.status(HttpStatus.OK).body(new UserDto(user.get()));
         }
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ErrorMessageDto(HttpStatus.UNAUTHORIZED));
     }

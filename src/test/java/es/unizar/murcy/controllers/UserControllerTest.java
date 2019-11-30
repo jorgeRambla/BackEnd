@@ -2,10 +2,16 @@ package es.unizar.murcy.controllers;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import es.unizar.murcy.components.JsonWebTokenUtil;
+import es.unizar.murcy.model.User;
+import es.unizar.murcy.model.dto.QuestionDto;
+import es.unizar.murcy.model.dto.UserDto;
 import es.unizar.murcy.model.request.RegisterUserRequest;
+import es.unizar.murcy.service.JwtUserDetailsService;
 import es.unizar.murcy.service.MailService;
 import es.unizar.murcy.service.MailServiceRule;
 import es.unizar.murcy.service.UserService;
+import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -15,9 +21,11 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.*;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.junit4.SpringRunner;
 
+import java.net.URI;
 import java.util.UUID;
 
 import static org.junit.Assert.assertEquals;
@@ -36,17 +44,55 @@ public class UserControllerTest {
     @Autowired
     private UserService userService;
 
+    @Autowired
+    private JwtUserDetailsService userDetailsService;
+
+    @Autowired
+    private JsonWebTokenUtil jsonWebTokenUtil;
+
     @Rule
     public MailServiceRule mailServiceRule = new MailServiceRule();
 
     private TestRestTemplate restTemplate = new TestRestTemplate();
 
+    private ObjectMapper objectMapper = new ObjectMapper();
+
+    private String randomToken;
+    private User userUser;
+    private String userUserToken;
+    private User editorUser;
+    private String editorUserToken;
+    private User reviewerUser;
+    private String reviewerUserToken;
+
+    @Before
+    public void setUp()  {
+        User user = new User("testUser", new BCryptPasswordEncoder().encode("test"), "testUser@test.com", "Test Test");
+        user.setConfirmed(true);
+        this.userUser = userService.create(user);
+
+        user = new User("testEditor", new BCryptPasswordEncoder().encode("test"), "testEditor@test.com", "Test Test");
+        user.setConfirmed(true);
+        user.addRol(User.Rol.EDITOR);
+        this.editorUser = userService.create(user);
+
+        user = new User("testReviewer", new BCryptPasswordEncoder().encode("test"), "testReviewer@test.com", "Test Test");
+        user.setConfirmed(true);
+        user.addRol(User.Rol.REVIEWER);
+        this.reviewerUser = userService.create(user);
+
+        this.userUserToken = jsonWebTokenUtil.generateToken(userDetailsService.loadUserByUsername(userUser.getUsername()));
+        this.editorUserToken = jsonWebTokenUtil.generateToken(userDetailsService.loadUserByUsername(editorUser.getUsername()));
+        this.reviewerUserToken = jsonWebTokenUtil.generateToken(userDetailsService.loadUserByUsername(reviewerUser.getUsername()));
+        this.randomToken = userUserToken.substring(0, userUserToken.length()-3).concat("aaa");
+    }
+
     @Test
     public void test_POST_api_user_201() throws JsonProcessingException {
 
         RegisterUserRequest registerUserRequest = new RegisterUserRequest();
-        registerUserRequest.setUsername("test");
-        registerUserRequest.setEmail("test@test.com");
+        registerUserRequest.setUsername("newTest");
+        registerUserRequest.setEmail("newTest@test.com");
         registerUserRequest.setFullName("Test test");
         registerUserRequest.setPassword("test");
 
@@ -60,7 +106,7 @@ public class UserControllerTest {
     }
 
     @Test
-    public void test_POST_api_user_400_incomplete_1() throws JsonProcessingException {
+    public void test_POST_api_user_400_1() throws JsonProcessingException {
 
         RegisterUserRequest registerUserRequest = new RegisterUserRequest();
         registerUserRequest.setEmail("test@test.com");
@@ -77,7 +123,7 @@ public class UserControllerTest {
     }
 
     @Test
-    public void test_POST_api_user_400_incomplete_2() throws JsonProcessingException {
+    public void test_POST_api_user_400_2() throws JsonProcessingException {
 
         RegisterUserRequest registerUserRequest = new RegisterUserRequest();
         registerUserRequest.setUsername("test");
@@ -94,7 +140,7 @@ public class UserControllerTest {
     }
 
     @Test
-    public void test_POST_api_user_400_incomplete_3() throws JsonProcessingException {
+    public void test_POST_api_user_400_3() throws JsonProcessingException {
 
         RegisterUserRequest registerUserRequest = new RegisterUserRequest();
         registerUserRequest.setUsername("test");
@@ -111,7 +157,7 @@ public class UserControllerTest {
     }
 
     @Test
-    public void test_POST_api_user_400_incomplete_4() throws JsonProcessingException {
+    public void test_POST_api_user_400_4() throws JsonProcessingException {
 
         RegisterUserRequest registerUserRequest = new RegisterUserRequest();
         registerUserRequest.setUsername("test");
@@ -128,19 +174,14 @@ public class UserControllerTest {
     }
 
     @Test
-    public void test_POST_api_user_400_duplicated_username() throws JsonProcessingException {
+    public void test_POST_api_user_400_5() throws JsonProcessingException {
 
 
         RegisterUserRequest registerUserRequest = new RegisterUserRequest();
-        registerUserRequest.setUsername("test2");
-        registerUserRequest.setEmail("test2@test.com");
+        registerUserRequest.setUsername("testUser");
+        registerUserRequest.setEmail("test@test.com");
         registerUserRequest.setFullName("Test test");
         registerUserRequest.setPassword("test");
-
-        userService.create(registerUserRequest.toEntity());
-
-        registerUserRequest.setUsername("test2");
-        registerUserRequest.setEmail("test@test.com");
 
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
@@ -152,10 +193,10 @@ public class UserControllerTest {
     }
 
     @Test
-    public void test_POST_api_user_400_duplicated_mail() throws JsonProcessingException {
+    public void test_POST_api_user_400_6() throws JsonProcessingException {
         RegisterUserRequest registerUserRequest = new RegisterUserRequest();
-        registerUserRequest.setUsername("test2");
-        registerUserRequest.setEmail("test2@test.com");
+        registerUserRequest.setUsername("test");
+        registerUserRequest.setEmail("testUser@test.com");
         registerUserRequest.setFullName("Test test");
         registerUserRequest.setPassword("test");
 
@@ -174,9 +215,72 @@ public class UserControllerTest {
     }
 
     @Test
-    public void test_GET_api_user_info() {
-        ResponseEntity response = restTemplate.getForEntity("http://localhost:" + port + "/api/user/info", Object.class);
+    public void test_GET_api_user_info_500_1() {
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        headers.setBearerAuth(randomToken);
+
+        ResponseEntity response = restTemplate.exchange(URI.create("http://localhost:" + port + "/api/user/info"), HttpMethod.GET, new HttpEntity<>(headers), Object.class);
+
+        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
+    }
+
+    @Test
+    public void test_GET_api_user_info_401_1() {
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+
+        ResponseEntity response = restTemplate.exchange(URI.create("http://localhost:" + port + "/api/user/info"), HttpMethod.GET, new HttpEntity<>(headers), Object.class);
 
         assertEquals(HttpStatus.UNAUTHORIZED, response.getStatusCode());
     }
+
+    @Test
+    public void test_GET_api_user_info_200_1() throws Exception {
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        headers.setBearerAuth(userUserToken);
+
+        ResponseEntity response = restTemplate.exchange(URI.create("http://localhost:" + port + "/api/user/info"), HttpMethod.GET, new HttpEntity<>(headers), Object.class);
+
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+
+        UserDto userDto = objectMapper.readValue(objectMapper.writeValueAsString(response.getBody()), UserDto.class);
+        assertEquals(userUser.getId(), userDto.getId());
+        assertEquals(userUser.getUsername(), userDto.getUserName());
+        assertEquals(userUser.getEmail(), userDto.getEmail());
+    }
+
+    @Test
+    public void test_GET_api_user_info_200_2() throws Exception {
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        headers.setBearerAuth(editorUserToken);
+
+        ResponseEntity response = restTemplate.exchange(URI.create("http://localhost:" + port + "/api/user/info"), HttpMethod.GET, new HttpEntity<>(headers), Object.class);
+
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+
+        UserDto userDto = objectMapper.readValue(objectMapper.writeValueAsString(response.getBody()), UserDto.class);
+        assertEquals(editorUser.getId(), userDto.getId());
+        assertEquals(editorUser.getUsername(), userDto.getUserName());
+        assertEquals(editorUser.getEmail(), userDto.getEmail());
+    }
+
+    @Test
+    public void test_GET_api_user_info_200_3() throws Exception {
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        headers.setBearerAuth(reviewerUserToken);
+
+        ResponseEntity response = restTemplate.exchange(URI.create("http://localhost:" + port + "/api/user/info"), HttpMethod.GET, new HttpEntity<>(headers), Object.class);
+
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+
+        UserDto userDto = objectMapper.readValue(objectMapper.writeValueAsString(response.getBody()), UserDto.class);
+        assertEquals(reviewerUser.getId(), userDto.getId());
+        assertEquals(reviewerUser.getUsername(), userDto.getUserName());
+        assertEquals(reviewerUser.getEmail(), userDto.getEmail());
+    }
+
 }
