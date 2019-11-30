@@ -706,6 +706,38 @@ public class QuizControllerTest {
         headers.setContentType(MediaType.APPLICATION_JSON);
         headers.setBearerAuth(reviewerUserToken);
 
+        QuizRequest quizRequest = new QuizRequest("", null, new HashSet<>());
+
+        Quiz quiz = quizService.findAll().get(0);
+
+        ResponseEntity response = restTemplate.exchange(URI.create("http://localhost:" + port + "/api/quiz/" + quiz.getId()), HttpMethod.PUT, new HttpEntity<>(objectMapper.writeValueAsString(quizRequest), headers), Object.class);
+
+        assertEquals(HttpStatus.CREATED, response.getStatusCode());
+
+        // Compare result after update
+        QuizDto quizDto = objectMapper.readValue(objectMapper.writeValueAsString(response.getBody()), QuizDto.class);
+        assertEquals(quiz.getId(), quizDto.getId());
+        assertEquals(quiz.getTitle(), quizDto.getTitle());
+        assertEquals(quiz.getDescription(), quizDto.getDescription());
+        assertEquals(quiz.getUser().getUsername(), quizDto.getOwnerUserName());
+        assertEquals(quiz.getUser().getId(), quizDto.getOwnerId());
+        assertEquals(quiz.getQuestions().size(), quizDto.getQuestions().size());
+        for(int iterator = 0; iterator < quizDto.getQuestions().size(); iterator++) {
+            assertEquals(quiz.getQuestions().get(iterator).getId(), quizDto.getQuestions().get(iterator).getId());
+            assertEquals(quiz.getQuestions().get(iterator).getTitle(), quizDto.getQuestions().get(iterator).getTitle());
+            assertEquals(quiz.getQuestions().get(iterator).getIsMultiple(), quizDto.getQuestions().get(iterator).getIsMultiple());
+            assertEquals(quiz.getQuestions().get(iterator).getDescription(), quizDto.getQuestions().get(iterator).getDescription());
+        }
+    }
+
+    @Test
+    public void test_PUT_API_QUIZ_ID_201_4() throws Exception {
+        test_POST_API_QUIZ_201_1();
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        headers.setBearerAuth(reviewerUserToken);
+
 
         Set<Long> questionIds = new HashSet<>();
         questionIds.add(question2.getId());
@@ -733,7 +765,7 @@ public class QuizControllerTest {
     }
 
     @Test
-    public void test_PUT_API_QUIZ_ID_201_4() throws Exception {
+    public void test_PUT_API_QUIZ_ID_201_5() throws Exception {
         test_POST_API_QUIZ_201_1();
 
         HttpHeaders headers = new HttpHeaders();
@@ -765,7 +797,7 @@ public class QuizControllerTest {
     }
 
     @Test
-    public void test_PUT_API_QUIZ_ID_201_5() throws Exception {
+    public void test_PUT_API_QUIZ_ID_201_6() throws Exception {
         test_POST_API_QUIZ_201_1();
 
         HttpHeaders headers = new HttpHeaders();
@@ -863,6 +895,6 @@ public class QuizControllerTest {
             assertEquals(HttpStatus.ACCEPTED, response.getStatusCode());
         }
 
-        assertEquals(0, questionService.findAll().size());
+        assertEquals(0, quizService.findAll().size());
     }
 }

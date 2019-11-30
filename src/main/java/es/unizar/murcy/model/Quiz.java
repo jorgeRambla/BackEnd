@@ -20,14 +20,14 @@ public class Quiz extends AuditableWorkflowEntity {
     @Setter
     private String title;
 
+    @Getter
+    @Setter
+    private String description;
+
     @ManyToOne
     @Getter
     @Setter
     private User user;
-
-    @Getter
-    @Setter
-    private String description;
 
     @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     @OrderColumn(name = "INDEX")
