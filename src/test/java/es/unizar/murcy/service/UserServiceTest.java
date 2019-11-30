@@ -40,7 +40,8 @@ public class UserServiceTest {
     @Test
     public void testFindAllUsers() {
         assertFalse(userService.findAllUsers().isEmpty());
-        assertEquals(userService.findAllUsers().size(), 2);
+        assertTrue(userService.findAllUsers().contains(user));
+        assertTrue(userService.findAllUsers().contains(confirmedUser));
     }
 
     @Test
