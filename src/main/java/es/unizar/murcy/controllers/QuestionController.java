@@ -3,12 +3,14 @@ package es.unizar.murcy.controllers;
 import es.unizar.murcy.controllers.utilities.AuthUtilities;
 import es.unizar.murcy.model.Question;
 import es.unizar.murcy.model.User;
+import es.unizar.murcy.model.Workflow;
 import es.unizar.murcy.model.dto.ErrorMessageDto;
 import es.unizar.murcy.model.dto.QuestionDto;
 import es.unizar.murcy.model.request.OptionRequest;
 import es.unizar.murcy.model.request.QuestionRequest;
 import es.unizar.murcy.service.QuestionService;
 import es.unizar.murcy.service.UserService;
+import es.unizar.murcy.service.WorkflowService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -31,6 +33,9 @@ public class QuestionController {
     @Autowired
     private UserService userService;
 
+    @Autowired
+    private WorkflowService workflowService;
+
     @CrossOrigin
     @PostMapping(value = "/api/question")
     public ResponseEntity create(HttpServletRequest request, @RequestBody QuestionRequest questionRequest) {
@@ -47,11 +52,21 @@ public class QuestionController {
         Question question = questionRequest.toEntity();
         question.setUser(user.get());
 
-        //EXPECTED: implement workflow, while -> is approved and closed
-        question.setApproved(true);
-        question.setClosed(true);
+        Workflow workflow = new Workflow();
+        workflow.setDescription(null);
+        workflow.setStatusUser(null);
+        workflow.setTitle("Solicitud publicar pregunta");
 
-        questionService.create(question);
+        workflow = workflowService.create(workflow);
+
+        question.setWorkflow(workflow);
+        question.setLastWorkflow(workflow);
+
+        question = questionService.create(question);
+
+        workflow.addAuditableWorkflowEntity(question);
+
+        workflowService.update(workflow);
 
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
@@ -151,6 +166,20 @@ public class QuestionController {
                 questionService.deleteOptions(question.getOptions(), false);
                 question.setOptions(questionRequest.getOptions().stream().map(OptionRequest::toEntity).collect(Collectors.toList()));
                 question.setIsMultiple(questionRequest.isMultiple());
+            }
+
+            if(question.isClosed()) {
+                Workflow workflow = new Workflow();
+                workflow.setDescription(null);
+                workflow.setStatusUser(null);
+                workflow.setTitle("Solicitud publicar pregunta");
+                workflow.addAuditableWorkflowEntity(question);
+                workflow = workflowService.create(workflow);
+
+                question.getLastWorkflow().setNextWorkflow(workflow);
+                workflowService.update(question.getLastWorkflow());
+
+                question.setLastWorkflow(workflow);
             }
 
             return ResponseEntity.status(HttpStatus.CREATED).body(new QuestionDto(questionService.update(question)));

@@ -35,7 +35,7 @@ public class QuestionDto {
     @Setter
     private boolean isMultiple;
 
-    /*@Getter
+    @Getter
     @Setter
     private WorkflowDto workflow;
 
@@ -49,7 +49,7 @@ public class QuestionDto {
 
     @Getter
     @Setter
-    private boolean closed;*/
+    private boolean closed;
 
     @Getter
     @Setter
@@ -63,13 +63,13 @@ public class QuestionDto {
         this.isMultiple = question.getIsMultiple();
         this.description = question.getDescription();
         this.options = question.getOptions().stream().map(OptionDto::new).collect(Collectors.toList());
-        /*if(question.getWorkflow() != null) {
+        if(question.getWorkflow() != null) {
             this.workflow = new WorkflowDto(question.getWorkflow());
         }
         if(question.getLastWorkflow() != null) {
             this.lastWorkflow = new WorkflowDto(question.getLastWorkflow());
         }
         this.approved = question.isApproved();
-        this.closed = question.isClosed();*/
+        this.closed = question.isClosed();
     }
 }
