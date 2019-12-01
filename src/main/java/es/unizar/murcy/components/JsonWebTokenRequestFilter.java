@@ -7,6 +7,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import es.unizar.murcy.service.JwtUserDetailsService;
+import io.jsonwebtoken.MalformedJwtException;
+import io.jsonwebtoken.SignatureException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -38,12 +40,13 @@ public class JsonWebTokenRequestFilter extends OncePerRequestFilter {
             try {
                 username = jsonWebTokenUtil.getUserNameFromToken(jwtToken);
             } catch (IllegalArgumentException e) {
-                logger.error("Unable to get JWT Token");
+                logger.debug("Unable to get JWT Token", e);
             } catch (ExpiredJwtException e) {
-                logger.error("JWT Token has expired");
-            } catch (Exception e) {
-                logger.error(e);
-                response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "The token is not valid.");
+                logger.debug("JWT Token has expired", e);
+            } catch (MalformedJwtException e) {
+                logger.debug("MalformedJwtException", e);
+            } catch (SignatureException e) {
+                logger.debug("SignatureException", e);
             }
         }
 

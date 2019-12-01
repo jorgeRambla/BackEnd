@@ -103,7 +103,7 @@ public class QuestionControllerTest {
         HttpEntity<String> entity = new HttpEntity<>(headers);
         ResponseEntity response = restTemplate.postForEntity("http://localhost:" + port + "/api/question", entity, Object.class);
 
-        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
+        assertEquals(HttpStatus.UNAUTHORIZED, response.getStatusCode());
     }
 
     @Test
@@ -259,7 +259,7 @@ public class QuestionControllerTest {
 
         ResponseEntity response = restTemplate.exchange(URI.create("http://localhost:" + port + "/api/question/list"), HttpMethod.GET, new HttpEntity<>(headers), Object.class);
 
-        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
+        assertEquals(HttpStatus.UNAUTHORIZED, response.getStatusCode());
     }
 
     @Test
@@ -337,7 +337,7 @@ public class QuestionControllerTest {
 
         ResponseEntity response = restTemplate.exchange(URI.create("http://localhost:" + port + "/api/question/list/" + reviewerUser.getId()), HttpMethod.GET, new HttpEntity<>(headers), Object.class);
 
-        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
+        assertEquals(HttpStatus.UNAUTHORIZED, response.getStatusCode());
     }
 
     @Test
@@ -427,7 +427,7 @@ public class QuestionControllerTest {
     }
 
     @Test
-    public void test_GET_API_QUESTION_ID_500_1() throws Exception {
+    public void test_GET_API_QUESTION_ID_401_1() throws Exception {
         test_POST_API_QUESTION_201_1();
         test_POST_API_QUESTION_201_2();
         HttpHeaders headers = new HttpHeaders();
@@ -435,11 +435,11 @@ public class QuestionControllerTest {
         headers.setBearerAuth(randomToken);
 
         ResponseEntity response = restTemplate.exchange(URI.create("http://localhost:" + port + "/api/question/" + -1), HttpMethod.GET, new HttpEntity<>(headers), Object.class);
-        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
+        assertEquals(HttpStatus.UNAUTHORIZED, response.getStatusCode());
     }
 
     @Test
-    public void test_GET_API_QUESTION_ID_401_1() throws Exception {
+    public void test_GET_API_QUESTION_ID_401_2() throws Exception {
         test_POST_API_QUESTION_201_1();
         test_POST_API_QUESTION_201_2();
         HttpHeaders headers = new HttpHeaders();
@@ -507,7 +507,7 @@ public class QuestionControllerTest {
     }
 
     @Test
-    public void test_PUT_API_QUESTION_ID_500_1() throws JsonProcessingException {
+    public void test_PUT_API_QUESTION_ID_401_1() throws JsonProcessingException {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
         headers.setBearerAuth(randomToken);
@@ -520,11 +520,11 @@ public class QuestionControllerTest {
         QuestionRequest questionRequest = new QuestionRequest("new", "desc", options);
 
         ResponseEntity response = restTemplate.exchange(URI.create("http://localhost:" + port + "/api/question/" + -1), HttpMethod.PUT, new HttpEntity<>(objectMapper.writeValueAsString(questionRequest), headers), Object.class);
-        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
+        assertEquals(HttpStatus.UNAUTHORIZED, response.getStatusCode());
     }
 
     @Test
-    public void test_PUT_API_QUESTION_ID_401_1() throws JsonProcessingException {
+    public void test_PUT_API_QUESTION_ID_401_2() throws JsonProcessingException {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
         headers.setBearerAuth(userUserToken);
@@ -908,17 +908,17 @@ public class QuestionControllerTest {
     }
 
     @Test
-    public void test_DELETE_API_QUESTION_ID_500_1() {
+    public void test_DELETE_API_QUESTION_ID_401_1() {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
         headers.setBearerAuth(randomToken);
 
         ResponseEntity response = restTemplate.exchange(URI.create("http://localhost:" + port + "/api/question/" + -1), HttpMethod.DELETE, new HttpEntity<>(headers), Object.class);
-        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
+        assertEquals(HttpStatus.UNAUTHORIZED, response.getStatusCode());
     }
 
     @Test
-    public void test_DELETE_API_QUESTION_ID_401_1() {
+    public void test_DELETE_API_QUESTION_ID_401_2() {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
         headers.setBearerAuth(userUserToken);

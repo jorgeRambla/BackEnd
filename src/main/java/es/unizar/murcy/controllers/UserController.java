@@ -20,6 +20,8 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
+import javax.mail.internet.AddressException;
+import javax.mail.internet.InternetAddress;
 import javax.servlet.http.HttpServletRequest;
 import java.util.Date;
 import java.util.Optional;
@@ -52,6 +54,10 @@ public class UserController {
     public ResponseEntity create(@RequestBody RegisterUserRequest registerUserRequest) {
         if(Boolean.FALSE.equals(registerUserRequest.isComplete())) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ErrorMessageDto(HttpStatus.BAD_REQUEST, "Faltan campos"));
+        }
+
+        if (Boolean.FALSE.equals(isMailValid(registerUserRequest.getEmail()))) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ErrorMessageDto(HttpStatus.BAD_REQUEST, "Email is not valid"));
         }
 
         if (userService.existsByUsername(registerUserRequest.getUsername())){
@@ -133,7 +139,13 @@ public class UserController {
         }
 
         if(user.get().getId() == id || user.get().getRoles().contains(User.Rol.REVIEWER)) {
-            if(updateUserRequest.getEmail() != null) {
+
+            if(Boolean.TRUE.equals(isUpdateValid(updateUserRequest.getEmail()))) {
+
+                if(Boolean.FALSE.equals(isMailValid(updateUserRequest.getEmail()))) {
+                    return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ErrorMessageDto(HttpStatus.BAD_REQUEST, "Email is not valid"));
+                }
+
                 if(!user.get().getEmail().equals(updateUserRequest.getEmail()) && userService.existsByEmail(updateUserRequest.getEmail())) {
                     return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ErrorMessageDto(HttpStatus.BAD_REQUEST, "Ya existe un usuario con ese email"));
                 } else {
@@ -141,7 +153,7 @@ public class UserController {
                 }
             }
 
-            if(updateUserRequest.getUsername() != null) {
+            if(Boolean.TRUE.equals(isUpdateValid(updateUserRequest.getUsername()))) {
                 if(!user.get().getUsername().equals(updateUserRequest.getUsername()) && userService.existsByUsername(updateUserRequest.getUsername())) {
                     return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ErrorMessageDto(HttpStatus.BAD_REQUEST, "Ya existe un usuario con ese nombre"));
                 } else {
@@ -154,22 +166,6 @@ public class UserController {
             return ResponseEntity.status(HttpStatus.CREATED).body(new UserDto(updatedUser));
         }
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ErrorMessageDto(HttpStatus.UNAUTHORIZED));
-    }
-
-    private User updateUserDataAuthorized(@RequestBody UpdateUserRequest updateUserRequest, User user, User finalUser) {
-        if(updateUserRequest.getFullName() != null) {
-            finalUser.setFullName(updateUserRequest.getFullName());
-        }
-
-        if(updateUserRequest.getPassword() != null) {
-            finalUser.setPassword(new BCryptPasswordEncoder().encode(updateUserRequest.getPassword()));
-        }
-
-        if(user.getRoles().contains(User.Rol.REVIEWER)) {
-            finalUser.setRoles(updateUserRequest.getRolSet());
-        }
-
-        return userService.update(finalUser);
     }
 
     @CrossOrigin
@@ -215,5 +211,36 @@ public class UserController {
         tokenService.delete(token.get());
 
         return ResponseEntity.status(HttpStatus.CREATED).build();
+    }
+
+    private User updateUserDataAuthorized(@RequestBody UpdateUserRequest updateUserRequest, User user, User finalUser) {
+        if(updateUserRequest.getFullName() != null && !updateUserRequest.getFullName().equals("")) {
+            finalUser.setFullName(updateUserRequest.getFullName());
+        }
+
+        if(updateUserRequest.getPassword() != null && !updateUserRequest.getPassword().equals("")) {
+            finalUser.setPassword(new BCryptPasswordEncoder().encode(updateUserRequest.getPassword()));
+        }
+
+        if(user.getRoles().contains(User.Rol.REVIEWER)) {
+            finalUser.setRoles(updateUserRequest.getRolSet());
+        }
+
+        return userService.update(finalUser);
+    }
+
+    private Boolean isMailValid(String mail) {
+        boolean isValid = true;
+        try {
+            InternetAddress emailAddr = new InternetAddress(mail);
+            emailAddr.validate();
+        } catch (AddressException ex) {
+            isValid = false;
+        }
+        return isValid;
+    }
+
+    private Boolean isUpdateValid(String value) {
+        return value != null && !value.equals("");
     }
 }
