@@ -133,7 +133,7 @@ public class QuizControllerTest {
         HttpEntity<String> entity = new HttpEntity<>(headers);
         ResponseEntity response = restTemplate.postForEntity("http://localhost:" + port + "/api/quiz", entity, Object.class);
 
-        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
+        assertEquals(HttpStatus.UNAUTHORIZED, response.getStatusCode());
     }
 
     @Test
@@ -275,7 +275,7 @@ public class QuizControllerTest {
 
         ResponseEntity response = restTemplate.exchange(URI.create("http://localhost:" + port + "/api/quiz/list"), HttpMethod.GET, new HttpEntity<>(headers), Object.class);
 
-        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
+        assertEquals(HttpStatus.UNAUTHORIZED, response.getStatusCode());
     }
 
     @Test
@@ -353,7 +353,7 @@ public class QuizControllerTest {
 
         ResponseEntity response = restTemplate.exchange(URI.create("http://localhost:" + port + "/api/quiz/list/" + reviewerUser.getId()), HttpMethod.GET, new HttpEntity<>(headers), Object.class);
 
-        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
+        assertEquals(HttpStatus.UNAUTHORIZED, response.getStatusCode());
     }
 
     @Test
@@ -442,7 +442,7 @@ public class QuizControllerTest {
     }
 
     @Test
-    public void test_GET_API_QUIZ_ID_500_1() throws Exception {
+    public void test_GET_API_QUIZ_ID_401_1() throws Exception {
         test_POST_API_QUIZ_201_1();
         test_POST_API_QUIZ_201_2();
         HttpHeaders headers = new HttpHeaders();
@@ -450,11 +450,11 @@ public class QuizControllerTest {
         headers.setBearerAuth(randomToken);
 
         ResponseEntity response = restTemplate.exchange(URI.create("http://localhost:" + port + "/api/quiz/" + -1), HttpMethod.GET, new HttpEntity<>(headers), Object.class);
-        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
+        assertEquals(HttpStatus.UNAUTHORIZED, response.getStatusCode());
     }
 
     @Test
-    public void test_GET_API_QUIZ_ID_401_1() throws Exception {
+    public void test_GET_API_QUIZ_ID_401_2() throws Exception {
         test_POST_API_QUIZ_201_1();
         test_POST_API_QUIZ_201_2();
         HttpHeaders headers = new HttpHeaders();
@@ -522,7 +522,7 @@ public class QuizControllerTest {
     }
 
     @Test
-    public void test_PUT_API_QUIZ_ID_500_1() throws JsonProcessingException {
+    public void test_PUT_API_QUIZ_ID_401_1() throws JsonProcessingException {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
         headers.setBearerAuth(randomToken);
@@ -534,11 +534,11 @@ public class QuizControllerTest {
         QuizRequest quizRequest = new QuizRequest("title", "description", questionIds);
 
         ResponseEntity response = restTemplate.exchange(URI.create("http://localhost:" + port + "/api/quiz/" + -1), HttpMethod.PUT, new HttpEntity<>(objectMapper.writeValueAsString(quizRequest), headers), Object.class);
-        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
+        assertEquals(HttpStatus.UNAUTHORIZED, response.getStatusCode());
     }
 
     @Test
-    public void test_PUT_API_QUIZ_ID_401_1() throws JsonProcessingException {
+    public void test_PUT_API_QUIZ_ID_401_2() throws JsonProcessingException {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
         headers.setBearerAuth(userUserToken);
@@ -829,17 +829,17 @@ public class QuizControllerTest {
     }
 
     @Test
-    public void test_DELETE_API_QUIZ_ID_500_1() {
+    public void test_DELETE_API_QUIZ_ID_401_1() {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
         headers.setBearerAuth(randomToken);
 
         ResponseEntity response = restTemplate.exchange(URI.create("http://localhost:" + port + "/api/quiz/" + -1), HttpMethod.DELETE, new HttpEntity<>(headers), Object.class);
-        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
+        assertEquals(HttpStatus.UNAUTHORIZED, response.getStatusCode());
     }
 
     @Test
-    public void test_DELETE_API_QUIZ_ID_401_1() {
+    public void test_DELETE_API_QUIZ_ID_401_2() {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
         headers.setBearerAuth(userUserToken);
