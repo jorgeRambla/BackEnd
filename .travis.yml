@@ -20,6 +20,7 @@ addons:
       secure: $SONAR_TOKEN
 
 script:
+- git fetch --unshallow
 - ./gradlew clean build
 - ./gradlew test jacocoTestReport
 - ./gradlew jacocoTestCoverageVerification #Check if % code is covered by tests
