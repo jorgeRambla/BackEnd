@@ -23,11 +23,17 @@ apply plugin: 'io.spring.dependency-management'
 
 apply plugin: 'jacoco'
 
+jacocoTestReport {
+    reports {
+        xml.enabled true
+    }
+}
+
 jacocoTestCoverageVerification {
     violationRules {
         rule {
             limit {
-                minimum = 0.1
+                minimum = 0.4
             }
         }
     }
