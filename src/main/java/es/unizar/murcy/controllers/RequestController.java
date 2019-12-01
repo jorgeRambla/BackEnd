@@ -7,7 +7,6 @@ import es.unizar.murcy.model.Workflow;
 import es.unizar.murcy.model.dto.EditorRequestDto;
 import es.unizar.murcy.model.dto.ErrorMessageDto;
 import es.unizar.murcy.model.request.EditorRequestRequest;
-import es.unizar.murcy.model.request.ManageEditorRequestRequest;
 import es.unizar.murcy.service.EditorRequestService;
 import es.unizar.murcy.service.WorkflowService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -109,11 +108,14 @@ public class RequestController {
             finalEditorRequest.setWorkflow(workflow);
             finalEditorRequest.setLastWorkflow(workflow);
 
-            editorRequestService.create(finalEditorRequest);
+            EditorRequest updatedEditorRequest = editorRequestService.create(finalEditorRequest);
+            workflow.addAuditableWorkflowEntity(updatedEditorRequest);
+
+            workflowService.update(workflow);
 
             return ResponseEntity.status(HttpStatus.CREATED).build();
         } else {
-            if (editorRequest.get().isClosed()) {
+            if (editorRequest.get().isClosed() && !editorRequest.get().isApproved()) {
                 EditorRequest finalEditorRequest = editorRequest.get();
 
                 Workflow workflow = new Workflow();
@@ -131,8 +133,10 @@ public class RequestController {
                 finalEditorRequest.setLastWorkflow(workflow);
                 finalEditorRequest.setClosed(false);
 
-                editorRequestService.update(finalEditorRequest);
+                EditorRequest updatedEditorRequest = editorRequestService.update(finalEditorRequest);
+                workflow.addAuditableWorkflowEntity(updatedEditorRequest);
 
+                workflowService.update(workflow);
                 return ResponseEntity.status(HttpStatus.CREATED).build();
             } else if (editorRequest.get().isApproved()) {
                 return ResponseEntity.status(HttpStatus.CONFLICT).body(new ErrorMessageDto(HttpStatus.CONFLICT, "Request is approved"));
@@ -160,12 +164,5 @@ public class RequestController {
         Set<EditorRequest> editorRequestSet = editorRequestService.findByClosedAndApproved(isClosed, isApproved);
 
         return ResponseEntity.status(HttpStatus.OK).body(editorRequestSet.stream().map(EditorRequestDto::new).collect(Collectors.toList()));
-    }
-
-    @CrossOrigin
-    @PutMapping("/api/request/editor/manage")
-    public ResponseEntity updateRequestStatus(HttpServletRequest request, @RequestBody ManageEditorRequestRequest manageEditorRequestRequest) {
-
-        return ResponseEntity.status(HttpStatus.NOT_IMPLEMENTED).build();
     }
 }

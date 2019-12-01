@@ -25,7 +25,7 @@ public class TokenCleanUpTask {
 
     @Scheduled(cron = "0 0/30 0 * * ?")
     public void cleanExpiredTokens() {
-        List<Token> tokens = tokenService.getExpiratedTokens(new Date());
+        List<Token> tokens = tokenService.getExpiredTokens(new Date());
         if(!tokens.isEmpty()) {
             log.info("-- [TAREA PROGRAMADA] [INICIO] LIMPIEZA DE TOKENS [{}] --", tokens.size());
             for(Token token : tokens) {

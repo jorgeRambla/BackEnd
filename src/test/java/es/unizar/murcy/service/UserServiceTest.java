@@ -1,25 +1,24 @@
-package es.unizar.murcy.repository;
+package es.unizar.murcy.service;
 
 import es.unizar.murcy.MurcyApplication;
 import es.unizar.murcy.model.User;
-import es.unizar.murcy.service.UserService;
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import java.util.Date;
 
 import static junit.framework.TestCase.assertTrue;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.*;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = MurcyApplication.class)
-public class EditorRequestRepositoryTest {
+@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
+public class UserServiceTest {
 
     @Autowired
     UserService userService;
@@ -38,16 +37,11 @@ public class EditorRequestRepositoryTest {
         this.confirmedUser = userService.create(newConfirmedUser);
     }
 
-    @After
-    public void after() {
-        userService.deleteUser(user);
-        userService.deleteUser(confirmedUser);
-    }
-
     @Test
     public void testFindAllUsers() {
         assertFalse(userService.findAllUsers().isEmpty());
-        assertEquals(userService.findAllUsers().size(), 2);
+        assertTrue(userService.findAllUsers().contains(user));
+        assertTrue(userService.findAllUsers().contains(confirmedUser));
     }
 
     @Test
@@ -78,37 +72,50 @@ public class EditorRequestRepositoryTest {
         assertTrue(Math.abs(user.getModifiedDate().getTime() - updateDate.getTime()) < 50);
     }
 
-/*
-    public void deleteUser(User user) {
-        deleteUser(user.getId());
+    @Test
+    public void testDelete() {
+        assertTrue(userService.findUserByUserName(user.getUsername()).isPresent());
+        userService.deleteUser(user);
+        assertFalse(userService.findUserByUserName(user.getUsername()).isPresent());
+        assertTrue(userService.findUserByUserName(confirmedUser.getUsername()).isPresent());
     }
 
-    public void deleteUser(long id) {
-        userRepository.deleteById(id);
+    @Test
+    public void testDeleteById() {
+        assertTrue(userService.findUserByUserName(user.getUsername()).isPresent());
+        userService.deleteUser(user.getId());
+        assertFalse(userService.findUserByUserName(user.getUsername()).isPresent());
+        assertTrue(userService.findUserByUserName(confirmedUser.getUsername()).isPresent());
     }
 
-    public boolean existsByUsername(String username) {
-        return userRepository.existsByUsername(username);
+    @Test
+    public void testExistsByUserName() {
+        assertTrue(userService.existsByUsername(user.getUsername()));
+        assertTrue(userService.existsByUsername(confirmedUser.getUsername()));
+        assertFalse(userService.existsByUsername("NotExists"));
+
     }
 
-    public boolean existsByEmail(String email) {
-        return userRepository.existsByEmail(email);
+    @Test
+    public void testExistsByEmail() {
+        assertTrue(userService.existsByEmail(user.getEmail()));
+        assertFalse(userService.existsByEmail("NotExists@mail.com"));
     }
 
-    public User create(User user) {
-        return userRepository.save(user);
+    @Test
+    public void testConfirmUser() {
+        assertFalse(user.getConfirmed());
+        assertTrue(userService.confirmUser(user).getConfirmed());
     }
 
-    public User confirmUser(long userId) {
-        Optional<User> user = findUserById(userId);
-        if(user.isPresent()) {
-            return confirmUser(user.get());
-        }
-        return null;
+    @Test
+    public void testConfirmUserById() {
+        assertFalse(user.getConfirmed());
+        assertTrue(userService.confirmUser(user.getId()).getConfirmed());
     }
 
-    public User confirmUser(User user) {
-        user.setConfirmed(true);
-        return update(user);
-    }*/
+    @Test
+    public void testConfirmUserById_notFound() {
+        assertNull(userService.confirmUser(-1));
+    }
 }

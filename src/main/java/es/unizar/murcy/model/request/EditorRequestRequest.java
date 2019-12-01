@@ -1,20 +1,13 @@
 package es.unizar.murcy.model.request;
 
+import lombok.*;
+
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class EditorRequestRequest {
+
+    @Getter
+    @Setter
     private String description;
-
-    public EditorRequestRequest() {
-    }
-
-    public EditorRequestRequest(String description) {
-        this.description = description;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
 }

@@ -50,7 +50,7 @@ public class TokenService {
         return tokenRepository.findTokenByUser(user);
     }
 
-    public List<Token> getExpiratedTokens(Date currentDate) {
+    public List<Token> getExpiredTokens(Date currentDate) {
         return tokenRepository.findTokenByExpirationDateBefore(currentDate);
     }
 }

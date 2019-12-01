@@ -31,6 +31,22 @@ public class AuthUtilities {
         return userService.findUserByUserName(username);
     }
 
+    public Optional<User> getUserFromRequest(HttpServletRequest request, User.Rol rol, boolean canBeReviewer) {
+        final String authorization = request.getHeader("Authorization");
+
+        final String username = jsonWebTokenUtil.getUserNameFromToken(authorization.substring(7));
+
+        Optional<User> user = userService.findUserByUserName(username);
+        if(user.isPresent()) {
+            if(user.get().getRoles().contains(rol) || (canBeReviewer && user.get().getRoles().contains(User.Rol.REVIEWER))) {
+                return user;
+            } else {
+                return Optional.empty();
+            }
+        }
+        return user;
+    }
+
     public void authenticate(String username, String password) {
         authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(username, password));
     }

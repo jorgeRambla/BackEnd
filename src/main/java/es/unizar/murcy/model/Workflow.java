@@ -1,125 +1,80 @@
 package es.unizar.murcy.model;
 
+import es.unizar.murcy.model.extendable.jpa.AuditableEntity;
+import es.unizar.murcy.model.extendable.jpa.AuditableWorkflowEntity;
+import lombok.*;
+
 import javax.persistence.*;
 import java.util.Date;
+import java.util.HashSet;
+import java.util.Objects;
+import java.util.Set;
 
 @Entity
 @Table(name = "murcy_workflow")
-public class Workflow {
+@AllArgsConstructor
+@ToString(callSuper = true)
+public class Workflow extends AuditableEntity {
+
+    @Getter
+    @Setter
+    private Status status;
+
+    @Getter
+    @Setter
+    private Date statusDate;
+
+    @Getter
+    @Setter
+    private String title;
+
+    @Getter
+    @Setter
+    private String description;
+
+    @Getter
+    @Setter
+    private String response;
+
+    @OneToOne
+    @Getter
+    @Setter
+    private Workflow nextWorkflow;
+
+    @ManyToOne
+    @Getter
+    @Setter
+    private User statusUser;
+
+    @ManyToMany
+    @Getter
+    @Setter
+    private Set<AuditableWorkflowEntity> auditableWorkflowEntities;
+
+    public Workflow() {
+        super();
+        Date now = new Date();
+        this.nextWorkflow = null;
+        this.status = Status.PENDING;
+        this.statusDate = now;
+        this.auditableWorkflowEntities = new HashSet<>();
+    }
+
     public enum Status {
         APPROVED, PENDING, DENIED, DRAFT, DRAFT_FROM_APPROVED, EXPIRED, INCOMPLETE, SCHEDULED
     }
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
-
-    private Status status;
-
-    private Date statusDate;
-
-    private Date createDate;
-
-    private Date modifiedDate;
-
-    private String title;
-
-    private String description;
-
-    private String response;
-
-    @OneToOne
-    private Workflow nextWorkflow;
-
-    @ManyToOne
-    private User statusUser;
-
-    public Workflow() {
-        Date now = new Date();
-        this.nextWorkflow = null;
-        this.createDate = now;
-        this.modifiedDate = now;
-        this.status = Status.PENDING;
-        this.statusDate = now;
+    public void addAuditableWorkflowEntity(AuditableWorkflowEntity auditableWorkflowEntity) {
+        this.auditableWorkflowEntities.add(auditableWorkflowEntity);
     }
 
-    public long getId() {
-        return id;
+    @Override
+    public boolean equals(Object o) {
+        return super.equals(o);
     }
 
-    public void setId(long id) {
-        this.id = id;
-    }
-
-    public Status getStatus() {
-        return status;
-    }
-
-    public void setStatus(Status status) {
-        this.status = status;
-    }
-
-    public Date getStatusDate() {
-        return statusDate;
-    }
-
-    public void setStatusDate(Date statusDate) {
-        this.statusDate = statusDate;
-    }
-
-    public Date getCreateDate() {
-        return createDate;
-    }
-
-    public void setCreateDate(Date createDate) {
-        this.createDate = createDate;
-    }
-
-    public Date getModifiedDate() {
-        return modifiedDate;
-    }
-
-    public void setModifiedDate(Date modifiedDate) {
-        this.modifiedDate = modifiedDate;
-    }
-
-    public String getTitle() {
-        return title;
-    }
-
-    public void setTitle(String title) {
-        this.title = title;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
-    public String getResponse() {
-        return response;
-    }
-
-    public void setResponse(String response) {
-        this.response = response;
-    }
-
-    public Workflow getNextWorkflow() {
-        return nextWorkflow;
-    }
-
-    public void setNextWorkflow(Workflow nextWorkflow) {
-        this.nextWorkflow = nextWorkflow;
-    }
-
-    public User getStatusUser() {
-        return statusUser;
-    }
-
-    public void setStatusUser(User statusUser) {
-        this.statusUser = statusUser;
+    @Override
+    public int hashCode() {
+        return Objects.hash(super.hashCode());
     }
 }

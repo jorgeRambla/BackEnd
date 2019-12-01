@@ -7,6 +7,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import es.unizar.murcy.service.JwtUserDetailsService;
+import io.jsonwebtoken.MalformedJwtException;
+import io.jsonwebtoken.SignatureException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -33,21 +35,25 @@ public class JsonWebTokenRequestFilter extends OncePerRequestFilter {
         String username = null;
         String jwtToken = null;
 
-        if (requestTokenHeader != null) {
+        if (requestTokenHeader != null && requestTokenHeader.startsWith("Bearer ")) {
             jwtToken = requestTokenHeader.substring(7);
             try {
                 username = jsonWebTokenUtil.getUserNameFromToken(jwtToken);
             } catch (IllegalArgumentException e) {
-                logger.error("Unable to get JWT Token");
+                logger.debug("Unable to get JWT Token", e);
             } catch (ExpiredJwtException e) {
-                logger.error("JWT Token has expired");
+                logger.debug("JWT Token has expired", e);
+            } catch (MalformedJwtException e) {
+                logger.debug("MalformedJwtException", e);
+            } catch (SignatureException e) {
+                logger.debug("SignatureException", e);
             }
         }
 
         if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
             UserDetails userDetails = this.jwtUserDetailsService.loadUserByUsername(username);
 
-            if (jsonWebTokenUtil.validateToken(jwtToken, userDetails).equals(Boolean.TRUE)) {
+            if (userDetails != null && jsonWebTokenUtil.validateToken(jwtToken, userDetails).equals(Boolean.TRUE)) {
                 UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken = new UsernamePasswordAuthenticationToken(
                         userDetails, null, userDetails.getAuthorities());
                 usernamePasswordAuthenticationToken
