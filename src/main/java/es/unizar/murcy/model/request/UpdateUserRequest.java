@@ -4,6 +4,7 @@ import es.unizar.murcy.model.User;
 import lombok.*;
 
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -29,6 +30,9 @@ public class UpdateUserRequest {
     private String[] rol;
 
     public Set<User.Rol> getRolSet() {
+        if(rol == null) {
+            return new HashSet<>();
+        }
         return Arrays.stream(rol).map(User.Rol::valueOf).collect(Collectors.toSet());
     }
 }

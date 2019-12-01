@@ -4,7 +4,6 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import es.unizar.murcy.components.JsonWebTokenUtil;
 import es.unizar.murcy.model.User;
-import es.unizar.murcy.model.dto.QuestionDto;
 import es.unizar.murcy.model.dto.UserDto;
 import es.unizar.murcy.model.request.RegisterUserRequest;
 import es.unizar.murcy.model.request.UpdateUserRequest;
@@ -27,9 +26,9 @@ import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import java.net.URI;
-import java.util.UUID;
+import java.util.Optional;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.*;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -461,14 +460,292 @@ public class UserControllerTest {
     }
 
     @Test
-    public void test_PUT_api_user_info_ID_201_3() throws Exception{
+    public void test_PUT_api_user_info_ID_400_4() throws Exception{
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
         headers.setBearerAuth(reviewerUserToken);
 
-        UpdateUserRequest updateUserRequest = new UpdateUserRequest(null, null, editorUser.getUsername(), new BCryptPasswordEncoder().encode("newPass"), new String[]{"USER", "EDITOR"});
+        UpdateUserRequest updateUserRequest = new UpdateUserRequest("novalidmail", "Test test", editorUser.getUsername(), new BCryptPasswordEncoder().encode("newPass"), new String[]{"USER", "EDITOR"});
 
         ResponseEntity response = restTemplate.exchange(URI.create("http://localhost:" + port + "/api/user/info/" + userUser.getId()), HttpMethod.PUT, new HttpEntity<>(objectMapper.writeValueAsString(updateUserRequest), headers), Object.class);
         assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+    }
+
+    @Test
+    public void test_PUT_api_user_info_ID_201_3() throws Exception{
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        headers.setBearerAuth(editorUserToken);
+
+        UpdateUserRequest updateUserRequest = new UpdateUserRequest(null, null, null, null, null);
+
+        ResponseEntity response = restTemplate.exchange(URI.create("http://localhost:" + port + "/api/user/info/" + editorUser.getId()), HttpMethod.PUT, new HttpEntity<>(objectMapper.writeValueAsString(updateUserRequest), headers), Object.class);
+        assertEquals(HttpStatus.CREATED, response.getStatusCode());
+
+        UserDto userDto = objectMapper.readValue(objectMapper.writeValueAsString(response.getBody()), UserDto.class);
+        assertEquals(editorUser.getId(), userDto.getId());
+        assertEquals(editorUser.getUsername(), userDto.getUserName());
+        assertEquals(editorUser.getFullName(), userDto.getFullName());
+        assertEquals(editorUser.getEmail(), userDto.getEmail());
+        assertEquals(editorUser.getRoles().size(), userDto.getRole().length);
+        for(String rol : userDto.getRole()) {
+            assertTrue(editorUser.getRoles().contains(User.Rol.valueOf(rol)));
+        }
+
+        Optional<User> user = userService.findUserById(editorUser.getId());
+
+        assertTrue(user.isPresent());
+
+        assertEquals(editorUser.getPassword(), user.get().getPassword());
+    }
+
+    @Test
+    public void test_PUT_api_user_info_ID_201_4() throws Exception{
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        headers.setBearerAuth(editorUserToken);
+
+        UpdateUserRequest updateUserRequest = new UpdateUserRequest("", "", "", "", new String[]{});
+
+        ResponseEntity response = restTemplate.exchange(URI.create("http://localhost:" + port + "/api/user/info/" + editorUser.getId()), HttpMethod.PUT, new HttpEntity<>(objectMapper.writeValueAsString(updateUserRequest), headers), Object.class);
+        assertEquals(HttpStatus.CREATED, response.getStatusCode());
+
+        UserDto userDto = objectMapper.readValue(objectMapper.writeValueAsString(response.getBody()), UserDto.class);
+        assertEquals(editorUser.getId(), userDto.getId());
+        assertEquals(editorUser.getUsername(), userDto.getUserName());
+        assertEquals(editorUser.getFullName(), userDto.getFullName());
+        assertEquals(editorUser.getEmail(), userDto.getEmail());
+        assertEquals(editorUser.getRoles().size(), userDto.getRole().length);
+        for(String rol : userDto.getRole()) {
+            assertTrue(editorUser.getRoles().contains(User.Rol.valueOf(rol)));
+        }
+
+        Optional<User> user = userService.findUserById(editorUser.getId());
+
+        assertTrue(user.isPresent());
+
+        assertEquals(editorUser.getPassword(), user.get().getPassword());
+    }
+
+    @Test
+    public void test_PUT_api_user_info_ID_201_5() throws Exception{
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        headers.setBearerAuth(editorUserToken);
+
+        UpdateUserRequest updateUserRequest = new UpdateUserRequest("", "", "", "", new String[]{User.Rol.REVIEWER.name()});
+
+        ResponseEntity response = restTemplate.exchange(URI.create("http://localhost:" + port + "/api/user/info/" + editorUser.getId()), HttpMethod.PUT, new HttpEntity<>(objectMapper.writeValueAsString(updateUserRequest), headers), Object.class);
+        assertEquals(HttpStatus.CREATED, response.getStatusCode());
+
+        UserDto userDto = objectMapper.readValue(objectMapper.writeValueAsString(response.getBody()), UserDto.class);
+        assertEquals(editorUser.getId(), userDto.getId());
+        assertEquals(editorUser.getUsername(), userDto.getUserName());
+        assertEquals(editorUser.getFullName(), userDto.getFullName());
+        assertEquals(editorUser.getEmail(), userDto.getEmail());
+        assertEquals(editorUser.getRoles().size(), userDto.getRole().length);
+        for(String rol : userDto.getRole()) {
+            assertTrue(editorUser.getRoles().contains(User.Rol.valueOf(rol)));
+        }
+
+        Optional<User> user = userService.findUserById(editorUser.getId());
+
+        assertTrue(user.isPresent());
+
+        assertEquals(editorUser.getPassword(), user.get().getPassword());
+    }
+
+    @Test
+    public void test_PUT_api_user_info_ID_201_6() throws Exception{
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        headers.setBearerAuth(reviewerUserToken);
+
+        UpdateUserRequest updateUserRequest = new UpdateUserRequest("", "", "", "", new String[]{User.Rol.REVIEWER.name()});
+
+        ResponseEntity response = restTemplate.exchange(URI.create("http://localhost:" + port + "/api/user/info/" + editorUser.getId()), HttpMethod.PUT, new HttpEntity<>(objectMapper.writeValueAsString(updateUserRequest), headers), Object.class);
+        assertEquals(HttpStatus.CREATED, response.getStatusCode());
+
+        UserDto userDto = objectMapper.readValue(objectMapper.writeValueAsString(response.getBody()), UserDto.class);
+        assertEquals(editorUser.getId(), userDto.getId());
+        assertEquals(editorUser.getUsername(), userDto.getUserName());
+        assertEquals(editorUser.getFullName(), userDto.getFullName());
+        assertEquals(editorUser.getEmail(), userDto.getEmail());
+        assertEquals(1, userDto.getRole().length);
+        assertEquals(User.Rol.REVIEWER, User.Rol.valueOf(userDto.getRole()[0]));
+
+        Optional<User> user = userService.findUserById(editorUser.getId());
+
+        assertTrue(user.isPresent());
+
+        assertEquals(editorUser.getPassword(), user.get().getPassword());
+    }
+
+    @Test
+    public void test_PUT_api_user_info_ID_201_7() throws Exception{
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        headers.setBearerAuth(reviewerUserToken);
+
+        UpdateUserRequest updateUserRequest = new UpdateUserRequest("newValid@mail.com", "", "", "", null);
+
+        ResponseEntity response = restTemplate.exchange(URI.create("http://localhost:" + port + "/api/user/info/" + editorUser.getId()), HttpMethod.PUT, new HttpEntity<>(objectMapper.writeValueAsString(updateUserRequest), headers), Object.class);
+        assertEquals(HttpStatus.CREATED, response.getStatusCode());
+
+        UserDto userDto = objectMapper.readValue(objectMapper.writeValueAsString(response.getBody()), UserDto.class);
+        assertEquals(editorUser.getId(), userDto.getId());
+        assertEquals(editorUser.getUsername(), userDto.getUserName());
+        assertEquals(editorUser.getFullName(), userDto.getFullName());
+        assertEquals("newValid@mail.com", userDto.getEmail());
+        assertEquals(editorUser.getRoles().size(), userDto.getRole().length);
+        for(String rol : userDto.getRole()) {
+            assertTrue(editorUser.getRoles().contains(User.Rol.valueOf(rol)));
+        }
+
+        Optional<User> user = userService.findUserById(editorUser.getId());
+
+        assertTrue(user.isPresent());
+
+        assertEquals(editorUser.getPassword(), user.get().getPassword());
+    }
+
+    @Test
+    public void test_PUT_api_user_info_ID_201_8() throws Exception{
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        headers.setBearerAuth(reviewerUserToken);
+
+        UpdateUserRequest updateUserRequest = new UpdateUserRequest("", "new", "", "", null);
+
+        ResponseEntity response = restTemplate.exchange(URI.create("http://localhost:" + port + "/api/user/info/" + editorUser.getId()), HttpMethod.PUT, new HttpEntity<>(objectMapper.writeValueAsString(updateUserRequest), headers), Object.class);
+        assertEquals(HttpStatus.CREATED, response.getStatusCode());
+
+        UserDto userDto = objectMapper.readValue(objectMapper.writeValueAsString(response.getBody()), UserDto.class);
+        assertEquals(editorUser.getId(), userDto.getId());
+        assertEquals(editorUser.getUsername(), userDto.getUserName());
+        assertEquals("new", userDto.getFullName());
+        assertEquals(editorUser.getEmail(), userDto.getEmail());
+        assertEquals(editorUser.getRoles().size(), userDto.getRole().length);
+        for(String rol : userDto.getRole()) {
+            assertTrue(editorUser.getRoles().contains(User.Rol.valueOf(rol)));
+        }
+
+        Optional<User> user = userService.findUserById(editorUser.getId());
+
+        assertTrue(user.isPresent());
+
+        assertEquals(editorUser.getPassword(), user.get().getPassword());
+    }
+
+    @Test
+    public void test_PUT_api_user_info_ID_201_9() throws Exception{
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        headers.setBearerAuth(reviewerUserToken);
+
+        UpdateUserRequest updateUserRequest = new UpdateUserRequest("", "", "new", "", null);
+
+        ResponseEntity response = restTemplate.exchange(URI.create("http://localhost:" + port + "/api/user/info/" + editorUser.getId()), HttpMethod.PUT, new HttpEntity<>(objectMapper.writeValueAsString(updateUserRequest), headers), Object.class);
+        assertEquals(HttpStatus.CREATED, response.getStatusCode());
+
+        UserDto userDto = objectMapper.readValue(objectMapper.writeValueAsString(response.getBody()), UserDto.class);
+        assertEquals(editorUser.getId(), userDto.getId());
+        assertEquals("new", userDto.getUserName());
+        assertEquals(editorUser.getFullName(), userDto.getFullName());
+        assertEquals(editorUser.getEmail(), userDto.getEmail());
+        assertEquals(editorUser.getRoles().size(), userDto.getRole().length);
+        for(String rol : userDto.getRole()) {
+            assertTrue(editorUser.getRoles().contains(User.Rol.valueOf(rol)));
+        }
+
+        Optional<User> user = userService.findUserById(editorUser.getId());
+
+        assertTrue(user.isPresent());
+
+        assertEquals(editorUser.getPassword(), user.get().getPassword());
+    }
+
+    @Test
+    public void test_PUT_api_user_info_ID_201_10() throws Exception{
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        headers.setBearerAuth(reviewerUserToken);
+
+        UpdateUserRequest updateUserRequest = new UpdateUserRequest("", "", "", "new", null);
+
+        ResponseEntity response = restTemplate.exchange(URI.create("http://localhost:" + port + "/api/user/info/" + editorUser.getId()), HttpMethod.PUT, new HttpEntity<>(objectMapper.writeValueAsString(updateUserRequest), headers), Object.class);
+        assertEquals(HttpStatus.CREATED, response.getStatusCode());
+
+        UserDto userDto = objectMapper.readValue(objectMapper.writeValueAsString(response.getBody()), UserDto.class);
+        assertEquals(editorUser.getId(), userDto.getId());
+        assertEquals(editorUser.getUsername(), userDto.getUserName());
+        assertEquals(editorUser.getFullName(), userDto.getFullName());
+        assertEquals(editorUser.getEmail(), userDto.getEmail());
+        assertEquals(editorUser.getRoles().size(), userDto.getRole().length);
+        for(String rol : userDto.getRole()) {
+            assertTrue(editorUser.getRoles().contains(User.Rol.valueOf(rol)));
+        }
+
+        Optional<User> user = userService.findUserById(editorUser.getId());
+
+        assertTrue(user.isPresent());
+
+        assertNotEquals(editorUser.getPassword(), user.get().getPassword());
+    }
+
+    @Test
+    public void test_PUT_api_user_info_ID_201_11() throws Exception{
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        headers.setBearerAuth(reviewerUserToken);
+
+        UpdateUserRequest updateUserRequest = new UpdateUserRequest(editorUser.getEmail(), "", "", "", null);
+
+        ResponseEntity response = restTemplate.exchange(URI.create("http://localhost:" + port + "/api/user/info/" + editorUser.getId()), HttpMethod.PUT, new HttpEntity<>(objectMapper.writeValueAsString(updateUserRequest), headers), Object.class);
+        assertEquals(HttpStatus.CREATED, response.getStatusCode());
+
+        UserDto userDto = objectMapper.readValue(objectMapper.writeValueAsString(response.getBody()), UserDto.class);
+        assertEquals(editorUser.getId(), userDto.getId());
+        assertEquals(editorUser.getUsername(), userDto.getUserName());
+        assertEquals(editorUser.getFullName(), userDto.getFullName());
+        assertEquals(editorUser.getEmail(), userDto.getEmail());
+        assertEquals(editorUser.getRoles().size(), userDto.getRole().length);
+        for(String rol : userDto.getRole()) {
+            assertTrue(editorUser.getRoles().contains(User.Rol.valueOf(rol)));
+        }
+
+        Optional<User> user = userService.findUserById(editorUser.getId());
+
+        assertTrue(user.isPresent());
+
+        assertEquals(editorUser.getPassword(), user.get().getPassword());
+    }
+
+    @Test
+    public void test_PUT_api_user_info_ID_201_12() throws Exception{
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        headers.setBearerAuth(reviewerUserToken);
+
+        UpdateUserRequest updateUserRequest = new UpdateUserRequest("", "", editorUser.getUsername(), "", null);
+
+        ResponseEntity response = restTemplate.exchange(URI.create("http://localhost:" + port + "/api/user/info/" + editorUser.getId()), HttpMethod.PUT, new HttpEntity<>(objectMapper.writeValueAsString(updateUserRequest), headers), Object.class);
+        assertEquals(HttpStatus.CREATED, response.getStatusCode());
+
+        UserDto userDto = objectMapper.readValue(objectMapper.writeValueAsString(response.getBody()), UserDto.class);
+        assertEquals(editorUser.getId(), userDto.getId());
+        assertEquals(editorUser.getUsername(), userDto.getUserName());
+        assertEquals(editorUser.getFullName(), userDto.getFullName());
+        assertEquals(editorUser.getEmail(), userDto.getEmail());
+        assertEquals(editorUser.getRoles().size(), userDto.getRole().length);
+        for(String rol : userDto.getRole()) {
+            assertTrue(editorUser.getRoles().contains(User.Rol.valueOf(rol)));
+        }
+
+        Optional<User> user = userService.findUserById(editorUser.getId());
+
+        assertTrue(user.isPresent());
+
+        assertEquals(editorUser.getPassword(), user.get().getPassword());
     }
 }
