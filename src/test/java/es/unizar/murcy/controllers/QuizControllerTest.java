@@ -110,7 +110,6 @@ public class QuizControllerTest {
         questionRequest = new QuestionRequest("title2", "description2", options2);
 
         this.question2 = questionService.create(questionRequest.toEntity());
-
     }
 
     @Test
