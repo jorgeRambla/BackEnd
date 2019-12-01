@@ -193,7 +193,7 @@ public class UserController {
         toUpdateUser.setLastIp(request.getRemoteAddr());
         userService.update(toUpdateUser);
 
-        return ResponseEntity.ok(new JsonWebTokenDto(token));
+        return ResponseEntity.status(HttpStatus.OK).body(new JsonWebTokenDto(token));
     }
 
     @CrossOrigin
