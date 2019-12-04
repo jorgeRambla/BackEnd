@@ -146,7 +146,7 @@ public class UserController {
                     return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ErrorMessageDto(HttpStatus.BAD_REQUEST, "Email is not valid"));
                 }
 
-                if(!user.get().getEmail().equals(updateUserRequest.getEmail()) && userService.existsByEmail(updateUserRequest.getEmail())) {
+                if(!finalUser.get().getEmail().equals(updateUserRequest.getEmail()) && userService.existsByEmail(updateUserRequest.getEmail())) {
                     return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ErrorMessageDto(HttpStatus.BAD_REQUEST, "Ya existe un usuario con ese email"));
                 } else {
                     finalUser.get().setEmail(updateUserRequest.getEmail());
@@ -154,7 +154,8 @@ public class UserController {
             }
 
             if(Boolean.TRUE.equals(isUpdateValid(updateUserRequest.getUsername()))) {
-                if(!user.get().getUsername().equals(updateUserRequest.getUsername()) && userService.existsByUsername(updateUserRequest.getUsername())) {
+
+                if(!finalUser.get().getUsername().equals(updateUserRequest.getUsername()) && userService.existsByUsername(updateUserRequest.getUsername())) {
                     return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ErrorMessageDto(HttpStatus.BAD_REQUEST, "Ya existe un usuario con ese nombre"));
                 } else {
                     finalUser.get().setUsername(updateUserRequest.getUsername());
@@ -192,7 +193,7 @@ public class UserController {
         toUpdateUser.setLastIp(request.getRemoteAddr());
         userService.update(toUpdateUser);
 
-        return ResponseEntity.ok(new JsonWebTokenDto(token));
+        return ResponseEntity.status(HttpStatus.OK).body(new JsonWebTokenDto(token));
     }
 
     @CrossOrigin
@@ -213,7 +214,7 @@ public class UserController {
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
-    private User updateUserDataAuthorized(@RequestBody UpdateUserRequest updateUserRequest, User user, User finalUser) {
+    private User updateUserDataAuthorized(UpdateUserRequest updateUserRequest, User user, User finalUser) {
         if(updateUserRequest.getFullName() != null && !updateUserRequest.getFullName().equals("")) {
             finalUser.setFullName(updateUserRequest.getFullName());
         }
@@ -222,7 +223,10 @@ public class UserController {
             finalUser.setPassword(new BCryptPasswordEncoder().encode(updateUserRequest.getPassword()));
         }
 
-        if(user.getRoles().contains(User.Rol.REVIEWER)) {
+        if(user.getRoles().contains(User.Rol.REVIEWER) && updateUserRequest.getRol() != null) {
+            if(updateUserRequest.getRol().length == 0){
+                updateUserRequest.setRol(new String[]{User.Rol.USER.name()});
+            }
             finalUser.setRoles(updateUserRequest.getRolSet());
         }
 

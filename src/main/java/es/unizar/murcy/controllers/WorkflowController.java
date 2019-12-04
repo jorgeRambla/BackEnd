@@ -27,6 +27,7 @@ public class WorkflowController {
 
     @CrossOrigin
     @PutMapping("/api/workflow/{id}/approve")
+    @SuppressWarnings("Duplicates")
     public ResponseEntity approveWorkflow(HttpServletRequest request, @PathVariable long id, @RequestBody UpdateWorkflowStatusRequest updateWorkflowStatusRequest) {
         Optional<User> user = authUtilities.getUserFromRequest(request);
 
@@ -53,6 +54,7 @@ public class WorkflowController {
 
     @CrossOrigin
     @PutMapping("/api/workflow/{id}/deny")
+    @SuppressWarnings("Duplicates")
     public ResponseEntity denyWorkflow(HttpServletRequest request, @PathVariable long id, @RequestBody UpdateWorkflowStatusRequest updateWorkflowStatusRequest) {
 
         Optional<User> user = authUtilities.getUserFromRequest(request);

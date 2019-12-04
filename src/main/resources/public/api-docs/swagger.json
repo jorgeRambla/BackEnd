@@ -1443,7 +1443,7 @@
       "Auth" : {
         "type" : "object",
         "properties" : {
-          "token" : {
+          "jsonWebToken" : {
             "type" : "string"
           }
         }
