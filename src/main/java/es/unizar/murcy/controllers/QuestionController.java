@@ -52,11 +52,22 @@ public class QuestionController {
         Question question = questionRequest.toEntity();
         question.setUser(user.get());
 
-        Workflow workflow = new Workflow();
-        workflow.setDescription(null);
-        workflow.setStatusUser(null);
-        workflow.setTitle("Solicitud publicar pregunta");
-
+        Workflow workflow= null;
+        if(Boolean.FALSE.equals(questionRequest.getPublish())) {
+            workflow = new Workflow();
+            workflow.setDescription(null);
+            workflow.setStatusUser(user.get());
+            workflow.setTitle("Borrador");
+            workflow.setResponse("Borrador");
+            workflow.setStatus(Workflow.Status.DRAFT);
+            question.setClosed(true);
+            question.setApproved(false);
+        } else {
+            workflow = new Workflow();
+            workflow.setDescription(null);
+            workflow.setStatusUser(null);
+            workflow.setTitle("Solicitud publicar pregunta");
+        }
         workflow = workflowService.create(workflow);
 
         question.setWorkflow(workflow);
@@ -170,10 +181,25 @@ public class QuestionController {
 
             if(question.isClosed()) {
                 Workflow workflow = new Workflow();
-                workflow.setDescription(null);
-                workflow.setStatusUser(null);
-                workflow.setTitle("Solicitud publicar pregunta");
-                workflow.addAuditableWorkflowEntity(question);
+                if(Boolean.FALSE.equals(questionRequest.getPublish())){
+                    workflow.setDescription(null);
+                    workflow.setStatusUser(user.get());
+                    workflow.setTitle("Borrador");
+                    workflow.setResponse("Borrador");
+                    question.setClosed(true);
+                    question.setApproved(false);
+                    if(question.getLastWorkflow().getStatus().equals(Workflow.Status.APPROVED)){
+                        workflow.setStatus(Workflow.Status.DRAFT_FROM_APPROVED);
+                    } else {
+                        workflow.setStatus(Workflow.Status.DRAFT);
+                    }
+                } else {
+                    workflow = new Workflow();
+                    workflow.setDescription(null);
+                    workflow.setStatusUser(null);
+                    workflow.setTitle("Solicitud publicar pregunta");
+                    workflow.addAuditableWorkflowEntity(question);
+                }
                 workflow = workflowService.create(workflow);
 
                 question.getLastWorkflow().setNextWorkflow(workflow);

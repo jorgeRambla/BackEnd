@@ -99,7 +99,7 @@ public class QuizControllerTest {
         options.add(new OptionRequest("pregunta 3", false));
         options.add(new OptionRequest("pregunta 4", false));
 
-        QuestionRequest questionRequest = new QuestionRequest("title", "description", options);
+        QuestionRequest questionRequest = new QuestionRequest("title", "description", options, false);
 
         this.question1 = questionService.create(questionRequest.toEntity());
 
@@ -107,7 +107,7 @@ public class QuizControllerTest {
         options2.add(new OptionRequest("pregunta 10", false));
         options2.add(new OptionRequest("pregunta 40", true));
 
-        questionRequest = new QuestionRequest("title2", "description2", options2);
+        questionRequest = new QuestionRequest("title2", "description2", options2, false);
 
         this.question2 = questionService.create(questionRequest.toEntity());
     }

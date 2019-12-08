@@ -19,6 +19,9 @@ public class QuestionRequest {
     @Getter
     @Setter
     private List<OptionRequest> options;
+    @Getter
+    @Setter
+    private Boolean publish;
 
     public boolean isValid() {
         return title != null

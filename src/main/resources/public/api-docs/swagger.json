@@ -1581,7 +1581,7 @@
         }
       },
       "QuestionRequest" : {
-        "required" : [ "description", "options", "title" ],
+        "required" : [ "description", "options", "publish", "title" ],
         "type" : "object",
         "properties" : {
           "title" : {
@@ -1599,6 +1599,9 @@
             "items" : {
               "$ref" : "#/components/schemas/OptionRequest"
             }
+          },
+          "publish" : {
+            "type" : "boolean"
           }
         }
       },
