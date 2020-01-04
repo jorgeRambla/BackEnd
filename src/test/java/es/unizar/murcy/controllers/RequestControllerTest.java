@@ -87,7 +87,6 @@ public class RequestControllerTest {
 
     }
 
-
     @Test
     public void test_GET_current_user_editor_request_401_1() throws Exception {
         HttpHeaders headers = new HttpHeaders();
@@ -103,10 +102,7 @@ public class RequestControllerTest {
                 Object.class);
 
         assertEquals(HttpStatus.UNAUTHORIZED, response.getStatusCode());
-
     }
-
-
 
     @Test
     public void test_GET_current_user_editor_request_401_2() throws Exception {
@@ -126,7 +122,6 @@ public class RequestControllerTest {
         assertEquals(HttpStatus.UNAUTHORIZED, response.getStatusCode());
     }
 
-
     @Test
     public void test_PUT_current_user_editor_request_404_1() {
         HttpHeaders headers = new HttpHeaders();
@@ -136,7 +131,6 @@ public class RequestControllerTest {
         ResponseEntity response = restTemplate.exchange(URI.create("http://localhost:" + port + "/api/request/editor/" + -1), HttpMethod.PUT, new HttpEntity<>(headers), Object.class);
         assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
     }
-
 
     @Test
     public void test_PUT_current_user_editor_request_401_1() throws Exception {
@@ -191,26 +185,6 @@ public class RequestControllerTest {
 
     }
 
-
-    @Test
-    public void test_CREATE_current_user_editor_request_401_1() throws Exception {
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_JSON);
-
-        EditorRequest editorRequest = new EditorRequest();
-        editorRequest.setDescription("Description");
-        editorRequest.setApplicant(editorUser);
-
-        ResponseEntity response = restTemplate.exchange(
-                URI.create("http://localhost:" + port + "/api/request/editor/"),
-                HttpMethod.POST, new HttpEntity<>(objectMapper.writeValueAsString(editorRequest), headers),
-                Object.class);
-
-        assertEquals(HttpStatus.UNAUTHORIZED, response.getStatusCode());
-
-    }
-
-
     @Test
     public void test_CREATE_current_user_editor_request_401_1() throws Exception {
         HttpHeaders headers = new HttpHeaders();
@@ -301,83 +275,6 @@ public class RequestControllerTest {
                 Object.class);
 
         assertEquals(HttpStatus.UNAUTHORIZED, response.getStatusCode());
-
-    }
-
-    @Test
-    public void test_GET_OPENED_user_editor_request_401_3() throws Exception {
-    public void test_CREATE_current_user_editor_request_401_2() throws Exception {
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_JSON);
-        headers.setBearerAuth(randomToken);
-
-        EditorRequest editorRequest = new EditorRequest();
-        editorRequest.setDescription("Description");
-        editorRequest.setApplicant(editorUser);
-
-        ResponseEntity response = restTemplate.exchange(
-                URI.create("http://localhost:" + port + "/api/request/editor/"),
-                HttpMethod.POST, new HttpEntity<>(objectMapper.writeValueAsString(editorRequest), headers),
-                Object.class);
-
-        assertEquals(HttpStatus.UNAUTHORIZED, response.getStatusCode());
-
-    }
-
-    @Test
-    public void test_CREATE_current_user_editor_request_201_1() throws Exception {
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_JSON);
-        headers.setBearerAuth(userUserToken);
-
-        EditorRequest editorRequest = new EditorRequest();
-        editorRequest.setDescription("Description");
-        editorRequest.setApplicant(editorUser);
-
-        ResponseEntity response = restTemplate.exchange(
-                URI.create("http://localhost:" + port + "/api/request/editor/"),
-                HttpMethod.POST, new HttpEntity<>(objectMapper.writeValueAsString(editorRequest), headers),
-                Object.class);
-
-        assertEquals(HttpStatus.CREATED, response.getStatusCode());
-
-    }
-
-    @Test
-    public void test_GET_OPENED_user_editor_request_401_1() throws Exception {
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_JSON);
-
-        EditorRequest editorRequest = new EditorRequest();
-        editorRequest.setDescription("Description");
-        editorRequest.setApplicant(editorUser);
-
-        ResponseEntity response = restTemplate.exchange(
-                URI.create("http://localhost:" + port + "/api/request/editor/list"),
-                HttpMethod.GET, new HttpEntity<>(objectMapper.writeValueAsString(editorRequest), headers),
-                Object.class);
-
-        assertEquals(HttpStatus.UNAUTHORIZED, response.getStatusCode());
-
-    }
-
-    @Test
-    public void test_GET_OPENED_user_editor_request_401_2() throws Exception {
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_JSON);
-        headers.setBearerAuth(randomToken);
-
-        EditorRequest editorRequest = new EditorRequest();
-        editorRequest.setDescription("Description");
-        editorRequest.setApplicant(editorUser);
-
-        ResponseEntity response = restTemplate.exchange(
-                URI.create("http://localhost:" + port + "/api/request/editor/list"),
-                HttpMethod.GET, new HttpEntity<>(objectMapper.writeValueAsString(editorRequest), headers),
-                Object.class);
-
-        assertEquals(HttpStatus.UNAUTHORIZED, response.getStatusCode());
-
     }
 
     @Test
@@ -390,25 +287,6 @@ public class RequestControllerTest {
         editorRequest.setDescription("Description");
         editorRequest.setApplicant(editorUser);
 
-        ResponseEntity response = restTemplate.exchange(
-                URI.create("http://localhost:" + port + "/api/request/editor/list"),
-                HttpMethod.GET, new HttpEntity<>(objectMapper.writeValueAsString(editorRequest), headers),
-                Object.class);
-        assertEquals(HttpStatus.UNAUTHORIZED, response.getStatusCode());
-    }
-
-    @Test
-    public void test_GET_OPENED_user_editor_request_200_1() throws Exception {
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_JSON);
-        headers.setBearerAuth(reviewerUserToken);
-
-        ResponseEntity response = restTemplate.exchange(URI.create("http://localhost:" + port + "/api/request/editor/list"), HttpMethod.GET, new HttpEntity<>(headers), Object.class);
-
-        assertEquals(HttpStatus.OK, response.getStatusCode());
-        Set<EditorRequest> returnData = objectMapper.readValue(objectMapper.writeValueAsString(response.getBody()), new TypeReference<Set<EditorRequest>>(){});
-
-        assertEquals(0, returnData.size());
         ResponseEntity response = restTemplate.exchange(
                 URI.create("http://localhost:" + port + "/api/request/editor/list"),
                 HttpMethod.GET, new HttpEntity<>(objectMapper.writeValueAsString(editorRequest), headers),
