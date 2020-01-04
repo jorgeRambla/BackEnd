@@ -116,7 +116,7 @@ public class QuestionControllerTest {
         options.add(new OptionRequest("pregunta 1", false));
         options.add(new OptionRequest("pregunta 2", true));
 
-        QuestionRequest questionRequest = new QuestionRequest("title", "description", options);
+        QuestionRequest questionRequest = new QuestionRequest("title", "description", options, false);
 
         HttpEntity<String> entity = new HttpEntity<>(new ObjectMapper().writeValueAsString(questionRequest), headers);
         ResponseEntity response = restTemplate.postForEntity("http://localhost:" + port + "/api/question", entity, Object.class);
@@ -146,7 +146,7 @@ public class QuestionControllerTest {
         options.add(new OptionRequest("pregunta 1", false));
         options.add(new OptionRequest("pregunta 2", true));
 
-        QuestionRequest questionRequest = new QuestionRequest(null, "description", options);
+        QuestionRequest questionRequest = new QuestionRequest(null, "description", options, false);
 
         HttpEntity<String> entity = new HttpEntity<>(objectMapper.writeValueAsString(questionRequest), headers);
         ResponseEntity response = restTemplate.postForEntity("http://localhost:" + port + "/api/question", entity, Object.class);
@@ -164,7 +164,7 @@ public class QuestionControllerTest {
         options.add(new OptionRequest("pregunta 1", false));
         options.add(new OptionRequest("pregunta 2", true));
 
-        QuestionRequest questionRequest = new QuestionRequest("", "description", options);
+        QuestionRequest questionRequest = new QuestionRequest("", "description", options, false);
 
         HttpEntity<String> entity = new HttpEntity<>(objectMapper.writeValueAsString(questionRequest), headers);
         ResponseEntity response = restTemplate.postForEntity("http://localhost:" + port + "/api/question", entity, Object.class);
@@ -181,7 +181,7 @@ public class QuestionControllerTest {
         List<OptionRequest> options = new ArrayList<>();
         options.add(new OptionRequest("pregunta 1", false));
 
-        QuestionRequest questionRequest = new QuestionRequest("title", "description", options);
+        QuestionRequest questionRequest = new QuestionRequest("title", "description", options, false);
 
         HttpEntity<String> entity = new HttpEntity<>(objectMapper.writeValueAsString(questionRequest), headers);
         ResponseEntity response = restTemplate.postForEntity("http://localhost:" + port + "/api/question", entity, Object.class);
@@ -203,7 +203,7 @@ public class QuestionControllerTest {
         options.add(new OptionRequest("pregunta 5", false));
 
 
-        QuestionRequest questionRequest = new QuestionRequest("title", "description", options);
+        QuestionRequest questionRequest = new QuestionRequest("title", "description", options, false);
 
         HttpEntity<String> entity = new HttpEntity<>(objectMapper.writeValueAsString(questionRequest), headers);
         ResponseEntity response = restTemplate.postForEntity("http://localhost:" + port + "/api/question", entity, Object.class);
@@ -223,7 +223,7 @@ public class QuestionControllerTest {
         options.add(new OptionRequest("pregunta 3", false));
         options.add(new OptionRequest("pregunta 4", false));
 
-        QuestionRequest questionRequest = new QuestionRequest("title", "description", options);
+        QuestionRequest questionRequest = new QuestionRequest("title", "description", options, false);
 
         HttpEntity<String> entity = new HttpEntity<>(objectMapper.writeValueAsString(questionRequest), headers);
         ResponseEntity response = restTemplate.postForEntity("http://localhost:" + port + "/api/question", entity, Object.class);
@@ -243,7 +243,7 @@ public class QuestionControllerTest {
         options.add(new OptionRequest("pregunta 3", false));
         options.add(new OptionRequest("pregunta 4", false));
 
-        QuestionRequest questionRequest = new QuestionRequest("title", "description", options);
+        QuestionRequest questionRequest = new QuestionRequest("title", "description", options, false);
 
         HttpEntity<String> entity = new HttpEntity<>(objectMapper.writeValueAsString(questionRequest), headers);
         ResponseEntity response = restTemplate.postForEntity("http://localhost:" + port + "/api/question", entity, Object.class);
@@ -350,6 +350,7 @@ public class QuestionControllerTest {
 
         assertEquals(HttpStatus.UNAUTHORIZED, response.getStatusCode());
     }
+
 
     @Test
     public void test_GET_API_QUESTION_LIST_ID_200_1() throws Exception {
@@ -516,7 +517,7 @@ public class QuestionControllerTest {
         options.add(new OptionRequest("pregunta 20", false));
         options.add(new OptionRequest("pregunta 40", true));
 
-        QuestionRequest questionRequest = new QuestionRequest("new", "desc", options);
+        QuestionRequest questionRequest = new QuestionRequest("new", "desc", options, false);
 
         ResponseEntity response = restTemplate.exchange(URI.create("http://localhost:" + port + "/api/question/" + -1), HttpMethod.PUT, new HttpEntity<>(objectMapper.writeValueAsString(questionRequest), headers), Object.class);
         assertEquals(HttpStatus.UNAUTHORIZED, response.getStatusCode());
@@ -533,7 +534,7 @@ public class QuestionControllerTest {
         options.add(new OptionRequest("pregunta 20", false));
         options.add(new OptionRequest("pregunta 40", true));
 
-        QuestionRequest questionRequest = new QuestionRequest("new", "desc", options);
+        QuestionRequest questionRequest = new QuestionRequest("new", "desc", options, false);
 
         ResponseEntity response = restTemplate.exchange(URI.create("http://localhost:" + port + "/api/question/" + -1), HttpMethod.PUT, new HttpEntity<>(objectMapper.writeValueAsString(questionRequest), headers), Object.class);
         assertEquals(HttpStatus.UNAUTHORIZED, response.getStatusCode());
@@ -562,7 +563,7 @@ public class QuestionControllerTest {
         List<OptionRequest> options = new ArrayList<>();
         options.add(new OptionRequest("pregunta 10", true));
 
-        QuestionRequest questionRequest = new QuestionRequest("new", "desc", options);
+        QuestionRequest questionRequest = new QuestionRequest("new", "desc", options, false);
 
         List<Question> questions = questionService.findAll();
 
@@ -584,7 +585,7 @@ public class QuestionControllerTest {
         options.add(new OptionRequest("pregunta 40", true));
         options.add(new OptionRequest("pregunta 50", true));
 
-        QuestionRequest questionRequest = new QuestionRequest("new", "desc", options);
+        QuestionRequest questionRequest = new QuestionRequest("new", "desc", options, false);
 
         List<Question> questions = questionService.findAll();
 
@@ -603,7 +604,7 @@ public class QuestionControllerTest {
         options.add(new OptionRequest("pregunta 10", true));
         options.add(new OptionRequest("pregunta 20", false));
 
-        QuestionRequest questionRequest = new QuestionRequest("new", "desc", options);
+        QuestionRequest questionRequest = new QuestionRequest("new", "desc", options, false);
 
         ResponseEntity response = restTemplate.exchange(URI.create("http://localhost:" + port + "/api/question/" + -1), HttpMethod.PUT, new HttpEntity<>(objectMapper.writeValueAsString(questionRequest), headers), Object.class);
         assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
@@ -621,7 +622,7 @@ public class QuestionControllerTest {
         options.add(new OptionRequest("pregunta 10", true));
         options.add(new OptionRequest("pregunta 20", false));
 
-        QuestionRequest questionRequest = new QuestionRequest("new", "desc", options);
+        QuestionRequest questionRequest = new QuestionRequest("new", "desc", options, false);
 
         List<Question> questions = questionService.findAll();
 
@@ -649,7 +650,7 @@ public class QuestionControllerTest {
         options.add(new OptionRequest("pregunta 10", true));
         options.add(new OptionRequest("pregunta 20", false));
 
-        QuestionRequest questionRequest = new QuestionRequest("new", "desc", options);
+        QuestionRequest questionRequest = new QuestionRequest("new", "desc", options, false);
 
         List<Question> questions = questionService.findAll();
 
@@ -668,7 +669,7 @@ public class QuestionControllerTest {
         headers.setContentType(MediaType.APPLICATION_JSON);
         headers.setBearerAuth(reviewerUserToken);
 
-        QuestionRequest questionRequest = new QuestionRequest(null, null, null);
+        QuestionRequest questionRequest = new QuestionRequest(null, null, null, false);
 
         Question question = questionService.findAll().get(0);
 
@@ -698,7 +699,7 @@ public class QuestionControllerTest {
         headers.setContentType(MediaType.APPLICATION_JSON);
         headers.setBearerAuth(reviewerUserToken);
 
-        QuestionRequest questionRequest = new QuestionRequest(null, null, new ArrayList<>());
+        QuestionRequest questionRequest = new QuestionRequest(null, null, new ArrayList<>(), false);
 
         Question question = questionService.findAll().get(0);
 
@@ -733,7 +734,7 @@ public class QuestionControllerTest {
         options.add(new OptionRequest("pregunta 10", true));
         options.add(new OptionRequest("pregunta 20", true));
 
-        QuestionRequest questionRequest = new QuestionRequest(null, null, options);
+        QuestionRequest questionRequest = new QuestionRequest(null, null, options, false);
 
         Question question = questionService.findAll().get(0);
 
@@ -763,7 +764,7 @@ public class QuestionControllerTest {
         headers.setContentType(MediaType.APPLICATION_JSON);
         headers.setBearerAuth(reviewerUserToken);
 
-        QuestionRequest questionRequest = new QuestionRequest("new", null, null);
+        QuestionRequest questionRequest = new QuestionRequest("new", null, null, false);
 
         Question question = questionService.findAll().get(0);
 
@@ -785,7 +786,6 @@ public class QuestionControllerTest {
             assertEquals(question.getOptions().get(iterator).getCorrect(), questionDto.getOptions().get(iterator).isCorrect());
         }
     }
-
     @Test
     public void test_PUT_API_QUESTION_ID_201_5() throws Exception {
         test_POST_API_QUESTION_201_1();
@@ -794,7 +794,7 @@ public class QuestionControllerTest {
         headers.setContentType(MediaType.APPLICATION_JSON);
         headers.setBearerAuth(reviewerUserToken);
 
-        QuestionRequest questionRequest = new QuestionRequest(null, "new", null);
+        QuestionRequest questionRequest = new QuestionRequest(null, "new", null, false);
 
         Question question = questionService.findAll().get(0);
 
@@ -825,7 +825,7 @@ public class QuestionControllerTest {
         headers.setContentType(MediaType.APPLICATION_JSON);
         headers.setBearerAuth(reviewerUserToken);
 
-        QuestionRequest questionRequest = new QuestionRequest("", null, null);
+        QuestionRequest questionRequest = new QuestionRequest("", null, null, false);
 
         Question question = questionService.findAll().get(0);
 
@@ -861,7 +861,7 @@ public class QuestionControllerTest {
         headers.setContentType(MediaType.APPLICATION_JSON);
         headers.setBearerAuth(reviewerUserToken);
 
-        QuestionRequest questionRequest = new QuestionRequest("title", null, null);
+        QuestionRequest questionRequest = new QuestionRequest("title", null, null, false);
 
         Question question = questionService.findAll().get(0);
         question.setApproved(true);
@@ -891,7 +891,7 @@ public class QuestionControllerTest {
         headers.setContentType(MediaType.APPLICATION_JSON);
         headers.setBearerAuth(reviewerUserToken);
 
-        QuestionRequest questionRequest = new QuestionRequest("title", null, null);
+        QuestionRequest questionRequest = new QuestionRequest("title", null, null, false);
 
         Question question = questionService.findAll().get(0);
         question.setApproved(false);
