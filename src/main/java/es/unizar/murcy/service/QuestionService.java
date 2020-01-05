@@ -12,6 +12,7 @@ import javax.transaction.Transactional;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 @Service
 @Transactional
@@ -73,5 +74,9 @@ public class QuestionService {
 
     public List<Question> findQuestionsByOwnerId(long userId) {
         return questionRepository.findQuestionsByUser_IdAndDeletedIsFalse(userId);
+    }
+
+    public Set<Question> findByClosedAndApproved(boolean closed, boolean approved) {
+        return questionRepository.findQuestionsByClosedAndAndApprovedOrderByCreateDateDesc(closed, approved);
     }
 }

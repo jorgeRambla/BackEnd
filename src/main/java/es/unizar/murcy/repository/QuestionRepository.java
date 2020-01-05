@@ -5,6 +5,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 public interface QuestionRepository extends JpaRepository<Question, Long> {
     Optional<Question> findByIdAndDeletedIsFalse(long idQuestion);
@@ -16,4 +17,7 @@ public interface QuestionRepository extends JpaRepository<Question, Long> {
     List<Question> findQuestionsByUser_IdAndDeletedIsFalse(long id);
 
     List<Question> findQuestionsByDeletedIsFalse();
+
+    Set<Question> findQuestionsByClosedAndAndApprovedOrderByCreateDateDesc(boolean closed, boolean approved);
+
 }

@@ -2,10 +2,12 @@ package es.unizar.murcy.controllers;
 
 import es.unizar.murcy.controllers.utilities.AuthUtilities;
 import es.unizar.murcy.model.Question;
+import es.unizar.murcy.model.Quiz;
 import es.unizar.murcy.model.User;
 import es.unizar.murcy.model.Workflow;
 import es.unizar.murcy.model.dto.ErrorMessageDto;
 import es.unizar.murcy.model.dto.QuestionDto;
+import es.unizar.murcy.model.dto.QuizDto;
 import es.unizar.murcy.model.request.OptionRequest;
 import es.unizar.murcy.model.request.QuestionRequest;
 import es.unizar.murcy.service.QuestionService;
@@ -18,6 +20,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @CrossOrigin
@@ -234,6 +237,22 @@ public class QuestionController {
             return ResponseEntity.status(HttpStatus.ACCEPTED).build();
         }
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ErrorMessageDto(HttpStatus.UNAUTHORIZED));
+    }
+
+    @CrossOrigin
+    @GetMapping("/api/question/request/list")
+    public ResponseEntity getQuestionsRequests(HttpServletRequest request,
+                                                 @RequestParam(value = "closed", defaultValue = "false") Boolean isClosed,
+                                                 @RequestParam(value = "approved", defaultValue = "false") Boolean isApproved) {
+        Optional<User> user = authUtilities.getUserFromRequest(request, User.Rol.REVIEWER, true);
+
+        if (!user.isPresent()) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ErrorMessageDto(HttpStatus.UNAUTHORIZED));
+        }
+
+        Set<Question> editorRequestSet = questionService.findByClosedAndApproved(isClosed, isApproved);
+
+        return ResponseEntity.status(HttpStatus.OK).body(editorRequestSet.stream().map(QuestionDto::new).collect(Collectors.toList()));
     }
 
 }

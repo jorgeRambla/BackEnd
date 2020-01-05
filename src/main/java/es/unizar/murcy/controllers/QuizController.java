@@ -6,17 +6,20 @@ import es.unizar.murcy.model.Quiz;
 import es.unizar.murcy.model.User;
 import es.unizar.murcy.model.dto.ErrorMessageDto;
 import es.unizar.murcy.model.dto.QuizDto;
+import es.unizar.murcy.model.dto.SimplifiedQuizDto;
 import es.unizar.murcy.model.request.QuizRequest;
 import es.unizar.murcy.service.QuestionService;
 import es.unizar.murcy.service.QuizService;
 import es.unizar.murcy.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @CrossOrigin
@@ -172,5 +175,50 @@ public class QuizController {
             return ResponseEntity.status(HttpStatus.ACCEPTED).build();
         }
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ErrorMessageDto(HttpStatus.UNAUTHORIZED));
+    }
+
+    @CrossOrigin
+    @GetMapping("/api/quiz/request/list")
+    public ResponseEntity getQuizRequests(HttpServletRequest request,
+                                                 @RequestParam(value = "closed", defaultValue = "false") Boolean isClosed,
+                                                 @RequestParam(value = "approved", defaultValue = "false") Boolean isApproved) {
+        Optional<User> user = authUtilities.getUserFromRequest(request, User.Rol.REVIEWER, true);
+
+        if (!user.isPresent()) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ErrorMessageDto(HttpStatus.UNAUTHORIZED));
+        }
+
+        Set<Quiz> editorRequestSet = quizService.findByClosedAndApproved(isClosed, isApproved);
+
+        return ResponseEntity.status(HttpStatus.OK).body(
+                editorRequestSet.stream()
+                        .map(QuizDto::new)
+                        .collect(Collectors.toList())
+        );
+    }
+
+    @CrossOrigin
+    @GetMapping("/api/quiz/search")
+    public ResponseEntity searchQuiz(HttpServletRequest request,
+                                            @RequestParam(value = "page", defaultValue = "0") int page,
+                                            @RequestParam(value = "size", defaultValue = "50") int size,
+                                            @RequestParam(value = "sortColumn", defaultValue = "title") String sortColumn,
+                                            @RequestParam(value = "sortType", defaultValue = "desc") String sortType,
+                                            @RequestParam(value = "query", defaultValue = "") String query) {
+
+        // For search currently we don't have to track user.
+
+        List<Quiz> resultSet;
+        if(sortType.equalsIgnoreCase("asc")) {
+            resultSet = quizService.searchQuizzes(query, PageRequest.of(page, size, Sort.by(sortColumn).ascending()));
+        } else {
+            resultSet = quizService.searchQuizzes(query, PageRequest.of(page, size, Sort.by(sortColumn).descending()));
+        }
+
+        return ResponseEntity.status(HttpStatus.OK).body(
+                resultSet.stream()
+                        .map(SimplifiedQuizDto::new)
+                        .collect(Collectors.toList())
+        );
     }
 }

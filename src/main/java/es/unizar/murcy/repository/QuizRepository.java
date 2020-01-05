@@ -5,6 +5,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 
 public interface QuizRepository extends JpaRepository<Quiz, Long> {
@@ -19,4 +20,5 @@ public interface QuizRepository extends JpaRepository<Quiz, Long> {
 
     List<Quiz> findByDeletedIsFalseAndUser_id(long id);
 
+    Set<Quiz> findQuizzesByClosedAndAndApprovedOrderByCreateDateDesc(boolean closed, boolean approved);
 }
