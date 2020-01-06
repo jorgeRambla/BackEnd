@@ -4,7 +4,6 @@ import lombok.*;
 
 @NoArgsConstructor
 @AllArgsConstructor
-@Data
 public class UpdateWorkflowStatusRequest {
     @Getter
     @Setter

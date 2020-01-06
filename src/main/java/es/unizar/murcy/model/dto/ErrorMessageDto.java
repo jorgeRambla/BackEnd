@@ -3,7 +3,6 @@ package es.unizar.murcy.model.dto;
 import lombok.*;
 import org.springframework.http.HttpStatus;
 
-@Data
 @NoArgsConstructor
 @AllArgsConstructor
 public class ErrorMessageDto {

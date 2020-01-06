@@ -3,7 +3,6 @@ package es.unizar.murcy.model.dto;
 import es.unizar.murcy.model.EditorRequest;
 import lombok.*;
 
-@Data
 @NoArgsConstructor
 @AllArgsConstructor
 public class EditorRequestDto {

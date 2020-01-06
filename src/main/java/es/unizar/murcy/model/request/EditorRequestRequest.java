@@ -2,7 +2,6 @@ package es.unizar.murcy.model.request;
 
 import lombok.*;
 
-@Data
 @NoArgsConstructor
 @AllArgsConstructor
 public class EditorRequestRequest {
