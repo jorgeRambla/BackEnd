@@ -68,6 +68,6 @@ public class QuizService {
     }
 
     public List<Quiz> searchQuizzes(String query, Pageable pageable) {
-        return quizRepositoryPaging.findQuizzesByDeletedIsFalseAndTitleContainingOrDeletedIsFalseAndDescriptionContaining(query, pageable);
+        return quizRepositoryPaging.findQuizzesByDeletedIsFalseAndTitleContainingOrDeletedIsFalseAndDescriptionContaining(query, query, pageable);
     }
 }

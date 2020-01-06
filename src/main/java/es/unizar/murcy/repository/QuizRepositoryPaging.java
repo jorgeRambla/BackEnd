@@ -8,5 +8,5 @@ import java.util.List;
 
 public interface QuizRepositoryPaging extends PagingAndSortingRepository<Quiz, Long> {
 
-    List<Quiz> findQuizzesByDeletedIsFalseAndTitleContainingOrDeletedIsFalseAndDescriptionContaining(String query, Pageable pageable);
+    List<Quiz> findQuizzesByDeletedIsFalseAndTitleContainingOrDeletedIsFalseAndDescriptionContaining(String titleQuery, String descriptionQuery, Pageable pageable);
 }
