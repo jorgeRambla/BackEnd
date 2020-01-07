@@ -16,6 +16,10 @@ import java.util.Set;
 @ToString(callSuper = true)
 public class Workflow extends AuditableEntity {
 
+    //FIXME: Move internationalization into localization file
+
+    public static final String DRAFT_MESSAGE = "DRAFT";
+
     @Getter
     @Setter
     private Status status;

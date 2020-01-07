@@ -24,6 +24,10 @@ public class QuizRequest {
     @Setter
     private Set<Long> questionIds;
 
+    @Getter
+    @Setter
+    private Boolean publish;
+
     public Boolean isCreateValid() {
         return this.title != null && !this.title.equals("") && this.questionIds != null && !this.questionIds.isEmpty();
     }

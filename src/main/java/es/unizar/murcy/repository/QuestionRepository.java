@@ -1,8 +1,11 @@
 package es.unizar.murcy.repository;
 
 import es.unizar.murcy.model.Question;
+import es.unizar.murcy.model.Workflow;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -18,6 +21,7 @@ public interface QuestionRepository extends JpaRepository<Question, Long> {
 
     List<Question> findQuestionsByDeletedIsFalse();
 
-    Set<Question> findQuestionsByClosedAndAndApprovedOrderByCreateDateDesc(boolean closed, boolean approved);
+    Set<Question> findQuestionsByDeletedIsFalseAndClosedAndApprovedAndWorkflow_StatusInOrderByCreateDateDesc(boolean closed, boolean approved, Collection<Workflow.Status> validStatus);
+
 
 }
