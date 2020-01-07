@@ -1717,7 +1717,7 @@
         }
       },
       "QuizRequest" : {
-        "required" : [ "description", "questionIds", "title" ],
+        "required" : [ "description", "publish", "questionIds", "title" ],
         "type" : "object",
         "properties" : {
           "title" : {
@@ -1735,6 +1735,10 @@
               "type" : "integer",
               "format" : "int64"
             }
+          },
+          "publish" : {
+            "type" : "boolean",
+            "description" : "publish quiz"
           }
         }
       },

@@ -4,6 +4,7 @@ package es.unizar.murcy.controllers;
 import es.unizar.murcy.controllers.utilities.AuthUtilities;
 import es.unizar.murcy.model.Quiz;
 import es.unizar.murcy.model.User;
+import es.unizar.murcy.model.Workflow;
 import es.unizar.murcy.model.dto.ErrorMessageDto;
 import es.unizar.murcy.model.dto.QuizDto;
 import es.unizar.murcy.model.dto.SimplifiedQuizDto;
@@ -11,6 +12,8 @@ import es.unizar.murcy.model.request.QuizRequest;
 import es.unizar.murcy.service.QuestionService;
 import es.unizar.murcy.service.QuizService;
 import es.unizar.murcy.service.UserService;
+import es.unizar.murcy.service.WorkflowService;
+import org.hibernate.jdbc.Work;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
@@ -38,6 +41,9 @@ public class QuizController {
     @Autowired
     private UserService userService;
 
+    @Autowired
+    private WorkflowService workflowService;
+
     @CrossOrigin
     @PostMapping(value = "/api/quiz")
     public ResponseEntity create(HttpServletRequest request, @RequestBody QuizRequest quizRequest) {
@@ -53,7 +59,34 @@ public class QuizController {
 
         Quiz createdQuiz = quizRequest.toEntity(questionService);
         createdQuiz.setUser(user.get());
-        quizService.create(createdQuiz);
+
+        Workflow workflow= null;
+        if(Boolean.FALSE.equals(quizRequest.getPublish())) {
+            workflow = new Workflow();
+            workflow.setTitle(Workflow.DRAFT_MESSAGE);
+            workflow.setResponse(Workflow.DRAFT_MESSAGE);
+            workflow.setDescription(null);
+            workflow.setStatusUser(user.get());
+            workflow.setStatus(Workflow.Status.DRAFT);
+            createdQuiz.setClosed(true);
+            createdQuiz.setApproved(false);
+        } else {
+            workflow = new Workflow();
+            workflow.setStatusUser(null);
+            workflow.setTitle("Solicitud publicar quiz");
+            workflow.setDescription(null);
+        }
+
+        workflow = workflowService.create(workflow);
+
+        createdQuiz.setLastWorkflow(workflow);
+        createdQuiz.setWorkflow(workflow);
+
+        createdQuiz = quizService.create(createdQuiz);
+
+        workflow.addAuditableWorkflowEntity(createdQuiz);
+
+        workflowService.update(workflow);
 
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
@@ -148,6 +181,38 @@ public class QuizController {
                         .map(Optional::get)
                         .collect(Collectors.toList()));
             }
+
+            if(quiz.isClosed()) {
+                Workflow workflow = new Workflow();
+                if(Boolean.FALSE.equals(quizRequest.getPublish())){
+                    workflow.setDescription(null);
+                    workflow.setStatusUser(user.get());
+                    workflow.setTitle(Workflow.DRAFT_MESSAGE);
+                    workflow.setResponse(Workflow.DRAFT_MESSAGE);
+                    quiz.setClosed(true);
+                    quiz.setApproved(false);
+                    if(quiz.getLastWorkflow().getStatus().equals(Workflow.Status.APPROVED)){
+                        workflow.setStatus(Workflow.Status.DRAFT_FROM_APPROVED);
+                    } else if (quiz.getLastWorkflow().getStatus().equals(Workflow.Status.DRAFT_FROM_APPROVED)){
+                        workflow.setStatus(Workflow.Status.DRAFT_FROM_APPROVED);
+                    } else {
+                            workflow.setStatus(Workflow.Status.DRAFT);
+                    }
+                } else {
+                    workflow = new Workflow();
+                    workflow.setDescription(null);
+                    workflow.setStatusUser(null);
+                    workflow.setTitle("Solicitud publicar quiz");
+                    workflow.addAuditableWorkflowEntity(quiz);
+                }
+                workflow = workflowService.create(workflow);
+
+                quiz.getLastWorkflow().setNextWorkflow(workflow);
+                workflowService.update(quiz.getLastWorkflow());
+
+                quiz.setLastWorkflow(workflow);
+            }
+
             return ResponseEntity.status(HttpStatus.CREATED).body(new QuizDto(quizService.update(quiz)));
         }
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ErrorMessageDto(HttpStatus.UNAUTHORIZED));
