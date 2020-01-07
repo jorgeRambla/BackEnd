@@ -5,7 +5,6 @@ import lombok.*;
 
 import java.util.Date;
 
-@Data
 @NoArgsConstructor
 @AllArgsConstructor
 public class WorkflowDto {
@@ -13,21 +12,27 @@ public class WorkflowDto {
     @Getter
     @Setter
     private long id;
+
     @Getter
     @Setter
     private String title;
+
     @Getter
     @Setter
     private String description;
+
     @Getter
     @Setter
     private String status;
+
     @Getter
     @Setter
     private Date statusDate;
+
     @Getter
     @Setter
     private String statusBy;
+
     @Getter
     @Setter
     private String response;

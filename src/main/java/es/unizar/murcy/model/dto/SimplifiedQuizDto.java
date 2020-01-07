@@ -3,10 +3,6 @@ package es.unizar.murcy.model.dto;
 import es.unizar.murcy.model.Quiz;
 import lombok.*;
 
-import java.util.List;
-import java.util.stream.Collectors;
-
-@Data
 @NoArgsConstructor
 @AllArgsConstructor
 public class SimplifiedQuizDto {

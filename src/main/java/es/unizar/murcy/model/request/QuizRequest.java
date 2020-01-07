@@ -10,7 +10,6 @@ import java.util.stream.Collectors;
 
 @NoArgsConstructor
 @AllArgsConstructor
-@Data
 public class QuizRequest {
 
     @Getter

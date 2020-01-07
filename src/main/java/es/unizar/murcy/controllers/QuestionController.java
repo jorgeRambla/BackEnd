@@ -2,12 +2,10 @@ package es.unizar.murcy.controllers;
 
 import es.unizar.murcy.controllers.utilities.AuthUtilities;
 import es.unizar.murcy.model.Question;
-import es.unizar.murcy.model.Quiz;
 import es.unizar.murcy.model.User;
 import es.unizar.murcy.model.Workflow;
 import es.unizar.murcy.model.dto.ErrorMessageDto;
 import es.unizar.murcy.model.dto.QuestionDto;
-import es.unizar.murcy.model.dto.QuizDto;
 import es.unizar.murcy.model.request.OptionRequest;
 import es.unizar.murcy.model.request.QuestionRequest;
 import es.unizar.murcy.service.QuestionService;

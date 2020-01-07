@@ -3,7 +3,6 @@ package es.unizar.murcy.model.dto;
 import es.unizar.murcy.model.Option;
 import lombok.*;
 
-@Data
 @AllArgsConstructor
 @NoArgsConstructor
 public class OptionDto {

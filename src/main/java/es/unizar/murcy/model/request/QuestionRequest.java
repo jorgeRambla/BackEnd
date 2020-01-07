@@ -8,7 +8,6 @@ import java.util.stream.Collectors;
 
 @NoArgsConstructor
 @AllArgsConstructor
-@Data
 public class QuestionRequest {
     @Getter
     @Setter
