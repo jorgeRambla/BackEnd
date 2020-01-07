@@ -13,7 +13,6 @@ import es.unizar.murcy.service.QuestionService;
 import es.unizar.murcy.service.QuizService;
 import es.unizar.murcy.service.UserService;
 import es.unizar.murcy.service.WorkflowService;
-import org.hibernate.jdbc.Work;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
