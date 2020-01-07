@@ -13,5 +13,5 @@ public interface EditorRequestRepository extends JpaRepository<EditorRequest, Lo
 
     Set<EditorRequest> findEditorRequestByClosedIsFalse();
 
-    Set<EditorRequest> findEditorRequestByClosedAndAndApprovedOrderByCreateDateDesc(Boolean closed, Boolean approved);
+    Set<EditorRequest> findEditorRequestByClosedAndAndApprovedAndDeletedIsFalseOrderByCreateDateDesc(Boolean closed, Boolean approved);
 }
