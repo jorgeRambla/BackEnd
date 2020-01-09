@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @CrossOrigin
@@ -57,8 +58,8 @@ public class QuestionController {
             workflow = new Workflow();
             workflow.setDescription(null);
             workflow.setStatusUser(user.get());
-            workflow.setTitle("Borrador");
-            workflow.setResponse("Borrador");
+            workflow.setTitle(Workflow.DRAFT_MESSAGE);
+            workflow.setResponse(Workflow.DRAFT_MESSAGE);
             workflow.setStatus(Workflow.Status.DRAFT);
             question.setClosed(true);
             question.setApproved(false);
@@ -182,15 +183,19 @@ public class QuestionController {
             if(question.isClosed()) {
                 Workflow workflow = new Workflow();
                 if(Boolean.FALSE.equals(questionRequest.getPublish())){
-                    workflow.setDescription(null);
                     workflow.setStatusUser(user.get());
-                    workflow.setTitle("Borrador");
-                    workflow.setResponse("Borrador");
+                    workflow.setTitle(Workflow.DRAFT_MESSAGE);
+                    workflow.setResponse(Workflow.DRAFT_MESSAGE);
+                    workflow.setDescription(null);
                     question.setClosed(true);
                     question.setApproved(false);
-                    if(question.getLastWorkflow().getStatus().equals(Workflow.Status.APPROVED)){
+                    if(question.getLastWorkflow().getStatus().equals(Workflow.Status.APPROVED)) {
                         workflow.setStatus(Workflow.Status.DRAFT_FROM_APPROVED);
-                    } else {
+                    }
+                    else if(question.getLastWorkflow().getStatus().equals(Workflow.Status.DRAFT_FROM_APPROVED)) {
+                        workflow.setStatus(Workflow.Status.DRAFT_FROM_APPROVED);
+                    }
+                    else {
                         workflow.setStatus(Workflow.Status.DRAFT);
                     }
                 } else {
@@ -234,6 +239,22 @@ public class QuestionController {
             return ResponseEntity.status(HttpStatus.ACCEPTED).build();
         }
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ErrorMessageDto(HttpStatus.UNAUTHORIZED));
+    }
+
+    @CrossOrigin
+    @GetMapping("/api/question/request/list")
+    public ResponseEntity getQuestionsRequests(HttpServletRequest request,
+                                                 @RequestParam(value = "closed", defaultValue = "false") Boolean isClosed,
+                                                 @RequestParam(value = "approved", defaultValue = "false") Boolean isApproved) {
+        Optional<User> user = authUtilities.getUserFromRequest(request, User.Rol.REVIEWER, true);
+
+        if (!user.isPresent()) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ErrorMessageDto(HttpStatus.UNAUTHORIZED));
+        }
+
+        Set<Question> editorRequestSet = questionService.findByClosedAndApproved(isClosed, isApproved);
+
+        return ResponseEntity.status(HttpStatus.OK).body(editorRequestSet.stream().map(QuestionDto::new).collect(Collectors.toList()));
     }
 
 }

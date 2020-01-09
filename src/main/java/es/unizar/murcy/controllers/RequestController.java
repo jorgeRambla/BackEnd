@@ -151,13 +151,9 @@ public class RequestController {
     public ResponseEntity getOpenedEditorRequest(HttpServletRequest request,
                                                  @RequestParam(value = "closed", defaultValue = "false") Boolean isClosed,
                                                  @RequestParam(value = "approved", defaultValue = "false") Boolean isApproved) {
-        Optional<User> user = authUtilities.getUserFromRequest(request);
+        Optional<User> user = authUtilities.getUserFromRequest(request, User.Rol.REVIEWER, true);
 
         if (!user.isPresent()) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ErrorMessageDto(HttpStatus.UNAUTHORIZED));
-        }
-
-        if(!user.get().getRoles().contains(User.Rol.REVIEWER)) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ErrorMessageDto(HttpStatus.UNAUTHORIZED));
         }
 

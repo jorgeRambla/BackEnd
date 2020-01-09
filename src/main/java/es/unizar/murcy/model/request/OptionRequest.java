@@ -5,7 +5,6 @@ import lombok.*;
 
 @NoArgsConstructor
 @AllArgsConstructor
-@Data
 public class OptionRequest {
     @Getter
     @Setter
