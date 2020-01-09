@@ -10,7 +10,6 @@ import java.util.stream.Collectors;
 
 @NoArgsConstructor
 @AllArgsConstructor
-@Data
 public class AnswerRequest {
 
     @Getter
@@ -20,14 +19,6 @@ public class AnswerRequest {
     @Getter
     @Setter
     private String description = "";
-
-    @Getter
-    @Setter
-    private Integer totalResolutionTime=0;
-
-    @Getter
-    @Setter
-    private Integer totalPoints;
 
     @Getter
     @Setter
@@ -42,8 +33,6 @@ public class AnswerRequest {
         Answer answer=new Answer();
         answer.setTitle(this.title);
         answer.setDescription(this.description);
-        answer.setTotalResolutionTime(this.totalResolutionTime);
-        answer.setTotalPoints(this.totalPoints);
         answer.setIndividualAnswers(individualAnswersIds.stream()
                 .map(individualAnswerService::findById)
                 .filter(Optional::isPresent)

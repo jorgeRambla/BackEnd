@@ -1,6 +1,6 @@
 package es.unizar.murcy.model;
 
-import es.unizar.murcy.model.extendable.jpa.AuditableWorkflowEntity;
+import es.unizar.murcy.model.extendable.jpa.AuditableEntity;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
@@ -14,7 +14,7 @@ import java.util.Objects;
 @Table(name = "murcy_answer")
 @AllArgsConstructor
 @ToString(callSuper = true)
-public class Answer extends AuditableWorkflowEntity {
+public class Answer extends AuditableEntity {
 
     @Getter
     @Setter
@@ -32,7 +32,7 @@ public class Answer extends AuditableWorkflowEntity {
     @Setter
     private Integer totalPoints;
 
-    @ManyToOne
+    @OneToMany
     @Getter
     @Setter
     private Quiz quiz;
@@ -45,7 +45,6 @@ public class Answer extends AuditableWorkflowEntity {
 
     public Answer() {
         super();
-        super.setClassname(this.getClass().getName());
     }
 
     @Override

@@ -8,13 +8,12 @@ import lombok.*;
 @Data
 public class IndividualAnswerRequest {
 
-    @Getter
-    @Setter
-    private String answerText;
 
     @Getter
     @Setter
-    private Integer resolutionTime=0;
+    private Integer timeInMillis;
+
+    //ID de la pregunta,
 
     @Getter
     @Setter
@@ -24,7 +23,7 @@ public class IndividualAnswerRequest {
         return this.answerText != null && !this.answerText.equals("") &&this.points!= null;
     }
 
-    public IndividualAnswer toEntity() {
+    public IndividualAnswer toEntity(long idAnswer) {
         IndividualAnswer individualAnswer=new IndividualAnswer();
         individualAnswer.setAnswerText(this.answerText);
         individualAnswer.setResolutionTime(this.resolutionTime);

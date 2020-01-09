@@ -33,6 +33,7 @@ public class IndividualAnswer extends AuditableWorkflowEntity {
     @Setter
     private Question question;
 
+    //Desde la general a las individuales y de la individual a una general.
     @ManyToMany(fetch = FetchType.EAGER)
     @Getter
     @Setter
@@ -40,7 +41,6 @@ public class IndividualAnswer extends AuditableWorkflowEntity {
 
     public IndividualAnswer() {
         super();
-        super.setClassname(this.getClass().getName());
     }
 
     @Override
