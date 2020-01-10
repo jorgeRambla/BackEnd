@@ -1,20 +1,22 @@
 package es.unizar.murcy.model;
 
+import es.unizar.murcy.model.extendable.jpa.AuditableEntity;
 import es.unizar.murcy.model.extendable.jpa.AuditableWorkflowEntity;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 
-import javax.persistence.*;
+import javax.persistence.Entity;
+import javax.persistence.ManyToOne;
+import javax.persistence.Table;
 import java.util.Objects;
-import java.util.Set;
 
 @Entity
 @Table(name = "murcy_individual_answer")
 @AllArgsConstructor
 @ToString(callSuper = true)
-public class IndividualAnswer extends AuditableWorkflowEntity {
+public class IndividualAnswer extends AuditableEntity {
 
     @Getter
     @Setter
@@ -33,11 +35,10 @@ public class IndividualAnswer extends AuditableWorkflowEntity {
     @Setter
     private Question question;
 
-    //Desde la general a las individuales y de la individual a una general.
-    @ManyToMany(fetch = FetchType.EAGER)
+    @ManyToOne
     @Getter
     @Setter
-    private Set<Answer> answers;
+    private Answer answer;
 
     public IndividualAnswer() {
         super();

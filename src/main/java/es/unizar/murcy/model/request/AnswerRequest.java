@@ -1,6 +1,7 @@
 package es.unizar.murcy.model.request;
 
 import es.unizar.murcy.model.Answer;
+import es.unizar.murcy.model.extendable.jpa.AuditableEntity;
 import es.unizar.murcy.service.IndividualAnswerService;
 import lombok.*;
 

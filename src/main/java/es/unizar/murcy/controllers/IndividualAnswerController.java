@@ -4,6 +4,7 @@ import es.unizar.murcy.controllers.utilities.AuthUtilities;
 import es.unizar.murcy.model.IndividualAnswer;
 import es.unizar.murcy.model.dto.ErrorMessageDto;
 import es.unizar.murcy.model.request.IndividualAnswerRequest;
+import es.unizar.murcy.service.AnswerService;
 import es.unizar.murcy.service.IndividualAnswerService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -20,6 +21,9 @@ public class IndividualAnswerController {
     @Autowired
     private IndividualAnswerService individualAnswerService;
 
+    @Autowired
+    private AnswerService answerService;
+
     @CrossOrigin
     @PostMapping("/api/individual_answer")
     public ResponseEntity create(@RequestBody IndividualAnswerRequest individualAnswerRequest) {
@@ -28,8 +32,8 @@ public class IndividualAnswerController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ErrorMessageDto(HttpStatus.BAD_REQUEST));
         }
 
-        IndividualAnswer individualAnswer = individualAnswerRequest.toEntity();
-        individualAnswerService.create(individualAnswer);
+        //IndividualAnswer individualAnswer = individualAnswerRequest.toEntity();
+        //individualAnswerService.create(individualAnswer);
 
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }

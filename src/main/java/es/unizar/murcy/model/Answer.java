@@ -32,13 +32,12 @@ public class Answer extends AuditableEntity {
     @Setter
     private Integer totalPoints;
 
-    @OneToMany
+    @ManyToOne
     @Getter
     @Setter
     private Quiz quiz;
 
-    @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
-    @OrderColumn(name = "INDEX")
+    @OneToMany
     @Getter
     @Setter
     private List<IndividualAnswer> individualAnswers;
