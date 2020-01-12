@@ -1,12 +1,14 @@
 package es.unizar.murcy.model.request;
 
 import es.unizar.murcy.model.Answer;
-import es.unizar.murcy.model.extendable.jpa.AuditableEntity;
 import es.unizar.murcy.service.IndividualAnswerService;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
+import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 @NoArgsConstructor
@@ -15,19 +17,10 @@ public class AnswerRequest {
 
     @Getter
     @Setter
-    private String title;
-
-    @Getter
-    @Setter
-    private String description = "";
-
-    @Getter
-    @Setter
-    private Set<Long> individualAnswersIds;
+    private List<Long> individualAnswersIds;
 
     public Boolean isCreateValid() {
-        return this.title != null && !this.title.equals("")
-                && this.individualAnswersIds != null && !this.individualAnswersIds.isEmpty();
+        return this.individualAnswersIds != null && !this.individualAnswersIds.isEmpty();
     }
 
     public Answer toEntity(IndividualAnswerService individualAnswerService) {

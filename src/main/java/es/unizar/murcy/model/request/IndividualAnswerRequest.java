@@ -1,6 +1,8 @@
 package es.unizar.murcy.model.request;
 
+import es.unizar.murcy.model.Answer;
 import es.unizar.murcy.model.IndividualAnswer;
+import es.unizar.murcy.model.Question;
 import es.unizar.murcy.service.AnswerService;
 import es.unizar.murcy.service.QuestionService;
 import lombok.*;
@@ -36,13 +38,15 @@ public class IndividualAnswerRequest {
         IndividualAnswer individualAnswer=new IndividualAnswer();
         individualAnswer.setTimeInMillis(this.timeInMillis);
         individualAnswer.setPoints(this.points);
+        Optional<Question> questionOptional=questionService.findById(questionId);
+        Optional<Answer> answerOptional=answerService.findById(answerId);
 
-        if(questionService.findById(questionId).isPresent()){
-            individualAnswer.setQuestion(questionService.findById(questionId).get());
+        if(questionOptional.isPresent()){
+            individualAnswer.setQuestion(questionOptional.get());
         }
 
-        if(answerService.findById(answerId).isPresent()){
-            individualAnswer.setAnswer(answerService.findById(answerId).get());
+        if(answerOptional.isPresent()){
+            individualAnswer.setAnswer(answerOptional.get());
         }
 
 

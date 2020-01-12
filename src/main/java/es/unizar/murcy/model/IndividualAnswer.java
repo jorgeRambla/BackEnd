@@ -19,10 +19,6 @@ public class IndividualAnswer extends AuditableEntity {
 
     @Getter
     @Setter
-    private String answerText;
-
-    @Getter
-    @Setter
     private long timeInMillis;
 
     @Getter

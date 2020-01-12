@@ -1,11 +1,12 @@
 package es.unizar.murcy.controllers;
 
 import es.unizar.murcy.controllers.utilities.AuthUtilities;
-import es.unizar.murcy.model.*;
-import es.unizar.murcy.model.dto.AnswerDto;
+import es.unizar.murcy.model.Answer;
+import es.unizar.murcy.model.IndividualAnswer;
+import es.unizar.murcy.model.Question;
+import es.unizar.murcy.model.User;
 import es.unizar.murcy.model.dto.ErrorMessageDto;
 import es.unizar.murcy.model.dto.IndividualAnswerDto;
-import es.unizar.murcy.model.request.AnswerRequest;
 import es.unizar.murcy.model.request.IndividualAnswerRequest;
 import es.unizar.murcy.service.AnswerService;
 import es.unizar.murcy.service.IndividualAnswerService;
@@ -19,7 +20,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 public class IndividualAnswerController {
 
