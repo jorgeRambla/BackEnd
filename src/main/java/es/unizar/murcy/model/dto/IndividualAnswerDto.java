@@ -3,7 +3,9 @@ package es.unizar.murcy.model.dto;
 import es.unizar.murcy.model.Answer;
 import es.unizar.murcy.model.IndividualAnswer;
 import es.unizar.murcy.model.Question;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.persistence.ManyToOne;
@@ -17,30 +19,24 @@ public class IndividualAnswerDto {
 
     @Getter
     @Setter
-    private String answerText;
+    private long resolutionTime;
 
     @Getter
     @Setter
-    private Integer resolutionTime;
+    private int points;
 
     @Getter
     @Setter
-    private Integer points;
+    private long questionId;
 
-    @ManyToOne
     @Getter
     @Setter
-    private Question question;
-
-    @ManyToOne
-    @Getter
-    @Setter
-    private Answer answer;
+    private LISTA ¡SIEMPRE DTO! answer;
 
     public IndividualAnswerDto(IndividualAnswer individualAnswer){
         this.id=individualAnswer.getId();
         this.answerText=individualAnswer.getAnswerText();
-        this.resolutionTime=individualAnswer.getResolutionTime();
+        this.resolutionTime=individualAnswer.getTimeInMillis();
         this.points=individualAnswer.getPoints();
         this.question=individualAnswer.getQuestion();
         this.answer=individualAnswer.getAnswer();

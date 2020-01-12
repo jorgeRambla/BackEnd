@@ -24,6 +24,8 @@ import javax.servlet.http.HttpServletRequest;
 import java.util.*;
 import java.util.stream.Collectors;
 
+//TODO: controller for getting all individual answers for one question GET /api/quiz/{id}/answers -> Lista de respuestas
+
 @CrossOrigin
 @RestController
 public class QuizController {

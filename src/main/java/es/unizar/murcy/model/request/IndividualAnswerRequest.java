@@ -1,11 +1,14 @@
 package es.unizar.murcy.model.request;
 
 import es.unizar.murcy.model.IndividualAnswer;
+import es.unizar.murcy.model.Question;
 import es.unizar.murcy.service.AnswerService;
 import es.unizar.murcy.service.QuestionService;
 import lombok.*;
 
 import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @NoArgsConstructor
 @AllArgsConstructor
@@ -26,26 +29,24 @@ public class IndividualAnswerRequest {
 
     @Getter
     @Setter
-    private long answerId;
+    private Set<Long> answerIds;
 
     public Boolean isCreateValid() {
         return this.points!= null && this.answerId!=0 && this.questionId!=0;
     }
+    //FIXME: CHECK answerIds VALIDITY WITH CURRENT CHANGES,
+    // 4 <= answersIds.len => 0 if !ismultilple, else answerIds.len == 1
 
     public IndividualAnswer toEntity(AnswerService answerService, QuestionService questionService) {
         IndividualAnswer individualAnswer=new IndividualAnswer();
         individualAnswer.setTimeInMillis(this.timeInMillis);
         individualAnswer.setPoints(this.points);
 
-        if(questionService.findById(questionId).isPresent()){
-            individualAnswer.setQuestion(questionService.findById(questionId).get());
-        }
+        Optional<Question> optionalQuestion = questionService.findById(questionId);
+        optionalQuestion.ifPresent(individualAnswer::setQuestion);
 
-        if(answerService.findById(answerId).isPresent()){
-            individualAnswer.setAnswer(answerService.findById(answerId).get());
-        }
-
-
+        //FIXME: SET CURRENT VALUE TO INDIVIDUAL ANSWER OBJECT
+        answerIds.stream().map(answerService::findById).filter(Optional::isPresent).map(Optional::get).collect(Collectors.toSet());
         return individualAnswer;
     }
 
