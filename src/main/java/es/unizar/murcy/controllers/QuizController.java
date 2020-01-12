@@ -146,6 +146,19 @@ public class QuizController {
     }
 
     @CrossOrigin
+    @GetMapping(value = "/api/quiz/{id}/public")
+    @SuppressWarnings("Duplicates")
+    public ResponseEntity fetchQuizByIdPublic(@PathVariable long id) {
+        Optional<Quiz> optionalQuiz = quizService.findByPublishAndId(id);
+
+        if (!optionalQuiz.isPresent()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ErrorMessageDto(HttpStatus.NOT_FOUND));
+        }
+
+        return ResponseEntity.status(HttpStatus.OK).body(new SimplifiedQuizDto(optionalQuiz.get()));
+    }
+
+    @CrossOrigin
     @PutMapping(value = "/api/quiz/{id}")
     @SuppressWarnings("Duplicates")
     public ResponseEntity update(HttpServletRequest request, @RequestBody QuizRequest quizRequest, @PathVariable long id) {
