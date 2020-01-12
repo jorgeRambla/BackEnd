@@ -32,8 +32,8 @@ public class IndividualAnswerController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ErrorMessageDto(HttpStatus.BAD_REQUEST));
         }
 
-        //IndividualAnswer individualAnswer = individualAnswerRequest.toEntity();
-        //individualAnswerService.create(individualAnswer);
+        IndividualAnswer individualAnswer = individualAnswerRequest.toEntity();
+        individualAnswerService.create(individualAnswer);
 
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }

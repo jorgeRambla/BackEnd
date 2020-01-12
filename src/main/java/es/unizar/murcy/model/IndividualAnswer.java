@@ -1,7 +1,6 @@
 package es.unizar.murcy.model;
 
 import es.unizar.murcy.model.extendable.jpa.AuditableEntity;
-import es.unizar.murcy.model.extendable.jpa.AuditableWorkflowEntity;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
