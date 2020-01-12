@@ -49,8 +49,8 @@ public class AnswerService {
         update(answer);
     }
 
-    public List<Answer> findAnswersByQuizId(Quiz quiz) {
-        return findAnswersByOwnerId(quiz.getId());
+    public List<Answer> findAnswersByQuizId(long quizId) {
+        return findAnswersByOwnerId(quizId);
     }
 
     public List<Answer> findAnswersByOwnerId(long quizId) {

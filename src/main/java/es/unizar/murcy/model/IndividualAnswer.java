@@ -23,7 +23,7 @@ public class IndividualAnswer extends AuditableEntity {
 
     @Getter
     @Setter
-    private Integer resolutionTime;
+    private long timeInMillis;
 
     @Getter
     @Setter
