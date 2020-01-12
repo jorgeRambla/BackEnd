@@ -79,7 +79,7 @@ public class AnswerController {
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ErrorMessageDto(HttpStatus.UNAUTHORIZED));
     }
 
-    @CrossOrigin
+/*    @CrossOrigin //TODO: mover a quizcontoller /api/quiz/{id}/answers
     @GetMapping(value = "/api/answer/list")
     public ResponseEntity fetchAnswersByQuizId(HttpServletRequest request, @PathVariable long id) {
         Optional<User> user = authUtilities.getUserFromRequest(request, User.Rol.EDITOR, true);
@@ -104,7 +104,7 @@ public class AnswerController {
             return ResponseEntity.status(HttpStatus.OK).body(answerList);
         }
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ErrorMessageDto(HttpStatus.UNAUTHORIZED));
-    }
+    }*/
 
     @CrossOrigin
     @DeleteMapping(value = "/api/answer/{id}")
@@ -124,44 +124,6 @@ public class AnswerController {
         if (user.equals(user.get()) || user.get().getRoles().contains(User.Rol.REVIEWER)) {
             answerService.delete(optionalAnswer.get());
             return ResponseEntity.status(HttpStatus.ACCEPTED).build();
-        }
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ErrorMessageDto(HttpStatus.UNAUTHORIZED));
-    }
-
-    @CrossOrigin
-    @PutMapping(value = "/api/quiz/{id}")
-    public ResponseEntity update(HttpServletRequest request, @RequestBody AnswerRequest answerRequest, @PathVariable long id) {
-        Optional<User> user = authUtilities.getUserFromRequest(request, User.Rol.EDITOR, true);
-
-        if (!user.isPresent()) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ErrorMessageDto(HttpStatus.UNAUTHORIZED));
-        }
-
-        Optional<Answer> optionalAnswer = answerService.findById(id);
-
-        if (!optionalAnswer.isPresent()) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ErrorMessageDto(HttpStatus.NOT_FOUND));
-        }
-
-        if (user.equals(user.get()) || user.get().getRoles().contains(User.Rol.REVIEWER)) {
-
-            if (answerRequest.getTitle() != null && !answerRequest.getTitle().equals("")) {
-                optionalAnswer.get().setTitle(answerRequest.getTitle());
-            }
-
-            if (answerRequest.getDescription() != null) {
-                optionalAnswer.get().setDescription(answerRequest.getDescription());
-            }
-
-            if (answerRequest.getIndividualAnswersIds() != null && !answerRequest.getIndividualAnswersIds().isEmpty()) {
-                optionalAnswer.get().setIndividualAnswers(answerRequest.getIndividualAnswersIds().stream()
-                        .map(individualAnswerService::findById)
-                        .filter(Optional::isPresent)
-                        .map(Optional::get)
-                        .collect(Collectors.toList()));
-            }
-
-            return ResponseEntity.status(HttpStatus.CREATED).body(new AnswerDto((answerService.update(optionalAnswer.get()))));
         }
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ErrorMessageDto(HttpStatus.UNAUTHORIZED));
     }

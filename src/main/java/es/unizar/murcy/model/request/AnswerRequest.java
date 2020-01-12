@@ -21,6 +21,19 @@ public class AnswerRequest {
 
     public Boolean isCreateValid() {
         return this.individualAnswersIds != null && !this.individualAnswersIds.isEmpty();
+        //TODO: ADD IDUSUARIO
+        //TODO: ADD QUIZID
+    }
+
+    @Getter
+    @Setter
+    private List<IndividualAnswerRequest> individualAnswers;
+
+    public Boolean isCreateValid() {
+        return this.title != null && !this.title.equals("")
+                && this.individualAnswersIds != null && !this.individualAnswersIds.isEmpty();
+        //FIXME: quiz exists && quiz.len == individualA.len
+
     }
 
     public Answer toEntity(IndividualAnswerService individualAnswerService) {
