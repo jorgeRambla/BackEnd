@@ -15,6 +15,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -148,14 +149,10 @@ public class RequestController {
 
     @CrossOrigin
     @GetMapping("/api/request/editor/list")
-    public ResponseEntity getOpenedEditorRequest(HttpServletRequest request,
-                                                 @RequestParam(value = "closed", defaultValue = "false") Boolean isClosed,
-                                                 @RequestParam(value = "approved", defaultValue = "false") Boolean isApproved) {
-        Optional<User> user = authUtilities.getUserFromRequest(request, User.Rol.REVIEWER, true);
-
-        if (!user.isPresent()) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ErrorMessageDto(HttpStatus.UNAUTHORIZED));
-        }
+    public ResponseEntity<List<EditorRequestDto>> getOpenedEditorRequest(HttpServletRequest request,
+                                                                         @RequestParam(value = "closed", defaultValue = "false") Boolean isClosed,
+                                                                         @RequestParam(value = "approved", defaultValue = "false") Boolean isApproved) {
+        authUtilities.getUserFromRequest(request, User.Rol.REVIEWER, true);
 
         Set<EditorRequest> editorRequestSet = editorRequestService.findByClosedAndApproved(isClosed, isApproved);
 

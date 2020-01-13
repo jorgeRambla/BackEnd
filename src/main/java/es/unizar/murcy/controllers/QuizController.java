@@ -2,10 +2,13 @@ package es.unizar.murcy.controllers;
 
 
 import es.unizar.murcy.controllers.utilities.AuthUtilities;
+import es.unizar.murcy.exceptions.UserNotFoundException;
+import es.unizar.murcy.exceptions.UserUnauthorizedException;
+import es.unizar.murcy.exceptions.quiz.QuizBadRequestException;
+import es.unizar.murcy.exceptions.quiz.QuizNotFoundException;
 import es.unizar.murcy.model.Quiz;
 import es.unizar.murcy.model.User;
 import es.unizar.murcy.model.Workflow;
-import es.unizar.murcy.model.dto.ErrorMessageDto;
 import es.unizar.murcy.model.dto.QuizDto;
 import es.unizar.murcy.model.dto.SimplifiedQuizDto;
 import es.unizar.murcy.model.request.QuizRequest;
@@ -46,26 +49,22 @@ public class QuizController {
     @CrossOrigin
     @PostMapping(value = "/api/quiz")
     public ResponseEntity create(HttpServletRequest request, @RequestBody QuizRequest quizRequest) {
-        Optional<User> user = authUtilities.getUserFromRequest(request, User.Rol.EDITOR, true);
-
-        if (!user.isPresent()) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ErrorMessageDto(HttpStatus.UNAUTHORIZED));
-        }
+        User user = authUtilities.getUserFromRequest(request, User.Rol.EDITOR, true);
 
         if(quizRequest.isCreateValid().equals(Boolean.FALSE)) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ErrorMessageDto(HttpStatus.BAD_REQUEST));
+            throw new QuizBadRequestException();
         }
 
         Quiz createdQuiz = quizRequest.toEntity(questionService);
-        createdQuiz.setUser(user.get());
+        createdQuiz.setUser(user);
 
-        Workflow workflow= null;
+        Workflow workflow;
         if(Boolean.FALSE.equals(quizRequest.getPublish())) {
             workflow = new Workflow();
             workflow.setTitle(Workflow.DRAFT_MESSAGE);
             workflow.setResponse(Workflow.DRAFT_MESSAGE);
             workflow.setDescription(null);
-            workflow.setStatusUser(user.get());
+            workflow.setStatusUser(user);
             workflow.setStatus(Workflow.Status.DRAFT);
             createdQuiz.setClosed(true);
             createdQuiz.setApproved(false);
@@ -92,91 +91,59 @@ public class QuizController {
 
     @CrossOrigin
     @GetMapping(value = "/api/quiz/list")
-    public ResponseEntity fetchCurrentUserQuizList(HttpServletRequest request) {
-        Optional<User> user = authUtilities.getUserFromRequest(request, User.Rol.EDITOR, true);
+    public ResponseEntity<List<QuizDto>> fetchCurrentUserQuizList(HttpServletRequest request) {
+        User user = authUtilities.getUserFromRequest(request, User.Rol.EDITOR, true);
 
-        if (!user.isPresent()) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ErrorMessageDto(HttpStatus.UNAUTHORIZED));
-        }
-
-        return ResponseEntity.status(HttpStatus.OK).body(quizService.findQuizzesByOwnerId(user.get()).stream().map(QuizDto::new).collect(Collectors.toList()));
+        return ResponseEntity.status(HttpStatus.OK).body(quizService.findQuizzesByOwnerId(user).stream().map(QuizDto::new).collect(Collectors.toList()));
     }
 
     @CrossOrigin
     @GetMapping(value = "/api/quiz/list/{id}")
-    public ResponseEntity fetchUserByIdQuizList(HttpServletRequest request, @PathVariable long id) {
-        Optional<User> user = authUtilities.getUserFromRequest(request, User.Rol.EDITOR, true);
+    public ResponseEntity<List<QuizDto>> fetchUserByIdQuizList(HttpServletRequest request, @PathVariable long id) {
+        User user = authUtilities.getUserFromRequest(request, User.Rol.EDITOR, true);
 
-        if (!user.isPresent()) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ErrorMessageDto(HttpStatus.UNAUTHORIZED));
-        }
-
-        Optional<User> optionalUser = userService.findUserById(id);
-
-        if(!optionalUser.isPresent()) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ErrorMessageDto(HttpStatus.NOT_FOUND));
-        }
-
-        if(user.get().getId() == id || user.get().getRoles().contains(User.Rol.REVIEWER)) {
+        if(user.getId() == id) {
             return ResponseEntity.status(HttpStatus.OK).body(quizService.findQuizzesByOwnerId(id).stream().map(QuizDto::new).collect(Collectors.toList()));
+        } else if (user.getRoles().contains(User.Rol.REVIEWER)) {
+            if(userService.findUserById(id).isPresent()) {
+                return ResponseEntity.status(HttpStatus.OK).body(quizService.findQuizzesByOwnerId(id).stream().map(QuizDto::new).collect(Collectors.toList()));
+            }
+            throw new UserNotFoundException();
         }
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ErrorMessageDto(HttpStatus.UNAUTHORIZED));
+       throw new UserUnauthorizedException();
     }
 
     @CrossOrigin
     @GetMapping(value = "/api/quiz/{id}")
-    @SuppressWarnings("Duplicates")
-    public ResponseEntity fetchQuizById(HttpServletRequest request, @PathVariable long id) {
-        Optional<User> user = authUtilities.getUserFromRequest(request, User.Rol.EDITOR, true);
+    public ResponseEntity<QuizDto> fetchQuizById(HttpServletRequest request, @PathVariable long id) {
+        User user = authUtilities.getUserFromRequest(request, User.Rol.EDITOR, true);
 
-        if (!user.isPresent()) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ErrorMessageDto(HttpStatus.UNAUTHORIZED));
+        Quiz quiz = quizService.findById(id).orElseThrow(QuizNotFoundException::new);
+
+        if (quiz.getUser().equals(user) || user.getRoles().contains(User.Rol.REVIEWER)) {
+            return ResponseEntity.status(HttpStatus.OK).body(new QuizDto(quiz));
         }
-
-        Optional<Quiz> optionalQuiz = quizService.findById(id);
-
-        if (!optionalQuiz.isPresent()) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ErrorMessageDto(HttpStatus.NOT_FOUND));
-        }
-
-        if (optionalQuiz.get().getUser().equals(user.get()) || user.get().getRoles().contains(User.Rol.REVIEWER)) {
-            return ResponseEntity.status(HttpStatus.OK).body(new QuizDto(optionalQuiz.get()));
-        }
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ErrorMessageDto(HttpStatus.UNAUTHORIZED));
+        throw new UserUnauthorizedException();
     }
 
     @CrossOrigin
     @GetMapping(value = "/api/quiz/{id}/public")
-    @SuppressWarnings("Duplicates")
-    public ResponseEntity fetchQuizByIdPublic(@PathVariable long id) {
-        Optional<Quiz> optionalQuiz = quizService.findByPublishAndId(id);
+    public ResponseEntity<SimplifiedQuizDto> fetchQuizByIdPublic(@PathVariable long id) {
+        Quiz quiz = quizService.findByPublishAndId(id).orElseThrow(QuizNotFoundException::new);
 
-        if (!optionalQuiz.isPresent()) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ErrorMessageDto(HttpStatus.NOT_FOUND));
-        }
-
-        return ResponseEntity.status(HttpStatus.OK).body(new SimplifiedQuizDto(optionalQuiz.get()));
+        return ResponseEntity.status(HttpStatus.OK).body(new SimplifiedQuizDto(quiz));
     }
 
     @CrossOrigin
     @PutMapping(value = "/api/quiz/{id}")
-    @SuppressWarnings("Duplicates")
-    public ResponseEntity update(HttpServletRequest request, @RequestBody QuizRequest quizRequest, @PathVariable long id) {
-        Optional<User> user = authUtilities.getUserFromRequest(request, User.Rol.EDITOR, true);
+    public ResponseEntity<QuizDto> update(HttpServletRequest request, @RequestBody QuizRequest quizRequest, @PathVariable long id) {
+        User user = authUtilities.getUserFromRequest(request, User.Rol.EDITOR, true);
 
-        if (!user.isPresent()) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ErrorMessageDto(HttpStatus.UNAUTHORIZED));
-        }
+        Quiz quiz = quizService.findById(id).orElseThrow(QuizNotFoundException::new);
 
-        Optional<Quiz> optionalQuiz = quizService.findById(id);
 
-        if (!optionalQuiz.isPresent()) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ErrorMessageDto(HttpStatus.NOT_FOUND));
-        }
+        if (quiz.getUser().equals(user) || user.getRoles().contains(User.Rol.REVIEWER)) {
 
-        if (optionalQuiz.get().getUser().equals(user.get()) || user.get().getRoles().contains(User.Rol.REVIEWER)) {
-
-            Quiz quiz = optionalQuiz.get();
             if (quizRequest.getTitle() != null && !quizRequest.getTitle().equals("")) {
                 quiz.setTitle(quizRequest.getTitle());
             }
@@ -198,7 +165,7 @@ public class QuizController {
                 Workflow workflow = new Workflow();
                 if(Boolean.FALSE.equals(quizRequest.getPublish())){
                     workflow.setDescription(null);
-                    workflow.setStatusUser(user.get());
+                    workflow.setStatusUser(user);
                     workflow.setTitle(Workflow.DRAFT_MESSAGE);
                     workflow.setResponse(Workflow.DRAFT_MESSAGE);
                     quiz.setClosed(true);
@@ -227,43 +194,31 @@ public class QuizController {
 
             return ResponseEntity.status(HttpStatus.CREATED).body(new QuizDto(quizService.update(quiz)));
         }
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ErrorMessageDto(HttpStatus.UNAUTHORIZED));
+        throw new UserUnauthorizedException();
     }
 
     @CrossOrigin
     @DeleteMapping(value = "/api/quiz/{id}")
     @SuppressWarnings("Duplicates")
     public ResponseEntity delete(HttpServletRequest request, @PathVariable long id) {
-        Optional<User> user = authUtilities.getUserFromRequest(request, User.Rol.EDITOR, true);
+        User user = authUtilities.getUserFromRequest(request, User.Rol.EDITOR, true);
 
-        if (!user.isPresent()) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ErrorMessageDto(HttpStatus.UNAUTHORIZED));
-        }
+        Quiz quiz = quizService.findById(id).orElseThrow(QuizNotFoundException::new);
 
-        Optional<Quiz> optionalQuiz = quizService.findById(id);
+        if (quiz.getUser().equals(user) || user.getRoles().contains(User.Rol.REVIEWER)) {
 
-        if (!optionalQuiz.isPresent()) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ErrorMessageDto(HttpStatus.NOT_FOUND));
-        }
-
-        if (optionalQuiz.get().getUser().equals(user.get()) || user.get().getRoles().contains(User.Rol.REVIEWER)) {
-
-            quizService.delete(optionalQuiz.get());
+            quizService.delete(quiz);
             return ResponseEntity.status(HttpStatus.ACCEPTED).build();
         }
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ErrorMessageDto(HttpStatus.UNAUTHORIZED));
+        throw new UserUnauthorizedException();
     }
 
     @CrossOrigin
     @GetMapping("/api/quiz/request/list")
-    public ResponseEntity getQuizRequests(HttpServletRequest request,
+    public ResponseEntity<List<QuizDto>> getQuizRequests(HttpServletRequest request,
                                                  @RequestParam(value = "closed", defaultValue = "false") Boolean isClosed,
                                                  @RequestParam(value = "approved", defaultValue = "false") Boolean isApproved) {
-        Optional<User> user = authUtilities.getUserFromRequest(request, User.Rol.REVIEWER, true);
-
-        if (!user.isPresent()) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ErrorMessageDto(HttpStatus.UNAUTHORIZED));
-        }
+        authUtilities.getUserFromRequest(request, User.Rol.REVIEWER, true);
 
         Set<Quiz> editorRequestSet = quizService.findByClosedAndApproved(isClosed, isApproved);
 
@@ -276,7 +231,7 @@ public class QuizController {
 
     @CrossOrigin
     @GetMapping("/api/quiz/search")
-    public ResponseEntity searchQuiz(HttpServletRequest request,
+    public ResponseEntity<List<SimplifiedQuizDto>> searchQuiz(HttpServletRequest request,
                                             @RequestParam(value = "page", defaultValue = "0") int page,
                                             @RequestParam(value = "size", defaultValue = "50") int size,
                                             @RequestParam(value = "sortColumn", defaultValue = "title") String sortColumn,
