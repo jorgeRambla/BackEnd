@@ -1,14 +1,13 @@
 package es.unizar.murcy.model.dto;
 
-import es.unizar.murcy.model.Answer;
 import es.unizar.murcy.model.IndividualAnswer;
-import es.unizar.murcy.model.Question;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import javax.persistence.ManyToOne;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @NoArgsConstructor
 @AllArgsConstructor
@@ -31,15 +30,19 @@ public class IndividualAnswerDto {
 
     @Getter
     @Setter
-    private LISTA ¡SIEMPRE DTO! answer;
+    private long answerId;
+
+    @Getter
+    @Setter
+    private List<OptionDto> options;
 
     public IndividualAnswerDto(IndividualAnswer individualAnswer){
-        this.id=individualAnswer.getId();
-        this.answerText=individualAnswer.getAnswerText();
-        this.resolutionTime=individualAnswer.getTimeInMillis();
-        this.points=individualAnswer.getPoints();
-        this.question=individualAnswer.getQuestion();
-        this.answer=individualAnswer.getAnswer();
+        this.id = individualAnswer.getId();
+        this.resolutionTime = individualAnswer.getTimeInMillis();
+        this.points = individualAnswer.getPoints();
+        this.questionId = individualAnswer.getQuestion().getId();
+        this.answerId = individualAnswer.getAnswer().getId();
+        this.options = individualAnswer.getOptions().stream().map(OptionDto::new).collect(Collectors.toList());
     }
 
 }

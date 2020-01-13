@@ -2,6 +2,7 @@ package es.unizar.murcy.controllers;
 
 
 import es.unizar.murcy.controllers.utilities.AuthUtilities;
+import es.unizar.murcy.model.Answer;
 import es.unizar.murcy.model.Quiz;
 import es.unizar.murcy.model.User;
 import es.unizar.murcy.model.Workflow;
@@ -9,10 +10,7 @@ import es.unizar.murcy.model.dto.ErrorMessageDto;
 import es.unizar.murcy.model.dto.QuizDto;
 import es.unizar.murcy.model.dto.SimplifiedQuizDto;
 import es.unizar.murcy.model.request.QuizRequest;
-import es.unizar.murcy.service.QuestionService;
-import es.unizar.murcy.service.QuizService;
-import es.unizar.murcy.service.UserService;
-import es.unizar.murcy.service.WorkflowService;
+import es.unizar.murcy.service.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
@@ -38,6 +36,9 @@ public class QuizController {
 
     @Autowired
     private QuestionService questionService;
+
+    @Autowired
+    private AnswerService answerService;
 
     @Autowired
     private UserService userService;
@@ -286,5 +287,32 @@ public class QuizController {
                         .map(SimplifiedQuizDto::new)
                         .collect(Collectors.toList())
         );
+    }
+
+    @CrossOrigin
+    @GetMapping(value = "/api/quiz/{id}/answers")
+    public ResponseEntity fetchAnswersByQuizId(HttpServletRequest request, @PathVariable long id) {
+        Optional<User> user = authUtilities.getUserFromRequest(request, User.Rol.EDITOR, true);
+
+        if (!user.isPresent()) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ErrorMessageDto(HttpStatus.UNAUTHORIZED));
+        }
+
+        Optional<Quiz> optionalQuiz = quizService.findById(id);
+
+        if (!optionalQuiz.isPresent()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ErrorMessageDto(HttpStatus.NOT_FOUND));
+        }
+
+        List<Answer> answerList = answerService.findAnswersByQuizId(id);
+
+        if (answerList==null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ErrorMessageDto(HttpStatus.NOT_FOUND));
+        }
+
+        if (user.equals(user.get()) || user.get().getRoles().contains(User.Rol.REVIEWER)) {
+            return ResponseEntity.status(HttpStatus.OK).body(answerList);
+        }
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ErrorMessageDto(HttpStatus.UNAUTHORIZED));
     }
 }

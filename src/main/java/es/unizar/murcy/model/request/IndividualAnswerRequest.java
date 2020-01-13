@@ -7,8 +7,8 @@ import es.unizar.murcy.service.AnswerService;
 import es.unizar.murcy.service.QuestionService;
 import lombok.*;
 
+import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 @NoArgsConstructor
@@ -30,13 +30,27 @@ public class IndividualAnswerRequest {
 
     @Getter
     @Setter
-    private Set<Long> answerIds;
+    private long answerId;
 
-    public Boolean isCreateValid() {
-        return this.points!= null && this.answerId!=0 && this.questionId!=0;
+    @Getter
+    @Setter
+    private List<OptionRequest> options;
+
+    public Boolean isCreateValid(QuestionService questionService) {
+        Optional<Question> questionOptional= questionService.findById(this.questionId);
+        if(questionOptional.isPresent()){
+            if(questionOptional.get().getIsMultiple()){
+                return this.points!= null && this.options!=null && this.options.size()<=4
+                        && this.questionId!=0;
+            }
+            else{
+                return this.options.size()==1;
+            }
+        }
+        else{
+            return false;
+        }
     }
-    //FIXME: CHECK answerIds VALIDITY WITH CURRENT CHANGES,
-    // 4 <= answersIds.len => 0 if !ismultilple, else answerIds.len == 1
 
     public IndividualAnswer toEntity(AnswerService answerService, QuestionService questionService) {
         IndividualAnswer individualAnswer=new IndividualAnswer();
@@ -53,11 +67,8 @@ public class IndividualAnswerRequest {
             individualAnswer.setAnswer(answerOptional.get());
         }
 
-        Optional<Question> optionalQuestion = questionService.findById(questionId);
-        optionalQuestion.ifPresent(individualAnswer::setQuestion);
+        individualAnswer.setOptions(this.options.stream());
 
-        //FIXME: SET CURRENT VALUE TO INDIVIDUAL ANSWER OBJECT
-        answerIds.stream().map(answerService::findById).filter(Optional::isPresent).map(Optional::get).collect(Collectors.toSet());
         return individualAnswer;
     }
 

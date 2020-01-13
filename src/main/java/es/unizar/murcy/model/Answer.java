@@ -15,18 +15,14 @@ import java.util.Objects;
 @AllArgsConstructor
 @ToString(callSuper = true)
 public class Answer extends AuditableEntity {
+    @ManyToOne
+    @Getter
+    @Setter
+    private User user;
 
     @Getter
     @Setter
-    private String title;
-
-    @Getter
-    @Setter
-    private String description;
-
-    @Getter
-    @Setter
-    private Integer totalResolutionTime;
+    private Integer resolutionTimeInMillis;
 
     @Getter
     @Setter

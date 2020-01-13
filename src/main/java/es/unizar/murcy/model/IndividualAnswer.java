@@ -9,6 +9,7 @@ import lombok.ToString;
 import javax.persistence.Entity;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
+import java.util.List;
 import java.util.Objects;
 
 @Entity
@@ -34,6 +35,10 @@ public class IndividualAnswer extends AuditableEntity {
     @Getter
     @Setter
     private Answer answer;
+
+    @Getter
+    @Setter
+    private List<Option> options;
 
     public IndividualAnswer() {
         super();

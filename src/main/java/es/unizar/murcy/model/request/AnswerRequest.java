@@ -1,7 +1,10 @@
 package es.unizar.murcy.model.request;
 
 import es.unizar.murcy.model.Answer;
+import es.unizar.murcy.model.Quiz;
 import es.unizar.murcy.service.IndividualAnswerService;
+import es.unizar.murcy.service.QuizService;
+import es.unizar.murcy.service.UserService;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -17,33 +20,35 @@ public class AnswerRequest {
 
     @Getter
     @Setter
-    private List<Long> individualAnswersIds;
+    private long idUser;
 
-    public Boolean isCreateValid() {
-        return this.individualAnswersIds != null && !this.individualAnswersIds.isEmpty();
-        //TODO: ADD IDUSUARIO
-        //TODO: ADD QUIZID
-    }
+    @Getter
+    @Setter
+    private long quizId;
 
     @Getter
     @Setter
     private List<IndividualAnswerRequest> individualAnswers;
 
-    public Boolean isCreateValid() {
-        return this.title != null && !this.title.equals("")
-                && this.individualAnswersIds != null && !this.individualAnswersIds.isEmpty();
-        //FIXME: quiz exists && quiz.len == individualA.len
-
+    public Boolean isCreateValid(QuizService quizService) {
+        Optional<Quiz> quizOptional=quizService.findById(quizId);
+        if(quizOptional.isPresent()&&individualAnswers!=null&&!individualAnswers.isEmpty()){
+            return quizOptional.get().getQuestions().size()==individualAnswers.size();
+        }
+        else{
+            return false;
+        }
     }
 
-    public Answer toEntity(IndividualAnswerService individualAnswerService) {
+    public Answer toEntity(IndividualAnswerService individualAnswerService, UserService userService, QuizService quizService) {
         Answer answer=new Answer();
-        answer.setTitle(this.title);
-        answer.setDescription(this.description);
-        answer.setIndividualAnswers(individualAnswersIds.stream()
-                .map(individualAnswerService::findById)
+        answer.setUser(userService.findUserById(this.idUser).get());
+        answer.setQuiz(quizService.findById(this.quizId).get());
+        answer.setIndividualAnswers(individualAnswers);
+
+                .map(questionService::findById)
                 .filter(Optional::isPresent)
-                .map(Optional::get)
+
                 .collect(Collectors.toList()));
         return answer;
     }
