@@ -648,6 +648,125 @@
         } ]
       }
     },
+    "/quiz/{id}/answers" : {
+      "get" : {
+        "tags" : [ "quiz", "answer" ],
+        "summary" : "Get quiz answers by quiz ID",
+        "description" : "Get quiz answers by question identifier",
+        "parameters" : [ {
+          "name" : "id",
+          "in" : "path",
+          "description" : "Quiz id to fetch answers",
+          "required" : true,
+          "style" : "simple",
+          "explode" : false,
+          "schema" : {
+            "type" : "integer",
+            "format" : "int64"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "success",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ArrayAnswerDto"
+                }
+              }
+            }
+          },
+          "403" : {
+            "description" : "Not authorized",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404" : {
+            "description" : "Not found",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "deprecated" : true,
+        "security" : [ {
+          "bearerAuth" : [ ]
+        } ]
+      }
+    },
+    "/quiz/{id}/answer" : {
+      "post" : {
+        "tags" : [ "quiz", "answer" ],
+        "summary" : "Submit new answer to given quiz id",
+        "description" : "Submit new answer to given quiz identified by given id in path",
+        "parameters" : [ {
+          "name" : "id",
+          "in" : "path",
+          "description" : "Quiz id to fetch answers",
+          "required" : true,
+          "style" : "simple",
+          "explode" : false,
+          "schema" : {
+            "type" : "integer",
+            "format" : "int64"
+          }
+        } ],
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/AnswerRequest"
+              }
+            }
+          }
+        },
+        "responses" : {
+          "200" : {
+            "description" : "success",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ArrayAnswerDto"
+                }
+              }
+            }
+          },
+          "403" : {
+            "description" : "Not authorized",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404" : {
+            "description" : "Not found",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "deprecated" : true,
+        "security" : [ {
+          "bearerAuth" : [ ]
+        } ]
+      }
+    },
     "/quiz/request/list" : {
       "get" : {
         "tags" : [ "quiz" ],
@@ -1061,6 +1180,61 @@
         } ]
       }
     },
+    "/question/{id}/answers" : {
+      "get" : {
+        "tags" : [ "question", "answer" ],
+        "summary" : "Get question answers by question ID",
+        "description" : "Get question answers by question identifier",
+        "parameters" : [ {
+          "name" : "id",
+          "in" : "path",
+          "description" : "question id to fetch answers",
+          "required" : true,
+          "style" : "simple",
+          "explode" : false,
+          "schema" : {
+            "type" : "integer",
+            "format" : "int64"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "success",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ArrayIndividualAnswerDto"
+                }
+              }
+            }
+          },
+          "403" : {
+            "description" : "Not authorized",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404" : {
+            "description" : "Not found",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "deprecated" : true,
+        "security" : [ {
+          "bearerAuth" : [ ]
+        } ]
+      }
+    },
     "/question/request/list" : {
       "get" : {
         "tags" : [ "question" ],
@@ -1400,6 +1574,195 @@
           "bearerAuth" : [ ]
         } ]
       }
+    },
+    "/answer/{id}" : {
+      "get" : {
+        "tags" : [ "answer" ],
+        "summary" : "Get given ID answer",
+        "description" : "Get ansert by given answer identifier",
+        "parameters" : [ {
+          "name" : "id",
+          "in" : "path",
+          "description" : "answer id to be obtained",
+          "required" : true,
+          "style" : "simple",
+          "explode" : false,
+          "schema" : {
+            "type" : "integer",
+            "format" : "int64"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "Answers",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/AnswerDto"
+                }
+              }
+            }
+          },
+          "403" : {
+            "description" : "Not authorized",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404" : {
+            "description" : "Not found",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "deprecated" : true,
+        "security" : [ {
+          "bearerAuth" : [ ]
+        } ]
+      },
+      "delete" : {
+        "tags" : [ "answer" ],
+        "summary" : "Delete given ID answer",
+        "description" : "Delete answer by given answer identifier",
+        "parameters" : [ {
+          "name" : "id",
+          "in" : "path",
+          "description" : "answer id to be deleted",
+          "required" : true,
+          "style" : "simple",
+          "explode" : false,
+          "schema" : {
+            "type" : "integer",
+            "format" : "int64"
+          }
+        } ],
+        "responses" : {
+          "201" : {
+            "description" : "Deleted"
+          },
+          "403" : {
+            "description" : "Not authorized",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404" : {
+            "description" : "Not found",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "deprecated" : true,
+        "security" : [ {
+          "bearerAuth" : [ ]
+        } ]
+      }
+    },
+    "/answer/list" : {
+      "get" : {
+        "tags" : [ "answer" ],
+        "summary" : "Get users requests",
+        "description" : "Get users request",
+        "responses" : {
+          "200" : {
+            "description" : "Answers",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/AnswerDto"
+                }
+              }
+            }
+          },
+          "403" : {
+            "description" : "Not authorized",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "deprecated" : true,
+        "security" : [ {
+          "bearerAuth" : [ ]
+        } ]
+      }
+    },
+    "/answer/list/{id}" : {
+      "get" : {
+        "tags" : [ "answer" ],
+        "summary" : "Get users requests",
+        "description" : "Get users request",
+        "parameters" : [ {
+          "name" : "id",
+          "in" : "path",
+          "description" : "user id to retrieve answers",
+          "required" : true,
+          "style" : "simple",
+          "explode" : false,
+          "schema" : {
+            "type" : "integer",
+            "format" : "int64"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "Answers",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/AnswerDto"
+                }
+              }
+            }
+          },
+          "403" : {
+            "description" : "Not authorized",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404" : {
+            "description" : "Not found",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "deprecated" : true,
+        "security" : [ {
+          "bearerAuth" : [ ]
+        } ]
+      }
     }
   },
   "components" : {
@@ -1581,6 +1944,70 @@
           }
         }
       },
+      "IndividualAnswerDto" : {
+        "type" : "object",
+        "properties" : {
+          "id" : {
+            "type" : "integer",
+            "format" : "int64"
+          },
+          "userId" : {
+            "type" : "integer",
+            "format" : "int64"
+          },
+          "questionId" : {
+            "type" : "integer",
+            "format" : "int64"
+          },
+          "timeInMillis" : {
+            "type" : "integer",
+            "format" : "int64"
+          },
+          "submitedOptions" : {
+            "type" : "array",
+            "items" : {
+              "type" : "integer",
+              "format" : "int64"
+            }
+          }
+        }
+      },
+      "ArrayIndividualAnswerDto" : {
+        "type" : "array",
+        "items" : {
+          "$ref" : "#/components/schemas/IndividualAnswerDto"
+        }
+      },
+      "AnswerDto" : {
+        "type" : "object",
+        "properties" : {
+          "id" : {
+            "type" : "integer",
+            "format" : "int64"
+          },
+          "userId" : {
+            "type" : "integer",
+            "format" : "int64"
+          },
+          "quizId" : {
+            "type" : "integer",
+            "format" : "int64"
+          },
+          "timeInMillis" : {
+            "type" : "integer",
+            "format" : "int64"
+          },
+          "individualAnswers" : {
+            "$ref" : "#/components/schemas/ArrayIndividualAnswerDto"
+          }
+        }
+      },
+      "ArrayAnswerDto" : {
+        "type" : "array",
+        "items" : {
+          "$ref" : "#/components/schemas/AnswerDto"
+        }
+      },
       "ArrayQuestionDto" : {
         "type" : "array",
         "items" : {
@@ -1634,12 +2061,6 @@
           }
         }
       },
-      "ArrayEditorRequest" : {
-        "type" : "array",
-        "items" : {
-          "$ref" : "#/components/schemas/EditorRequest"
-        }
-      },
       "WorkflowDto" : {
         "type" : "object",
         "properties" : {
@@ -1675,6 +2096,12 @@
       "WorkflowStatus" : {
         "type" : "string",
         "enum" : [ "APPROVED", "PENDING", "DENIED", "DRAFT", "DRAFT_FROM_APPROVED", "EXPIRED", "INCOMPLETE", "SCHEDULED" ]
+      },
+      "ArrayEditorRequest" : {
+        "type" : "array",
+        "items" : {
+          "$ref" : "#/components/schemas/EditorRequest"
+        }
       },
       "LoginRequest" : {
         "required" : [ "password", "username" ],
@@ -1825,6 +2252,46 @@
           "response" : {
             "type" : "string",
             "description" : "response message"
+          }
+        }
+      },
+      "IndividualAnswerRequest" : {
+        "required" : [ "optionsIds", "points", "questionId", "timeInMillis" ],
+        "type" : "object",
+        "properties" : {
+          "questionId" : {
+            "type" : "integer",
+            "format" : "int64"
+          },
+          "points" : {
+            "type" : "integer",
+            "format" : "int32"
+          },
+          "timeInMillis" : {
+            "type" : "integer",
+            "format" : "int64"
+          },
+          "optionsIds" : {
+            "type" : "array",
+            "items" : {
+              "type" : "integer",
+              "format" : "int64"
+            }
+          }
+        }
+      },
+      "AnswerRequest" : {
+        "required" : [ "individualAnswers", "quizId" ],
+        "properties" : {
+          "quizId" : {
+            "type" : "integer",
+            "format" : "int64"
+          },
+          "individualAnswers" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/IndividualAnswerRequest"
+            }
           }
         }
       }
