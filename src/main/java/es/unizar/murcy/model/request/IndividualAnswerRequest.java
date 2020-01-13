@@ -39,11 +39,10 @@ public class IndividualAnswerRequest {
     public Boolean isCreateValid(QuestionService questionService) {
         Optional<Question> questionOptional= questionService.findById(this.questionId);
         if(questionOptional.isPresent()){
-            if(questionOptional.get().getIsMultiple()){
+            if(Boolean.TRUE.equals(questionOptional.get().getIsMultiple())){
                 return this.points!= null && this.options!=null && this.options.size()<=4
                         && this.questionId!=0;
-            }
-            else{
+            }else{
                 return this.options.size()==1;
             }
         }
@@ -59,13 +58,9 @@ public class IndividualAnswerRequest {
         Optional<Question> questionOptional=questionService.findById(questionId);
         Optional<Answer> answerOptional=answerService.findById(answerId);
 
-        if(questionOptional.isPresent()){
-            individualAnswer.setQuestion(questionOptional.get());
-        }
+        questionOptional.ifPresent(individualAnswer::setQuestion);
 
-        if(answerOptional.isPresent()){
-            individualAnswer.setAnswer(answerOptional.get());
-        }
+        answerOptional.ifPresent(individualAnswer::setAnswer);
 
         individualAnswer.setOptions(options.stream().map(OptionRequest::toEntity).collect(Collectors.toList()));
 

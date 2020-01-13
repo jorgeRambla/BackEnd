@@ -41,11 +41,9 @@ public class AnswerRequest {
     public Answer toEntity(IndividualAnswerService individualAnswerService, UserService userService, QuizService quizService,
                            QuestionService questionService, AnswerService answerService) {
         Answer answer=new Answer();
-        answer.setUser(userService.findUserById(this.idUser).get());
-        answer.setQuiz(quizService.findById(this.quizId).get());
-        answer.setIndividualAnswers(individualAnswers.stream().map(IndividualAnswerRequest::toEntity(//FIXME Poner de forma correcta
-         )).collect(Collectors.toList()));
-
+        answer.setUser(userService.findUserById(this.idUser).orElse(null));
+        answer.setQuiz(quizService.findById(this.quizId).orElse(null));
+        answer.setIndividualAnswers(individualAnswers.stream().map(item -> item.toEntity(answerService, questionService)).collect(Collectors.toList()));
         return answer;
     }
 

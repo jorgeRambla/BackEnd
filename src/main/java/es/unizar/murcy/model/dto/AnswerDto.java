@@ -19,7 +19,7 @@ public class AnswerDto {
 
     @Getter
     @Setter
-    private Integer resolutionTimeInMillis;
+    private Integer timeInMillis;
 
     @Getter
     @Setter

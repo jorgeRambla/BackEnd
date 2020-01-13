@@ -306,11 +306,11 @@ public class QuizController {
 
         List<Answer> answerList = answerService.findAnswersByQuizId(id);
 
-        if (answerList==null) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ErrorMessageDto(HttpStatus.NOT_FOUND));
-        }
+//        if (answerList==null) {
+//            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ErrorMessageDto(HttpStatus.NOT_FOUND));
+//        } <- ESTA CONDICION NUNCA VA A SER, SI ESO DEVUELVE LISTA VACIA, SOLO SE DEVUELVE 404 SI EL ID NO EXISTE
 
-        if (user.equals(user.get()) || user.get().getRoles().contains(User.Rol.REVIEWER)) {
+        if (user.equals(user.get()) || user.get().getRoles().contains(User.Rol.REVIEWER)) { // <- Optional<User> equals Optinal<User>::get ?¿¿?¿?¿ No querras decir quiz user owner equals Optional<User>::get ?¿?
             return ResponseEntity.status(HttpStatus.OK).body(answerList);
         }
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ErrorMessageDto(HttpStatus.UNAUTHORIZED));

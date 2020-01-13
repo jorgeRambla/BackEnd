@@ -18,7 +18,7 @@ public class IndividualAnswerDto {
 
     @Getter
     @Setter
-    private long resolutionTime;
+    private long timeInMillis;
 
     @Getter
     @Setter
@@ -38,7 +38,7 @@ public class IndividualAnswerDto {
 
     public IndividualAnswerDto(IndividualAnswer individualAnswer){
         this.id = individualAnswer.getId();
-        this.resolutionTime = individualAnswer.getTimeInMillis();
+        this.timeInMillis = individualAnswer.getTimeInMillis();
         this.points = individualAnswer.getPoints();
         this.questionId = individualAnswer.getQuestion().getId();
         this.answerId = individualAnswer.getAnswer().getId();
