@@ -5,6 +5,7 @@ import lombok.*;
 
 @AllArgsConstructor
 @NoArgsConstructor
+@SuppressWarnings("Duplicates")
 public class OptionDto {
 
     @Getter

@@ -8,6 +8,7 @@ import java.util.stream.Collectors;
 
 @NoArgsConstructor
 @AllArgsConstructor
+@SuppressWarnings("Duplicates")
 public class SimplifiedQuestionDto {
 
     @Getter

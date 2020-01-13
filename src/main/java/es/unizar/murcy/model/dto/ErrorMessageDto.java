@@ -5,11 +5,13 @@ import org.springframework.http.HttpStatus;
 
 @NoArgsConstructor
 @AllArgsConstructor
+@SuppressWarnings("Duplicates")
 public class ErrorMessageDto {
 
     @Getter
     @Setter
     private int status;
+
     @Getter
     @Setter
     private @NonNull String message;
