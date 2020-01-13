@@ -8,7 +8,6 @@ import es.unizar.murcy.exceptions.question.QuestionNotFoundException;
 import es.unizar.murcy.model.Question;
 import es.unizar.murcy.model.User;
 import es.unizar.murcy.model.Workflow;
-import es.unizar.murcy.model.dto.ErrorMessageDto;
 import es.unizar.murcy.model.dto.QuestionDto;
 import es.unizar.murcy.model.request.OptionRequest;
 import es.unizar.murcy.model.request.QuestionRequest;
@@ -22,7 +21,6 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
-import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 

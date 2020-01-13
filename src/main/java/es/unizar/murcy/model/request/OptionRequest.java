@@ -5,6 +5,7 @@ import lombok.*;
 
 @NoArgsConstructor
 @AllArgsConstructor
+@SuppressWarnings("Duplicates")
 public class OptionRequest {
     @Getter
     @Setter
