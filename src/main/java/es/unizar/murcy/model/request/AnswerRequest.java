@@ -2,9 +2,7 @@ package es.unizar.murcy.model.request;
 
 import es.unizar.murcy.model.Answer;
 import es.unizar.murcy.model.Quiz;
-import es.unizar.murcy.service.IndividualAnswerService;
-import es.unizar.murcy.service.QuizService;
-import es.unizar.murcy.service.UserService;
+import es.unizar.murcy.service.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -40,16 +38,14 @@ public class AnswerRequest {
         }
     }
 
-    public Answer toEntity(IndividualAnswerService individualAnswerService, UserService userService, QuizService quizService) {
+    public Answer toEntity(IndividualAnswerService individualAnswerService, UserService userService, QuizService quizService,
+                           QuestionService questionService, AnswerService answerService) {
         Answer answer=new Answer();
         answer.setUser(userService.findUserById(this.idUser).get());
         answer.setQuiz(quizService.findById(this.quizId).get());
-        answer.setIndividualAnswers(individualAnswers);
+        answer.setIndividualAnswers(individualAnswers.stream().map(IndividualAnswerRequest::toEntity(//FIXME Poner de forma correcta
+         )).collect(Collectors.toList()));
 
-                .map(questionService::findById)
-                .filter(Optional::isPresent)
-
-                .collect(Collectors.toList()));
         return answer;
     }
 

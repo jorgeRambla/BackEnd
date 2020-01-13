@@ -67,7 +67,7 @@ public class IndividualAnswerRequest {
             individualAnswer.setAnswer(answerOptional.get());
         }
 
-        individualAnswer.setOptions(this.options.stream());
+        individualAnswer.setOptions(options.stream().map(OptionRequest::toEntity).collect(Collectors.toList()));
 
         return individualAnswer;
     }
