@@ -1,24 +1,24 @@
 package es.unizar.murcy.controllers;
 
 import es.unizar.murcy.controllers.utilities.AuthUtilities;
-import es.unizar.murcy.exceptions.answer.AnswerBadRequestException;
 import es.unizar.murcy.exceptions.answer.AnswerNotFoundException;
 import es.unizar.murcy.exceptions.user.UserNotFoundException;
 import es.unizar.murcy.exceptions.user.UserUnauthorizedException;
 import es.unizar.murcy.model.Answer;
 import es.unizar.murcy.model.User;
 import es.unizar.murcy.model.dto.AnswerDto;
-import es.unizar.murcy.model.dto.ErrorMessageDto;
-import es.unizar.murcy.model.request.AnswerRequest;
-import es.unizar.murcy.service.*;
+import es.unizar.murcy.service.AnswerService;
+import es.unizar.murcy.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 public class AnswerController {

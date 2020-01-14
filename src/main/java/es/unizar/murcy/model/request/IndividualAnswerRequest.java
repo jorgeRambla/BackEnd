@@ -1,17 +1,14 @@
 package es.unizar.murcy.model.request;
 
 import es.unizar.murcy.exceptions.question.QuestionNotFoundException;
-import es.unizar.murcy.model.Answer;
 import es.unizar.murcy.model.IndividualAnswer;
 import es.unizar.murcy.model.Option;
 import es.unizar.murcy.model.Question;
-import es.unizar.murcy.service.AnswerService;
 import es.unizar.murcy.service.QuestionService;
 import lombok.*;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @NoArgsConstructor

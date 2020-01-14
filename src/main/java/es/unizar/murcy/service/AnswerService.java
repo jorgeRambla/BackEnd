@@ -1,7 +1,6 @@
 package es.unizar.murcy.service;
 
 import es.unizar.murcy.model.Answer;
-import es.unizar.murcy.model.Quiz;
 import es.unizar.murcy.repository.AnswerRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

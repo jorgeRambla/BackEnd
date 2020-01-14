@@ -5,7 +5,6 @@ import es.unizar.murcy.exceptions.workflow.WorkflowBadRequestException;
 import es.unizar.murcy.exceptions.workflow.WorkflowNotFoundException;
 import es.unizar.murcy.model.User;
 import es.unizar.murcy.model.Workflow;
-import es.unizar.murcy.model.dto.ErrorMessageDto;
 import es.unizar.murcy.model.dto.WorkflowDto;
 import es.unizar.murcy.model.request.UpdateWorkflowStatusRequest;
 import es.unizar.murcy.service.WorkflowService;
@@ -15,7 +14,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.Optional;
 
 @RestController
 @CrossOrigin

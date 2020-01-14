@@ -12,7 +12,9 @@ import es.unizar.murcy.exceptions.user.validation.UserBadRequestEmailNotValidExc
 import es.unizar.murcy.exceptions.user.validation.UserBadRequestUsernameAlreadyExistsException;
 import es.unizar.murcy.model.Token;
 import es.unizar.murcy.model.User;
-import es.unizar.murcy.model.dto.*;
+import es.unizar.murcy.model.dto.ErrorMessageDto;
+import es.unizar.murcy.model.dto.JsonWebTokenDto;
+import es.unizar.murcy.model.dto.UserDto;
 import es.unizar.murcy.model.request.JsonWebTokenRequest;
 import es.unizar.murcy.model.request.RegisterUserRequest;
 import es.unizar.murcy.model.request.UpdateUserRequest;
@@ -31,7 +33,6 @@ import javax.mail.internet.AddressException;
 import javax.mail.internet.InternetAddress;
 import javax.servlet.http.HttpServletRequest;
 import java.util.Date;
-import java.util.Optional;
 import java.util.UUID;
 
 @CrossOrigin
