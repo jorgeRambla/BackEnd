@@ -80,6 +80,6 @@ public class QuestionService {
         validStatus.add(Workflow.Status.APPROVED);
         validStatus.add(Workflow.Status.DENIED);
 
-        return questionRepository.findQuestionsByDeletedIsFalseAndClosedAndApprovedAndWorkflow_StatusInOrderByCreateDateDesc(closed, approved, validStatus);
+        return questionRepository.findQuestionsByDeletedIsFalseAndClosedAndApprovedAndLastWorkflow_StatusInOrderByCreateDateDesc(closed, approved, validStatus);
     }
 }

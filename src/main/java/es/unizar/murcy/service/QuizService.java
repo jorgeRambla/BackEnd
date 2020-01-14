@@ -70,7 +70,7 @@ public class QuizService {
     }
 
     public Set<Quiz> findByClosedAndApproved(boolean closed, boolean approved) {
-        return quizRepository.findQuizByDeletedIsFalseAndClosedAndApprovedAndWorkflow_StatusInOrderByCreateDateDesc(closed, approved, getWorkflowRequestsStatus());
+        return quizRepository.findQuizByDeletedIsFalseAndClosedAndApprovedAndLastWorkflow_StatusInOrderByCreateDateDesc(closed, approved, getWorkflowRequestsStatus());
     }
 
     public Optional<Quiz> findByPublishAndId(long id) {

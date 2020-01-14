@@ -20,7 +20,7 @@ public interface QuestionRepository extends JpaRepository<Question, Long> {
 
     List<Question> findQuestionsByDeletedIsFalse();
 
-    Set<Question> findQuestionsByDeletedIsFalseAndClosedAndApprovedAndWorkflow_StatusInOrderByCreateDateDesc(boolean closed, boolean approved, Collection<Workflow.Status> validStatus);
+    Set<Question> findQuestionsByDeletedIsFalseAndClosedAndApprovedAndLastWorkflow_StatusInOrderByCreateDateDesc(boolean closed, boolean approved, Collection<Workflow.Status> validStatus);
 
 
 }
