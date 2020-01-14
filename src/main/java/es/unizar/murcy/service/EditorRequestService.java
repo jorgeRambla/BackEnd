@@ -35,6 +35,6 @@ public class EditorRequestService {
     }
 
     public Set<EditorRequest> findByClosedAndApproved(Boolean isClosed, Boolean isApproved) {
-        return editorRequestRepository.findEditorRequestByClosedAndAndApprovedOrderByCreateDateDesc(isClosed, isApproved);
+        return editorRequestRepository.findEditorRequestByClosedAndAndApprovedAndDeletedIsFalseOrderByCreateDateDesc(isClosed, isApproved);
     }
 }

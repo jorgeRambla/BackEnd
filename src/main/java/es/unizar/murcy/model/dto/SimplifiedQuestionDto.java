@@ -6,9 +6,9 @@ import lombok.*;
 import java.util.List;
 import java.util.stream.Collectors;
 
-@Data
 @NoArgsConstructor
 @AllArgsConstructor
+@SuppressWarnings("Duplicates")
 public class SimplifiedQuestionDto {
 
     @Getter

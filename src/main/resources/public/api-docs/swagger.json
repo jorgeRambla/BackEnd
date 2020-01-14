@@ -452,7 +452,7 @@
         "parameters" : [ {
           "name" : "id",
           "in" : "path",
-          "description" : "Quiz id to update info",
+          "description" : "Quiz id to fech info",
           "required" : true,
           "style" : "simple",
           "explode" : false,
@@ -565,7 +565,7 @@
         "parameters" : [ {
           "name" : "id",
           "in" : "path",
-          "description" : "quiz id to update info",
+          "description" : "quiz id to delete info",
           "required" : true,
           "style" : "simple",
           "explode" : false,
@@ -577,6 +577,167 @@
         "responses" : {
           "201" : {
             "description" : "Deleted"
+          },
+          "403" : {
+            "description" : "Not authorized",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404" : {
+            "description" : "Not found",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "security" : [ {
+          "bearerAuth" : [ ]
+        } ]
+      }
+    },
+    "/quiz/{id}/public" : {
+      "get" : {
+        "tags" : [ "quiz" ],
+        "summary" : "Get quiz info by ID",
+        "description" : "Get quiz public info by question identifier",
+        "parameters" : [ {
+          "name" : "id",
+          "in" : "path",
+          "description" : "Quiz id to fetch info",
+          "required" : true,
+          "style" : "simple",
+          "explode" : false,
+          "schema" : {
+            "type" : "integer",
+            "format" : "int64"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "success",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/SimplifiedQuizDto"
+                }
+              }
+            }
+          },
+          "404" : {
+            "description" : "Not found",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "security" : [ {
+          "bearerAuth" : [ ]
+        } ]
+      }
+    },
+    "/quiz/{id}/answers" : {
+      "get" : {
+        "tags" : [ "quiz", "answer" ],
+        "summary" : "Get quiz answers by quiz ID",
+        "description" : "Get quiz answers by question identifier",
+        "parameters" : [ {
+          "name" : "id",
+          "in" : "path",
+          "description" : "Quiz id to fetch answers",
+          "required" : true,
+          "style" : "simple",
+          "explode" : false,
+          "schema" : {
+            "type" : "integer",
+            "format" : "int64"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "success",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ArrayAnswerDto"
+                }
+              }
+            }
+          },
+          "403" : {
+            "description" : "Not authorized",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404" : {
+            "description" : "Not found",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "security" : [ {
+          "bearerAuth" : [ ]
+        } ]
+      }
+    },
+    "/quiz/{id}/answer" : {
+      "post" : {
+        "tags" : [ "quiz", "answer" ],
+        "summary" : "Submit new answer to given quiz id",
+        "description" : "Submit new answer to given quiz identified by given id in path",
+        "parameters" : [ {
+          "name" : "id",
+          "in" : "path",
+          "description" : "Quiz id to fetch answers",
+          "required" : true,
+          "style" : "simple",
+          "explode" : false,
+          "schema" : {
+            "type" : "integer",
+            "format" : "int64"
+          }
+        } ],
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/AnswerRequest"
+              }
+            }
+          }
+        },
+        "responses" : {
+          "200" : {
+            "description" : "success",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ArrayAnswerDto"
+                }
+              }
+            }
           },
           "403" : {
             "description" : "Not authorized",
@@ -654,7 +815,84 @@
             }
           }
         },
-        "deprecated" : true,
+        "security" : [ {
+          "bearerAuth" : [ ]
+        } ]
+      }
+    },
+    "/quiz/search" : {
+      "get" : {
+        "tags" : [ "quiz" ],
+        "summary" : "Search Quizzes",
+        "description" : "Search Quizzes with query search, (Without paginarion set start and end as -1)",
+        "parameters" : [ {
+          "name" : "page",
+          "in" : "query",
+          "description" : "pagination page",
+          "required" : false,
+          "style" : "form",
+          "explode" : true,
+          "schema" : {
+            "type" : "integer",
+            "default" : 0
+          }
+        }, {
+          "name" : "size",
+          "in" : "query",
+          "description" : "pagination size",
+          "required" : false,
+          "style" : "form",
+          "explode" : true,
+          "schema" : {
+            "type" : "integer",
+            "default" : 50
+          }
+        }, {
+          "name" : "sortColumn",
+          "in" : "query",
+          "description" : "Search order column",
+          "required" : false,
+          "style" : "form",
+          "explode" : true,
+          "schema" : {
+            "type" : "string",
+            "default" : "title"
+          }
+        }, {
+          "name" : "sortType",
+          "in" : "query",
+          "description" : "Search order type",
+          "required" : false,
+          "style" : "form",
+          "explode" : true,
+          "schema" : {
+            "type" : "string",
+            "default" : "desc",
+            "enum" : [ "asc", "desc" ]
+          }
+        }, {
+          "name" : "query",
+          "in" : "query",
+          "description" : "Search by word",
+          "required" : false,
+          "style" : "form",
+          "explode" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "quizzes",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ArraySimplifiedQuizDto"
+                }
+              }
+            }
+          }
+        },
         "security" : [ {
           "bearerAuth" : [ ]
         } ]
@@ -940,6 +1178,60 @@
         } ]
       }
     },
+    "/question/{id}/answers" : {
+      "get" : {
+        "tags" : [ "question", "answer" ],
+        "summary" : "Get question answers by question ID",
+        "description" : "Get question answers by question identifier",
+        "parameters" : [ {
+          "name" : "id",
+          "in" : "path",
+          "description" : "question id to fetch answers",
+          "required" : true,
+          "style" : "simple",
+          "explode" : false,
+          "schema" : {
+            "type" : "integer",
+            "format" : "int64"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "success",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ArrayIndividualAnswerDto"
+                }
+              }
+            }
+          },
+          "403" : {
+            "description" : "Not authorized",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404" : {
+            "description" : "Not found",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "security" : [ {
+          "bearerAuth" : [ ]
+        } ]
+      }
+    },
     "/question/request/list" : {
       "get" : {
         "tags" : [ "question" ],
@@ -990,7 +1282,6 @@
             }
           }
         },
-        "deprecated" : true,
         "security" : [ {
           "bearerAuth" : [ ]
         } ]
@@ -1280,6 +1571,193 @@
           "bearerAuth" : [ ]
         } ]
       }
+    },
+    "/answer/{id}" : {
+      "get" : {
+        "tags" : [ "answer" ],
+        "summary" : "Get given ID answer",
+        "description" : "Get ansert by given answer identifier",
+        "parameters" : [ {
+          "name" : "id",
+          "in" : "path",
+          "description" : "answer id to be obtained",
+          "required" : true,
+          "style" : "simple",
+          "explode" : false,
+          "schema" : {
+            "type" : "integer",
+            "format" : "int64"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "Answers",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/AnswerDto"
+                }
+              }
+            }
+          },
+          "403" : {
+            "description" : "Not authorized",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404" : {
+            "description" : "Not found",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "security" : [ {
+          "bearerAuth" : [ ]
+        } ]
+      },
+      "delete" : {
+        "tags" : [ "answer" ],
+        "summary" : "Delete given ID answer",
+        "description" : "Delete answer by given answer identifier",
+        "parameters" : [ {
+          "name" : "id",
+          "in" : "path",
+          "description" : "answer id to be deleted",
+          "required" : true,
+          "style" : "simple",
+          "explode" : false,
+          "schema" : {
+            "type" : "integer",
+            "format" : "int64"
+          }
+        } ],
+        "responses" : {
+          "201" : {
+            "description" : "Deleted"
+          },
+          "403" : {
+            "description" : "Not authorized",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404" : {
+            "description" : "Not found",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "security" : [ {
+          "bearerAuth" : [ ]
+        } ]
+      }
+    },
+    "/answer/list" : {
+      "get" : {
+        "tags" : [ "answer" ],
+        "summary" : "Get user quiz answers",
+        "description" : "Get current user quiz answers",
+        "responses" : {
+          "200" : {
+            "description" : "Answers",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/AnswerDto"
+                }
+              }
+            }
+          },
+          "403" : {
+            "description" : "Not authorized",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "deprecated" : true,
+        "security" : [ {
+          "bearerAuth" : [ ]
+        } ]
+      }
+    },
+    "/answer/list/{id}" : {
+      "get" : {
+        "tags" : [ "answer" ],
+        "summary" : "Get given userId user quiz answers",
+        "description" : "Get user by user identifer quiz answers",
+        "parameters" : [ {
+          "name" : "id",
+          "in" : "path",
+          "description" : "user id to retrieve answers",
+          "required" : true,
+          "style" : "simple",
+          "explode" : false,
+          "schema" : {
+            "type" : "integer",
+            "format" : "int64"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "Answers",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/AnswerDto"
+                }
+              }
+            }
+          },
+          "403" : {
+            "description" : "Not authorized",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404" : {
+            "description" : "Not found",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "deprecated" : true,
+        "security" : [ {
+          "bearerAuth" : [ ]
+        } ]
+      }
     }
   },
   "components" : {
@@ -1360,6 +1838,33 @@
           "$ref" : "#/components/schemas/QuizDto"
         }
       },
+      "ArraySimplifiedQuizDto" : {
+        "type" : "array",
+        "items" : {
+          "$ref" : "#/components/schemas/SimplifiedQuizDto"
+        }
+      },
+      "SimplifiedQuizDto" : {
+        "type" : "object",
+        "properties" : {
+          "id" : {
+            "type" : "integer",
+            "format" : "int64"
+          },
+          "title" : {
+            "type" : "string"
+          },
+          "description" : {
+            "type" : "string"
+          },
+          "questions" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/SimplifiedQuestionDto"
+            }
+          }
+        }
+      },
       "SimplifiedQuestionDto" : {
         "type" : "object",
         "properties" : {
@@ -1381,7 +1886,7 @@
             "minItems" : 2,
             "type" : "array",
             "items" : {
-              "$ref" : "#/components/schemas/OptionRequest"
+              "$ref" : "#/components/schemas/OptionDto"
             }
           }
         }
@@ -1407,7 +1912,7 @@
             "minItems" : 2,
             "type" : "array",
             "items" : {
-              "$ref" : "#/components/schemas/OptionRequest"
+              "$ref" : "#/components/schemas/OptionDto"
             }
           },
           "isPublic" : {
@@ -1432,6 +1937,74 @@
           "ownerUsername" : {
             "type" : "string"
           }
+        }
+      },
+      "IndividualAnswerDto" : {
+        "type" : "object",
+        "properties" : {
+          "id" : {
+            "type" : "integer",
+            "format" : "int64"
+          },
+          "userId" : {
+            "type" : "integer",
+            "format" : "int64"
+          },
+          "questionId" : {
+            "type" : "integer",
+            "format" : "int64"
+          },
+          "timeInMillis" : {
+            "type" : "integer",
+            "format" : "int64"
+          },
+          "submitedOptions" : {
+            "type" : "array",
+            "items" : {
+              "type" : "integer",
+              "format" : "int64"
+            }
+          }
+        }
+      },
+      "ArrayIndividualAnswerDto" : {
+        "type" : "array",
+        "items" : {
+          "$ref" : "#/components/schemas/IndividualAnswerDto"
+        }
+      },
+      "AnswerDto" : {
+        "type" : "object",
+        "properties" : {
+          "id" : {
+            "type" : "integer",
+            "format" : "int64"
+          },
+          "userId" : {
+            "type" : "integer",
+            "format" : "int64"
+          },
+          "quizId" : {
+            "type" : "integer",
+            "format" : "int64"
+          },
+          "timeInMillis" : {
+            "type" : "integer",
+            "format" : "int64"
+          },
+          "totalPoints" : {
+            "type" : "integer",
+            "format" : "int64"
+          },
+          "individualAnswers" : {
+            "$ref" : "#/components/schemas/ArrayIndividualAnswerDto"
+          }
+        }
+      },
+      "ArrayAnswerDto" : {
+        "type" : "array",
+        "items" : {
+          "$ref" : "#/components/schemas/AnswerDto"
         }
       },
       "ArrayQuestionDto" : {
@@ -1487,12 +2060,6 @@
           }
         }
       },
-      "ArrayEditorRequest" : {
-        "type" : "array",
-        "items" : {
-          "$ref" : "#/components/schemas/EditorRequest"
-        }
-      },
       "WorkflowDto" : {
         "type" : "object",
         "properties" : {
@@ -1528,6 +2095,12 @@
       "WorkflowStatus" : {
         "type" : "string",
         "enum" : [ "APPROVED", "PENDING", "DENIED", "DRAFT", "DRAFT_FROM_APPROVED", "EXPIRED", "INCOMPLETE", "SCHEDULED" ]
+      },
+      "ArrayEditorRequest" : {
+        "type" : "array",
+        "items" : {
+          "$ref" : "#/components/schemas/EditorRequest"
+        }
       },
       "LoginRequest" : {
         "required" : [ "password", "username" ],
@@ -1619,8 +2192,26 @@
           }
         }
       },
+      "OptionDto" : {
+        "required" : [ "correct", "id", "title" ],
+        "type" : "object",
+        "properties" : {
+          "id" : {
+            "type" : "integer",
+            "format" : "int64"
+          },
+          "title" : {
+            "type" : "string",
+            "description" : "Option text"
+          },
+          "correct" : {
+            "type" : "boolean",
+            "description" : "is option correct"
+          }
+        }
+      },
       "QuizRequest" : {
-        "required" : [ "desctiption", "qustionIds", "title" ],
+        "required" : [ "description", "publish", "questionIds", "title" ],
         "type" : "object",
         "properties" : {
           "title" : {
@@ -1631,13 +2222,17 @@
             "type" : "string",
             "description" : "question description"
           },
-          "qustionIds" : {
+          "questionIds" : {
             "minItems" : 1,
             "type" : "array",
             "items" : {
               "type" : "integer",
               "format" : "int64"
             }
+          },
+          "publish" : {
+            "type" : "boolean",
+            "description" : "publish quiz"
           }
         }
       },
@@ -1670,6 +2265,38 @@
           "response" : {
             "type" : "string",
             "description" : "response message"
+          }
+        }
+      },
+      "IndividualAnswerRequest" : {
+        "required" : [ "optionsIds", "questionId", "timeInMillis" ],
+        "type" : "object",
+        "properties" : {
+          "questionId" : {
+            "type" : "integer",
+            "format" : "int64"
+          },
+          "timeInMillis" : {
+            "type" : "integer",
+            "format" : "int64"
+          },
+          "optionsIds" : {
+            "type" : "array",
+            "items" : {
+              "type" : "integer",
+              "format" : "int64"
+            }
+          }
+        }
+      },
+      "AnswerRequest" : {
+        "required" : [ "individualAnswers" ],
+        "properties" : {
+          "individualAnswers" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/IndividualAnswerRequest"
+            }
           }
         }
       }

@@ -6,9 +6,9 @@ import lombok.*;
 import java.util.HashSet;
 import java.util.Set;
 
-@Data
 @NoArgsConstructor
 @AllArgsConstructor
+@SuppressWarnings("Duplicates")
 public class RegisterUserRequest {
 
     @Getter

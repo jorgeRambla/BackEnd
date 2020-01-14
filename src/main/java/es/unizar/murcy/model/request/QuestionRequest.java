@@ -8,17 +8,21 @@ import java.util.stream.Collectors;
 
 @NoArgsConstructor
 @AllArgsConstructor
-@Data
+@SuppressWarnings("Duplicates")
 public class QuestionRequest {
+
     @Getter
     @Setter
     private String title;
+
     @Getter
     @Setter
     private String description;
+
     @Getter
     @Setter
     private List<OptionRequest> options;
+
     @Getter
     @Setter
     private Boolean publish;

@@ -4,7 +4,7 @@ import lombok.*;
 
 @NoArgsConstructor
 @AllArgsConstructor
-@Data
+@SuppressWarnings("Duplicates")
 public class UpdateWorkflowStatusRequest {
     @Getter
     @Setter

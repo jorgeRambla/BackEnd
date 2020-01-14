@@ -6,9 +6,9 @@ import lombok.*;
 import java.util.List;
 import java.util.stream.Collectors;
 
-@Data
 @NoArgsConstructor
 @AllArgsConstructor
+@SuppressWarnings("Duplicates")
 public class QuizDto {
 
     @Getter
@@ -33,6 +33,22 @@ public class QuizDto {
 
     @Getter
     @Setter
+    private WorkflowDto workflow;
+
+    @Getter
+    @Setter
+    private WorkflowDto lastWorkflow;
+
+    @Getter
+    @Setter
+    private boolean approved;
+
+    @Getter
+    @Setter
+    private boolean closed;
+
+    @Getter
+    @Setter
     private List<SimplifiedQuestionDto> questions;
 
     public QuizDto(Quiz quiz){
@@ -42,5 +58,13 @@ public class QuizDto {
         this.ownerUserName = quiz.getUser().getUsername();
         this.ownerId = quiz.getUser().getId();
         this.questions = quiz.getQuestions().stream().map(SimplifiedQuestionDto::new).collect(Collectors.toList());
+        if(quiz.getWorkflow() != null) {
+            this.workflow = new WorkflowDto(quiz.getWorkflow());
+        }
+        if(quiz.getLastWorkflow() != null) {
+            this.lastWorkflow = new WorkflowDto(quiz.getLastWorkflow());
+        }
+        this.approved = quiz.isApproved();
+        this.closed = quiz.isClosed();
     }
 }

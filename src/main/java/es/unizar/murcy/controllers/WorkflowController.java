@@ -1,9 +1,10 @@
 package es.unizar.murcy.controllers;
 
 import es.unizar.murcy.controllers.utilities.AuthUtilities;
+import es.unizar.murcy.exceptions.workflow.WorkflowBadRequestException;
+import es.unizar.murcy.exceptions.workflow.WorkflowNotFoundException;
 import es.unizar.murcy.model.User;
 import es.unizar.murcy.model.Workflow;
-import es.unizar.murcy.model.dto.ErrorMessageDto;
 import es.unizar.murcy.model.dto.WorkflowDto;
 import es.unizar.murcy.model.request.UpdateWorkflowStatusRequest;
 import es.unizar.murcy.service.WorkflowService;
@@ -13,7 +14,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.Optional;
 
 @RestController
 @CrossOrigin
@@ -27,56 +27,30 @@ public class WorkflowController {
 
     @CrossOrigin
     @PutMapping("/api/workflow/{id}/approve")
-    @SuppressWarnings("Duplicates")
     public ResponseEntity approveWorkflow(HttpServletRequest request, @PathVariable long id, @RequestBody UpdateWorkflowStatusRequest updateWorkflowStatusRequest) {
-        Optional<User> user = authUtilities.getUserFromRequest(request);
-
-        if(!user.isPresent()) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ErrorMessageDto(HttpStatus.UNAUTHORIZED));
-        }
-
-        if(!user.get().getRoles().contains(User.Rol.REVIEWER)) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ErrorMessageDto(HttpStatus.UNAUTHORIZED));
-        }
+        User user = authUtilities.getUserFromRequest(request, User.Rol.REVIEWER, true);
 
         if(!updateWorkflowStatusRequest.isValid()) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ErrorMessageDto(HttpStatus.BAD_REQUEST));
+            throw new WorkflowBadRequestException();
         }
 
-        Optional<Workflow> workflow = workflowService.approveById(id, user.get(), updateWorkflowStatusRequest.getResponse());
+        Workflow workflow = workflowService.approveById(id, user, updateWorkflowStatusRequest.getResponse()).orElseThrow(WorkflowNotFoundException::new);
 
-        if(workflow.isPresent()) {
-            return ResponseEntity.status(HttpStatus.CREATED).body(new WorkflowDto(workflow.get()));
-        }
-
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ErrorMessageDto(HttpStatus.NOT_FOUND));
+        return ResponseEntity.status(HttpStatus.CREATED).body(new WorkflowDto(workflow));
     }
 
     @CrossOrigin
     @PutMapping("/api/workflow/{id}/deny")
-    @SuppressWarnings("Duplicates")
     public ResponseEntity denyWorkflow(HttpServletRequest request, @PathVariable long id, @RequestBody UpdateWorkflowStatusRequest updateWorkflowStatusRequest) {
 
-        Optional<User> user = authUtilities.getUserFromRequest(request);
-
-        if(!user.isPresent()) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ErrorMessageDto(HttpStatus.UNAUTHORIZED));
-        }
-
-        if(!user.get().getRoles().contains(User.Rol.REVIEWER)) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ErrorMessageDto(HttpStatus.UNAUTHORIZED));
-        }
+        User user = authUtilities.getUserFromRequest(request, User.Rol.REVIEWER, true);
 
         if(!updateWorkflowStatusRequest.isValid()) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ErrorMessageDto(HttpStatus.BAD_REQUEST));
+            throw new WorkflowBadRequestException();
         }
 
-        Optional<Workflow> workflow = workflowService.denyById(id, user.get(), updateWorkflowStatusRequest.getResponse());
+        Workflow workflow = workflowService.denyById(id, user, updateWorkflowStatusRequest.getResponse()).orElseThrow(WorkflowNotFoundException::new);
 
-        if(workflow.isPresent()) {
-            return ResponseEntity.status(HttpStatus.CREATED).body(new WorkflowDto(workflow.get()));
-        }
-
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ErrorMessageDto(HttpStatus.NOT_FOUND));
+        return ResponseEntity.status(HttpStatus.CREATED).body(new WorkflowDto(workflow));
     }
 }

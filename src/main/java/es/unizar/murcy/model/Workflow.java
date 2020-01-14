@@ -16,6 +16,8 @@ import java.util.Set;
 @ToString(callSuper = true)
 public class Workflow extends AuditableEntity {
 
+    public static final String DRAFT_MESSAGE = "DRAFT";
+
     @Getter
     @Setter
     private Status status;

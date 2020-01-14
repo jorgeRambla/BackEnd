@@ -35,7 +35,7 @@ public class DataLoader implements ApplicationRunner {
             rolSet.add(User.Rol.USER);
             rolSet.add(User.Rol.EDITOR);
             rolSet.add(User.Rol.REVIEWER);
-            userRepository.save(new User(adminUsername, new BCryptPasswordEncoder().encode(adminPassword), adminUsername, adminUsername + "@murcy.com", null, true, rolSet));
+            userRepository.save(new User(adminUsername, new BCryptPasswordEncoder().encode(adminPassword), adminUsername, adminUsername + "@murcy.com", null, true, new HashSet<>(), rolSet));
         }
     }
 }

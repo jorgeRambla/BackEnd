@@ -3,15 +3,14 @@ package es.unizar.murcy.service;
 import es.unizar.murcy.model.Option;
 import es.unizar.murcy.model.Question;
 import es.unizar.murcy.model.User;
+import es.unizar.murcy.model.Workflow;
 import es.unizar.murcy.repository.OptionRepository;
 import es.unizar.murcy.repository.QuestionRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
-import java.util.Date;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 @Service
 @Transactional
@@ -73,5 +72,14 @@ public class QuestionService {
 
     public List<Question> findQuestionsByOwnerId(long userId) {
         return questionRepository.findQuestionsByUser_IdAndDeletedIsFalse(userId);
+    }
+
+    public Set<Question> findByClosedAndApproved(boolean closed, boolean approved) {
+        Set<Workflow.Status> validStatus = new HashSet<>();
+        validStatus.add(Workflow.Status.PENDING);
+        validStatus.add(Workflow.Status.APPROVED);
+        validStatus.add(Workflow.Status.DENIED);
+
+        return questionRepository.findQuestionsByDeletedIsFalseAndClosedAndApprovedAndLastWorkflow_StatusInOrderByCreateDateDesc(closed, approved, validStatus);
     }
 }

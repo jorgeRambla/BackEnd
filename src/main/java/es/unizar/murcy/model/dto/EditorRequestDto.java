@@ -3,9 +3,9 @@ package es.unizar.murcy.model.dto;
 import es.unizar.murcy.model.EditorRequest;
 import lombok.*;
 
-@Data
 @NoArgsConstructor
 @AllArgsConstructor
+@SuppressWarnings("Duplicates")
 public class EditorRequestDto {
 
     @Getter

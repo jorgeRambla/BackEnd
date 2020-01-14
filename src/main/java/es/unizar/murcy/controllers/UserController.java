@@ -2,9 +2,19 @@ package es.unizar.murcy.controllers;
 
 import es.unizar.murcy.components.JsonWebTokenUtil;
 import es.unizar.murcy.controllers.utilities.AuthUtilities;
+import es.unizar.murcy.exceptions.token.TokenNotFoundException;
+import es.unizar.murcy.exceptions.user.UserForbiddenException;
+import es.unizar.murcy.exceptions.user.UserNotConfirmedException;
+import es.unizar.murcy.exceptions.user.UserNotFoundException;
+import es.unizar.murcy.exceptions.user.UserUnauthorizedException;
+import es.unizar.murcy.exceptions.user.validation.UserBadRequestEmailAlreadyExistsException;
+import es.unizar.murcy.exceptions.user.validation.UserBadRequestEmailNotValidException;
+import es.unizar.murcy.exceptions.user.validation.UserBadRequestUsernameAlreadyExistsException;
 import es.unizar.murcy.model.Token;
 import es.unizar.murcy.model.User;
-import es.unizar.murcy.model.dto.*;
+import es.unizar.murcy.model.dto.ErrorMessageDto;
+import es.unizar.murcy.model.dto.JsonWebTokenDto;
+import es.unizar.murcy.model.dto.UserDto;
 import es.unizar.murcy.model.request.JsonWebTokenRequest;
 import es.unizar.murcy.model.request.RegisterUserRequest;
 import es.unizar.murcy.model.request.UpdateUserRequest;
@@ -14,7 +24,6 @@ import es.unizar.murcy.service.TokenService;
 import es.unizar.murcy.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -24,7 +33,6 @@ import javax.mail.internet.AddressException;
 import javax.mail.internet.InternetAddress;
 import javax.servlet.http.HttpServletRequest;
 import java.util.Date;
-import java.util.Optional;
 import java.util.UUID;
 
 @CrossOrigin
@@ -80,106 +88,80 @@ public class UserController {
 
     @CrossOrigin
     @GetMapping("/api/user/info")
-    public ResponseEntity getCurrentUser(HttpServletRequest request) {
-        Optional<User> user = authUtilities.getUserFromRequest(request);
+    public ResponseEntity<UserDto> getCurrentUser(HttpServletRequest request) {
+        User user = authUtilities.getUserFromRequest(request);
 
-        if(user.isPresent()) {
-            return ResponseEntity.status(HttpStatus.OK).body(new UserDto(user.get()));
-        }
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ErrorMessageDto(HttpStatus.UNAUTHORIZED));
+        return ResponseEntity.status(HttpStatus.OK).body(new UserDto(user));
     }
 
     @CrossOrigin
     @GetMapping("/api/user/info/{id}")
-    public ResponseEntity getUserById(HttpServletRequest request, @PathVariable long id) {
-        Optional<User> user = authUtilities.getUserFromRequest(request);
+    public ResponseEntity<UserDto> getUserById(HttpServletRequest request, @PathVariable long id) {
+        User user = authUtilities.getUserFromRequest(request);
 
-        if(!user.isPresent()) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ErrorMessageDto(HttpStatus.UNAUTHORIZED));
+        User fetchedUser = userService.findUserById(id).orElseThrow(UserNotFoundException::new);
+
+
+        if(fetchedUser.getId() == user.getId() || user.getRoles().contains(User.Rol.REVIEWER)) {
+            return ResponseEntity.status(HttpStatus.OK).body(new UserDto(fetchedUser));
         }
-
-        Optional<User> optionalUser = userService.findUserById(id);
-
-        if(!optionalUser.isPresent()) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ErrorMessageDto(HttpStatus.NOT_FOUND));
-        }
-
-        if(optionalUser.get().getId() == user.get().getId() || user.get().getRoles().contains(User.Rol.REVIEWER)) {
-            return ResponseEntity.status(HttpStatus.OK).body(new UserDto(optionalUser.get()));
-        }
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ErrorMessageDto(HttpStatus.UNAUTHORIZED));
+        throw new UserUnauthorizedException();
     }
 
     @CrossOrigin
     @PutMapping("/api/user/info")
-    public ResponseEntity putCurrentUser(HttpServletRequest request,
+    public ResponseEntity<UserDto> putCurrentUser(HttpServletRequest request,
                                           @RequestBody UpdateUserRequest updateUserRequest) {
-        Optional<User> user = authUtilities.getUserFromRequest(request);
+        User user = authUtilities.getUserFromRequest(request);
 
-        if (!user.isPresent()) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ErrorMessageDto(HttpStatus.UNAUTHORIZED));
-        }
-
-        return putUserById(request, user.get().getId(), updateUserRequest);
+        return putUserById(request, user.getId(), updateUserRequest);
     }
 
     @CrossOrigin
     @PutMapping("/api/user/info/{id}")
-    public ResponseEntity putUserById(HttpServletRequest request, @PathVariable long id, @RequestBody UpdateUserRequest updateUserRequest) {
-        Optional<User> user = authUtilities.getUserFromRequest(request);
+    public ResponseEntity<UserDto> putUserById(HttpServletRequest request, @PathVariable long id, @RequestBody UpdateUserRequest updateUserRequest) {
+        User user = authUtilities.getUserFromRequest(request);
 
-        if (!user.isPresent()) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ErrorMessageDto(HttpStatus.UNAUTHORIZED));
-        }
+        User fetchedUser = userService.findUserById(id).orElseThrow(UserNotFoundException::new);
 
-        Optional<User> finalUser = userService.findUserById(id);
-
-        if(!finalUser.isPresent()) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ErrorMessageDto(HttpStatus.NOT_FOUND, "User not found"));
-        }
-
-        if(user.get().getId() == id || user.get().getRoles().contains(User.Rol.REVIEWER)) {
+        if(user.getId() == id || user.getRoles().contains(User.Rol.REVIEWER)) {
 
             if(Boolean.TRUE.equals(isUpdateValid(updateUserRequest.getEmail()))) {
 
                 if(Boolean.FALSE.equals(isMailValid(updateUserRequest.getEmail()))) {
-                    return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ErrorMessageDto(HttpStatus.BAD_REQUEST, "Email is not valid"));
+                    throw new UserBadRequestEmailNotValidException();
                 }
 
-                if(!finalUser.get().getEmail().equals(updateUserRequest.getEmail()) && userService.existsByEmail(updateUserRequest.getEmail())) {
-                    return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ErrorMessageDto(HttpStatus.BAD_REQUEST, "Ya existe un usuario con ese email"));
+                if(!fetchedUser.getEmail().equals(updateUserRequest.getEmail()) && userService.existsByEmail(updateUserRequest.getEmail())) {
+                    throw new UserBadRequestEmailAlreadyExistsException();
                 } else {
-                    finalUser.get().setEmail(updateUserRequest.getEmail());
+                    fetchedUser.setEmail(updateUserRequest.getEmail());
                 }
             }
 
             if(Boolean.TRUE.equals(isUpdateValid(updateUserRequest.getUsername()))) {
 
-                if(!finalUser.get().getUsername().equals(updateUserRequest.getUsername()) && userService.existsByUsername(updateUserRequest.getUsername())) {
-                    return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ErrorMessageDto(HttpStatus.BAD_REQUEST, "Ya existe un usuario con ese nombre"));
+                if(!fetchedUser.getUsername().equals(updateUserRequest.getUsername()) && userService.existsByUsername(updateUserRequest.getUsername())) {
+                    throw new UserBadRequestUsernameAlreadyExistsException();
                 } else {
-                    finalUser.get().setUsername(updateUserRequest.getUsername());
+                    fetchedUser.setUsername(updateUserRequest.getUsername());
                 }
             }
 
-            User updatedUser = updateUserDataAuthorized(updateUserRequest, user.get(), finalUser.get());
+            User updatedUser = updateUserDataAuthorized(updateUserRequest, user, fetchedUser);
 
             return ResponseEntity.status(HttpStatus.CREATED).body(new UserDto(updatedUser));
         }
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ErrorMessageDto(HttpStatus.UNAUTHORIZED));
+        throw new UserUnauthorizedException();
     }
 
     @CrossOrigin
     @PostMapping(value = "/api/user/login")
-    public ResponseEntity createAuthenticationToken(@RequestBody JsonWebTokenRequest jsonWebTokenRequest, HttpServletRequest request) {
-        Optional<User> user = userService.findUserByUserName(jsonWebTokenRequest.getUsername());
+    public ResponseEntity<JsonWebTokenDto> createAuthenticationToken(@RequestBody JsonWebTokenRequest jsonWebTokenRequest, HttpServletRequest request) {
+        User user = userService.findUserByUserName(jsonWebTokenRequest.getUsername()).orElseThrow(UserForbiddenException::new);
 
-        if(!user.isPresent()) {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
-        }
-
-        if(Boolean.FALSE.equals(user.get().getConfirmed())) {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(new ErrorMessageDto(HttpStatus.FORBIDDEN, "User not confirmed"));
+        if(Boolean.FALSE.equals(user.getConfirmed())) {
+            throw new UserNotConfirmedException();
         }
 
         authUtilities.authenticate(jsonWebTokenRequest.getUsername(), jsonWebTokenRequest.getPassword());
@@ -189,9 +171,8 @@ public class UserController {
 
         final String token = jsonWebTokenUtil.generateToken(userDetails);
 
-        User toUpdateUser = user.get();
-        toUpdateUser.setLastIp(request.getRemoteAddr());
-        userService.update(toUpdateUser);
+        user.setLastIp(request.getRemoteAddr());
+        userService.update(user);
 
         return ResponseEntity.status(HttpStatus.OK).body(new JsonWebTokenDto(token));
     }
@@ -199,17 +180,13 @@ public class UserController {
     @CrossOrigin
     @PostMapping(value = "/api/user/confirm/{tokenValue}")
     public ResponseEntity confirmToken(@PathVariable String tokenValue) {
-        Optional<Token> token = tokenService.getTokenByValue(tokenValue);
+        Token token = tokenService.getTokenByValue(tokenValue).orElseThrow(TokenNotFoundException::new);
 
-        if(!token.isPresent()) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).contentType(MediaType.APPLICATION_JSON).body(new ErrorMessageDto(HttpStatus.NOT_FOUND, "Token not found"));
-        }
-
-        User user = token.get().getUser();
+        User user = token.getUser();
 
         userService.confirmUser(user);
 
-        tokenService.delete(token.get());
+        tokenService.delete(token);
 
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }

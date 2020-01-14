@@ -1,6 +1,7 @@
 package es.unizar.murcy.controllers.utilities;
 
 import es.unizar.murcy.components.JsonWebTokenUtil;
+import es.unizar.murcy.exceptions.user.UserUnauthorizedException;
 import es.unizar.murcy.model.User;
 import es.unizar.murcy.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,28 +24,24 @@ public class AuthUtilities {
     @Autowired
     AuthenticationManager authenticationManager;
 
-    public Optional<User> getUserFromRequest(HttpServletRequest request) {
+    public User getUserFromRequest(HttpServletRequest request) {
         final String authorization = request.getHeader("Authorization");
 
         final String username = jsonWebTokenUtil.getUserNameFromToken(authorization.substring(7));
 
-        return userService.findUserByUserName(username);
+        return userService.findUserByUserName(username).orElseThrow(UserUnauthorizedException::new);
     }
 
-    public Optional<User> getUserFromRequest(HttpServletRequest request, User.Rol rol, boolean canBeReviewer) {
+    public User getUserFromRequest(HttpServletRequest request, User.Rol rol, boolean canBeReviewer) {
         final String authorization = request.getHeader("Authorization");
 
         final String username = jsonWebTokenUtil.getUserNameFromToken(authorization.substring(7));
 
         Optional<User> user = userService.findUserByUserName(username);
-        if(user.isPresent()) {
-            if(user.get().getRoles().contains(rol) || (canBeReviewer && user.get().getRoles().contains(User.Rol.REVIEWER))) {
-                return user;
-            } else {
-                return Optional.empty();
-            }
+        if(user.isPresent() && (user.get().getRoles().contains(rol) || (canBeReviewer && user.get().getRoles().contains(User.Rol.REVIEWER)))) {
+                return user.get();
         }
-        return user;
+        throw new UserUnauthorizedException();
     }
 
     public void authenticate(String username, String password) {

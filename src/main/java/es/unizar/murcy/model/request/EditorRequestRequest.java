@@ -2,9 +2,9 @@ package es.unizar.murcy.model.request;
 
 import lombok.*;
 
-@Data
 @NoArgsConstructor
 @AllArgsConstructor
+@SuppressWarnings("Duplicates")
 public class EditorRequestRequest {
 
     @Getter

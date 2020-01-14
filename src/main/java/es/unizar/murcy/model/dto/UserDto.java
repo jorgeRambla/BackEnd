@@ -3,9 +3,9 @@ package es.unizar.murcy.model.dto;
 import es.unizar.murcy.model.User;
 import lombok.*;
 
-@Data
 @NoArgsConstructor
 @AllArgsConstructor
+@SuppressWarnings("Duplicates")
 public class UserDto {
 
     @Getter

@@ -10,7 +10,7 @@ import java.util.stream.Collectors;
 
 @NoArgsConstructor
 @AllArgsConstructor
-@Data
+@SuppressWarnings("Duplicates")
 public class QuizRequest {
 
     @Getter
@@ -24,6 +24,10 @@ public class QuizRequest {
     @Getter
     @Setter
     private Set<Long> questionIds;
+
+    @Getter
+    @Setter
+    private Boolean publish;
 
     public Boolean isCreateValid() {
         return this.title != null && !this.title.equals("") && this.questionIds != null && !this.questionIds.isEmpty();

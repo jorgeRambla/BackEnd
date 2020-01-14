@@ -3,14 +3,15 @@ package es.unizar.murcy.model.dto;
 import lombok.*;
 import org.springframework.http.HttpStatus;
 
-@Data
 @NoArgsConstructor
 @AllArgsConstructor
+@SuppressWarnings("Duplicates")
 public class ErrorMessageDto {
 
     @Getter
     @Setter
     private int status;
+
     @Getter
     @Setter
     private @NonNull String message;
