@@ -26,10 +26,6 @@ public class AnswerService {
         return answerRepository.findByIdAndDeletedIsFalse(id);
     }
 
-    public Optional<Answer> findByTitle(String title) {
-        return answerRepository.findByTitleAndDeletedIsFalse(title);
-    }
-
     public Answer update(Answer answer) {
         answer.setModifiedDate(new Date());
         return answerRepository.save(answer);
@@ -38,11 +34,6 @@ public class AnswerService {
     public Answer create(Answer answer) {
         return answerRepository.save(answer);
     }
-
-    public boolean existsByTitle(String title) {
-        return answerRepository.existsByTitleAndDeletedIsFalse(title);
-    }
-
 
     public void delete(Answer answer) {
         answer.delete();

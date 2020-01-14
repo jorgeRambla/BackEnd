@@ -38,6 +38,11 @@ public class User extends AuditableEntity {
     @Setter
     private Boolean confirmed;
 
+    @OneToMany(fetch = FetchType.EAGER)
+    @Getter
+    @Setter
+    private Set<Answer> answers;
+
     @ElementCollection(targetClass = User.Rol.class)
     @Enumerated(EnumType.STRING)
     @CollectionTable(name = "murcy_user_rol")
@@ -48,6 +53,7 @@ public class User extends AuditableEntity {
     public User() {
         super();
         this.roles = new HashSet<>();
+        this.answers = new HashSet<>();
     }
 
     public User(String username, String password, String email, String fullName) {

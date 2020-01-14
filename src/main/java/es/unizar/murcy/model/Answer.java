@@ -15,6 +15,7 @@ import java.util.Objects;
 @AllArgsConstructor
 @ToString(callSuper = true)
 public class Answer extends AuditableEntity {
+
     @ManyToOne
     @Getter
     @Setter

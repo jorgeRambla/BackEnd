@@ -13,10 +13,6 @@ public interface AnswerRepository extends JpaRepository<Answer, Long> {
 
     Optional<Answer> findByIdAndDeletedIsFalse(long id);
 
-    Optional<Answer> findByTitleAndDeletedIsFalse(String title);
-
-    Boolean existsByTitleAndDeletedIsFalse(String title);
-
     List<Answer> findByDeletedIsFalseAndQuiz_id(long id);
 
 }
