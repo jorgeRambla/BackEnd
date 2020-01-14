@@ -2,20 +2,21 @@ package es.unizar.murcy.controllers;
 
 
 import es.unizar.murcy.controllers.utilities.AuthUtilities;
-import es.unizar.murcy.exceptions.UserNotFoundException;
-import es.unizar.murcy.exceptions.UserUnauthorizedException;
+import es.unizar.murcy.exceptions.answer.AnswerBadRequestException;
+import es.unizar.murcy.exceptions.user.UserNotFoundException;
+import es.unizar.murcy.exceptions.user.UserUnauthorizedException;
 import es.unizar.murcy.exceptions.quiz.QuizBadRequestException;
 import es.unizar.murcy.exceptions.quiz.QuizNotFoundException;
+import es.unizar.murcy.model.Answer;
 import es.unizar.murcy.model.Quiz;
 import es.unizar.murcy.model.User;
 import es.unizar.murcy.model.Workflow;
+import es.unizar.murcy.model.dto.AnswerDto;
 import es.unizar.murcy.model.dto.QuizDto;
 import es.unizar.murcy.model.dto.SimplifiedQuizDto;
+import es.unizar.murcy.model.request.AnswerRequest;
 import es.unizar.murcy.model.request.QuizRequest;
-import es.unizar.murcy.service.QuestionService;
-import es.unizar.murcy.service.QuizService;
-import es.unizar.murcy.service.UserService;
-import es.unizar.murcy.service.WorkflowService;
+import es.unizar.murcy.service.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
@@ -39,6 +40,9 @@ public class QuizController {
 
     @Autowired
     private QuestionService questionService;
+
+    @Autowired
+    private AnswerService answerService;
 
     @Autowired
     private UserService userService;
@@ -252,5 +256,42 @@ public class QuizController {
                         .map(SimplifiedQuizDto::new)
                         .collect(Collectors.toList())
         );
+    }
+
+    @CrossOrigin
+    @GetMapping(value = "/api/quiz/{id}/answers")
+    public ResponseEntity<List<AnswerDto>> fetchAnswersByQuizId(HttpServletRequest request, @PathVariable long id) {
+        User user = authUtilities.getUserFromRequest(request, User.Rol.EDITOR, true);
+
+        Quiz quiz = quizService.findById(id).orElseThrow(QuizNotFoundException::new);
+
+        if (quiz.getUser().equals(user) || user.getRoles().contains(User.Rol.REVIEWER)) {
+            return ResponseEntity.status(HttpStatus.OK).body(
+                    answerService.findAnswersByQuizId(quiz.getId())
+                            .stream()
+                            .map(AnswerDto::new)
+                            .collect(Collectors.toList()));
+        }
+        throw new UserUnauthorizedException();
+    }
+
+    @CrossOrigin
+    @PostMapping("/api/quiz/{id}/answer")
+    public ResponseEntity create(HttpServletRequest request, @PathVariable long id, @RequestBody AnswerRequest answerRequest) {
+        User user = authUtilities.getUserFromRequest(request, User.Rol.EDITOR, true);
+
+        Quiz quiz = quizService.findById(id).orElseThrow(QuizNotFoundException::new);
+
+        if (answerRequest.isCreateValid(quiz).equals(Boolean.FALSE)) {
+            throw new AnswerBadRequestException();
+        }
+
+        Answer answer = answerRequest.toEntity(questionService);
+        answer.setQuiz(quiz);
+        answer.setUser(user);
+
+        answerService.create(answer);
+
+        return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 }

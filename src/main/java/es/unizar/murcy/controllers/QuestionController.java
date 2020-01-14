@@ -1,16 +1,18 @@
 package es.unizar.murcy.controllers;
 
 import es.unizar.murcy.controllers.utilities.AuthUtilities;
-import es.unizar.murcy.exceptions.UserNotFoundException;
-import es.unizar.murcy.exceptions.UserUnauthorizedException;
+import es.unizar.murcy.exceptions.user.UserNotFoundException;
+import es.unizar.murcy.exceptions.user.UserUnauthorizedException;
 import es.unizar.murcy.exceptions.question.QuestionBadRequestException;
 import es.unizar.murcy.exceptions.question.QuestionNotFoundException;
 import es.unizar.murcy.model.Question;
 import es.unizar.murcy.model.User;
 import es.unizar.murcy.model.Workflow;
+import es.unizar.murcy.model.dto.IndividualAnswerDto;
 import es.unizar.murcy.model.dto.QuestionDto;
 import es.unizar.murcy.model.request.OptionRequest;
 import es.unizar.murcy.model.request.QuestionRequest;
+import es.unizar.murcy.service.IndividualAnswerService;
 import es.unizar.murcy.service.QuestionService;
 import es.unizar.murcy.service.UserService;
 import es.unizar.murcy.service.WorkflowService;
@@ -39,6 +41,9 @@ public class QuestionController {
 
     @Autowired
     private WorkflowService workflowService;
+
+    @Autowired
+    private IndividualAnswerService individualAnswerService;
 
     @CrossOrigin
     @PostMapping(value = "/api/question")
@@ -209,6 +214,24 @@ public class QuestionController {
         Set<Question> editorRequestSet = questionService.findByClosedAndApproved(isClosed, isApproved);
 
         return ResponseEntity.status(HttpStatus.OK).body(editorRequestSet.stream().map(QuestionDto::new).collect(Collectors.toList()));
+    }
+
+    @CrossOrigin
+    @GetMapping("/api/question/{id}/answers")
+    public ResponseEntity<List<IndividualAnswerDto>> fetchAnswersByQuestionId(HttpServletRequest request, @PathVariable long id) {
+        User user = authUtilities.getUserFromRequest(request, User.Rol.EDITOR, true);
+
+        Question question = questionService.findById(id).orElseThrow(QuestionNotFoundException::new);
+
+        if (question.getUser().equals(user) || user.getRoles().contains(User.Rol.REVIEWER)) {
+            return ResponseEntity.status(HttpStatus.OK).body(
+                    individualAnswerService.findIndividualAnswersByQuestionId(id)
+                            .stream()
+                            .map(
+                            IndividualAnswerDto::new)
+                            .collect(Collectors.toList()));
+        }
+        throw new UserUnauthorizedException();
     }
 
 }

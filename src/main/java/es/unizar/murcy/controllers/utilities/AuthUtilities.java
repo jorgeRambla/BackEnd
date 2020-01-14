@@ -1,7 +1,7 @@
 package es.unizar.murcy.controllers.utilities;
 
 import es.unizar.murcy.components.JsonWebTokenUtil;
-import es.unizar.murcy.exceptions.UserUnauthorizedException;
+import es.unizar.murcy.exceptions.user.UserUnauthorizedException;
 import es.unizar.murcy.model.User;
 import es.unizar.murcy.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
