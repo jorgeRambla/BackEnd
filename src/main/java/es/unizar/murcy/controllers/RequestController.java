@@ -1,6 +1,7 @@
 package es.unizar.murcy.controllers;
 
 import es.unizar.murcy.controllers.utilities.AuthUtilities;
+import es.unizar.murcy.exceptions.editor_request.EditorRequestNotFoundException;
 import es.unizar.murcy.model.EditorRequest;
 import es.unizar.murcy.model.User;
 import es.unizar.murcy.model.Workflow;
@@ -36,67 +37,47 @@ public class RequestController {
 
     @CrossOrigin
     @GetMapping("/api/request/editor")
-    public ResponseEntity getCurrentUserEditorRequest(HttpServletRequest request) {
-        Optional<User> user = authUtilities.getUserFromRequest(request);
+    public ResponseEntity<EditorRequestDto> getCurrentUserEditorRequest(HttpServletRequest request) {
+        User user = authUtilities.getUserFromRequest(request);
 
-        if (!user.isPresent()) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ErrorMessageDto(HttpStatus.UNAUTHORIZED));
-        }
+        EditorRequest editorRequest = editorRequestService.findEditorRequestByApplicant(user).orElseThrow(EditorRequestNotFoundException::new);
 
-        Optional<EditorRequest> editorRequest = editorRequestService.findEditorRequestByApplicant(user.get());
-
-        if (editorRequest.isPresent()) {
-            return ResponseEntity.ok().body(new EditorRequestDto(editorRequest.get()));
-        }
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ErrorMessageDto(HttpStatus.NOT_FOUND, "Request not found"));
+        return ResponseEntity.ok().body(new EditorRequestDto(editorRequest));
     }
 
     @CrossOrigin
     @PutMapping("/api/request/editor")
     public ResponseEntity putCurrentUserEditorRequest(HttpServletRequest request, @RequestBody EditorRequestRequest editorRequestRequest) {
-        Optional<User> user = authUtilities.getUserFromRequest(request);
+        User user = authUtilities.getUserFromRequest(request);
 
-        if (!user.isPresent()) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ErrorMessageDto(HttpStatus.UNAUTHORIZED));
-        }
+        EditorRequest editorRequest = editorRequestService.findEditorRequestByApplicant(user).orElseThrow(EditorRequestNotFoundException::new);
 
-        Optional<EditorRequest> editorRequest = editorRequestService.findEditorRequestByApplicant(user.get());
+        String description = (editorRequestRequest.getDescription() == null) ? "" : editorRequestRequest.getDescription();
 
-        if (editorRequest.isPresent()) {
-            String description = (editorRequestRequest.getDescription() == null) ? "" : editorRequestRequest.getDescription();
+        editorRequest.setDescription(description);
 
-            EditorRequest finalEditorRequest = editorRequest.get();
-            finalEditorRequest.setDescription(description);
+        Workflow finalWorkFlow = editorRequest.getLastWorkflow();
+        finalWorkFlow.setDescription(description);
 
-            Workflow finalWorkFlow = finalEditorRequest.getLastWorkflow();
-            finalWorkFlow.setDescription(description);
+        workflowService.update(finalWorkFlow);
 
-            workflowService.update(finalWorkFlow);
+        editorRequestService.update(editorRequest);
 
-            editorRequestService.update(finalEditorRequest);
-
-            return ResponseEntity.status(HttpStatus.CREATED).build();
-        } else {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ErrorMessageDto(HttpStatus.NOT_FOUND, "Request not found"));
-        }
+        return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
     @CrossOrigin
     @PostMapping("/api/request/editor")
     public ResponseEntity createCurrentUserEditorRequest(HttpServletRequest request, @RequestBody EditorRequestRequest editorRequestRequest) {
-        Optional<User> user = authUtilities.getUserFromRequest(request);
+        User user = authUtilities.getUserFromRequest(request);
 
-        if (!user.isPresent()) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ErrorMessageDto(HttpStatus.UNAUTHORIZED));
-        }
-
-        Optional<EditorRequest> editorRequest = editorRequestService.findEditorRequestByApplicant(user.get());
+        Optional<EditorRequest> editorRequest = editorRequestService.findEditorRequestByApplicant(user);
 
         String description = (editorRequestRequest.getDescription() == null) ? "" : editorRequestRequest.getDescription();
 
         if (!editorRequest.isPresent()) {
             EditorRequest finalEditorRequest = new EditorRequest();
-            finalEditorRequest.setApplicant(user.get());
+            finalEditorRequest.setApplicant(user);
             finalEditorRequest.setDescription(description);
 
             Workflow workflow = new Workflow();

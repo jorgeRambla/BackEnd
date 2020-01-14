@@ -760,7 +760,6 @@
             }
           }
         },
-        "deprecated" : true,
         "security" : [ {
           "bearerAuth" : [ ]
         } ]
@@ -1228,7 +1227,6 @@
             }
           }
         },
-        "deprecated" : true,
         "security" : [ {
           "bearerAuth" : [ ]
         } ]
@@ -1623,7 +1621,6 @@
             }
           }
         },
-        "deprecated" : true,
         "security" : [ {
           "bearerAuth" : [ ]
         } ]
@@ -1669,7 +1666,6 @@
             }
           }
         },
-        "deprecated" : true,
         "security" : [ {
           "bearerAuth" : [ ]
         } ]
@@ -1678,8 +1674,8 @@
     "/answer/list" : {
       "get" : {
         "tags" : [ "answer" ],
-        "summary" : "Get users requests",
-        "description" : "Get users request",
+        "summary" : "Get user quiz answers",
+        "description" : "Get current user quiz answers",
         "responses" : {
           "200" : {
             "description" : "Answers",
@@ -1702,7 +1698,6 @@
             }
           }
         },
-        "deprecated" : true,
         "security" : [ {
           "bearerAuth" : [ ]
         } ]
@@ -1711,8 +1706,8 @@
     "/answer/list/{id}" : {
       "get" : {
         "tags" : [ "answer" ],
-        "summary" : "Get users requests",
-        "description" : "Get users request",
+        "summary" : "Get given userId user quiz answers",
+        "description" : "Get user by user identifer quiz answers",
         "parameters" : [ {
           "name" : "id",
           "in" : "path",
@@ -1757,7 +1752,6 @@
             }
           }
         },
-        "deprecated" : true,
         "security" : [ {
           "bearerAuth" : [ ]
         } ]
@@ -1993,6 +1987,10 @@
             "format" : "int64"
           },
           "timeInMillis" : {
+            "type" : "integer",
+            "format" : "int64"
+          },
+          "totalPoints" : {
             "type" : "integer",
             "format" : "int64"
           },
@@ -2255,16 +2253,12 @@
         }
       },
       "IndividualAnswerRequest" : {
-        "required" : [ "optionsIds", "points", "questionId", "timeInMillis" ],
+        "required" : [ "optionsIds", "questionId", "timeInMillis" ],
         "type" : "object",
         "properties" : {
           "questionId" : {
             "type" : "integer",
             "format" : "int64"
-          },
-          "points" : {
-            "type" : "integer",
-            "format" : "int32"
           },
           "timeInMillis" : {
             "type" : "integer",
@@ -2280,12 +2274,8 @@
         }
       },
       "AnswerRequest" : {
-        "required" : [ "individualAnswers", "quizId" ],
+        "required" : [ "individualAnswers" ],
         "properties" : {
-          "quizId" : {
-            "type" : "integer",
-            "format" : "int64"
-          },
           "individualAnswers" : {
             "type" : "array",
             "items" : {

@@ -1,6 +1,7 @@
 package es.unizar.murcy.controllers.utilities;
 
 import es.unizar.murcy.components.JsonWebTokenUtil;
+import es.unizar.murcy.exceptions.user.UserNotFoundException;
 import es.unizar.murcy.exceptions.user.UserUnauthorizedException;
 import es.unizar.murcy.model.User;
 import es.unizar.murcy.service.UserService;
@@ -24,12 +25,12 @@ public class AuthUtilities {
     @Autowired
     AuthenticationManager authenticationManager;
 
-    public Optional<User> getUserFromRequest(HttpServletRequest request) {
+    public User getUserFromRequest(HttpServletRequest request) {
         final String authorization = request.getHeader("Authorization");
 
         final String username = jsonWebTokenUtil.getUserNameFromToken(authorization.substring(7));
 
-        return userService.findUserByUserName(username);
+        return userService.findUserByUserName(username).orElseThrow(UserUnauthorizedException::new);
     }
 
     public User getUserFromRequest(HttpServletRequest request, User.Rol rol, boolean canBeReviewer) {

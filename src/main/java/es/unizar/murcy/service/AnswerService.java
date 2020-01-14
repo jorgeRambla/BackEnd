@@ -10,6 +10,7 @@ import javax.transaction.Transactional;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 @Service
 @Transactional
@@ -41,10 +42,10 @@ public class AnswerService {
     }
 
     public List<Answer> findAnswersByQuizId(long quizId) {
-        return findAnswersByOwnerId(quizId);
+        return answerRepository.findByDeletedIsFalseAndQuiz_id(quizId);
     }
 
-    public List<Answer> findAnswersByOwnerId(long quizId) {
-        return answerRepository.findByDeletedIsFalseAndQuiz_id(quizId);
+    public Set<Answer> findAnswersByUser(long id) {
+        return answerRepository.findAnswerByUser_IdAndDeletedIsFalse(id);
     }
 }
