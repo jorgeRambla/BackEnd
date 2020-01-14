@@ -27,7 +27,7 @@ public class IndividualAnswer extends AuditableEntity {
 
     @Getter
     @Setter
-    private Integer points;
+    private long points;
 
     @ManyToOne
     @Getter

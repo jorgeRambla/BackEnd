@@ -23,11 +23,11 @@ public class Answer extends AuditableEntity {
 
     @Getter
     @Setter
-    private Integer resolutionTimeInMillis;
+    private long timeInMillis;
 
     @Getter
     @Setter
-    private Integer totalPoints;
+    private long totalPoints;
 
     @ManyToOne
     @Getter

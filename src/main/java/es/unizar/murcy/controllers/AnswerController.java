@@ -1,6 +1,9 @@
 package es.unizar.murcy.controllers;
 
 import es.unizar.murcy.controllers.utilities.AuthUtilities;
+import es.unizar.murcy.exceptions.answer.AnswerBadRequestException;
+import es.unizar.murcy.exceptions.answer.AnswerNotFoundException;
+import es.unizar.murcy.exceptions.user.UserUnauthorizedException;
 import es.unizar.murcy.model.Answer;
 import es.unizar.murcy.model.User;
 import es.unizar.murcy.model.dto.AnswerDto;
@@ -21,80 +24,35 @@ public class AnswerController {
     private AuthUtilities authUtilities;
 
     @Autowired
-    private IndividualAnswerService individualAnswerService;
-
-    @Autowired
     private AnswerService answerService;
-
-    @Autowired
-    private QuestionService questionService;
-
-    @Autowired
-    private QuizService quizService;
-
-    @Autowired
-    private UserService userService;
-
-    @CrossOrigin
-    @PostMapping("/api/answer")
-    public ResponseEntity create(HttpServletRequest request, @RequestBody AnswerRequest answerRequest) {
-        Optional<User> user = authUtilities.getUserFromRequest(request, User.Rol.EDITOR, true);
-
-        if (!user.isPresent()) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ErrorMessageDto(HttpStatus.UNAUTHORIZED));
-        }
-
-        if (answerRequest.isCreateValid(quizService).equals(Boolean.FALSE)) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ErrorMessageDto(HttpStatus.BAD_REQUEST));
-        }
-
-        Answer answer = answerRequest.toEntity(individualAnswerService, userService, quizService,
-                questionService, answerService);
-        answerService.create(answer);
-
-        return ResponseEntity.status(HttpStatus.CREATED).build();
-    }
 
     @CrossOrigin
     @GetMapping(value = "/api/answer/{id}")
-    public ResponseEntity fetchAnswerById(HttpServletRequest request, @PathVariable long id) {
-        Optional<User> user = authUtilities.getUserFromRequest(request, User.Rol.EDITOR, true);
+    public ResponseEntity<AnswerDto> fetchAnswerById(HttpServletRequest request, @PathVariable long id) {
+        User user = authUtilities.getUserFromRequest(request, User.Rol.EDITOR, true);
 
-        if (!user.isPresent()) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ErrorMessageDto(HttpStatus.UNAUTHORIZED));
+        Answer answer = answerService.findById(id).orElseThrow(AnswerNotFoundException::new);
+
+        if (answer.getUser().equals(user) || user.getRoles().contains(User.Rol.REVIEWER)) {
+            return ResponseEntity.status(HttpStatus.OK).body(new AnswerDto(answer));
         }
 
-        Optional<Answer> optionalAnswer = answerService.findById(id);
-
-        if (!optionalAnswer.isPresent()) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ErrorMessageDto(HttpStatus.NOT_FOUND));
-        }
-
-        if (optionalAnswer.get().getUser().equals(user.get()) || user.get().getRoles().contains(User.Rol.REVIEWER)) {
-            return ResponseEntity.status(HttpStatus.OK).body(new AnswerDto(optionalAnswer.get()));
-        }
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ErrorMessageDto(HttpStatus.UNAUTHORIZED));
+        throw new UserUnauthorizedException();
     }
 
     @CrossOrigin
     @DeleteMapping(value = "/api/answer/{id}")
     public ResponseEntity delete(HttpServletRequest request, @PathVariable long id) {
-        Optional<User> user = authUtilities.getUserFromRequest(request, User.Rol.EDITOR, true);
+        User user = authUtilities.getUserFromRequest(request, User.Rol.EDITOR, true);
 
-        if (!user.isPresent()) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ErrorMessageDto(HttpStatus.UNAUTHORIZED));
-        }
+        Answer answer = answerService.findById(id).orElseThrow(AnswerNotFoundException::new);
 
-        Optional<Answer> optionalAnswer = answerService.findById(id);
+        if (answer.getUser().equals(user) || user.getRoles().contains(User.Rol.REVIEWER)) {
+            answerService.delete(answer);
 
-        if (!optionalAnswer.isPresent()) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ErrorMessageDto(HttpStatus.NOT_FOUND));
-        }
-
-        if (optionalAnswer.get().getUser().equals(user.get()) || user.get().getRoles().contains(User.Rol.REVIEWER)) {
-            answerService.delete(optionalAnswer.get());
             return ResponseEntity.status(HttpStatus.ACCEPTED).build();
         }
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ErrorMessageDto(HttpStatus.UNAUTHORIZED));
+
+        throw new UserUnauthorizedException();
     }
 }

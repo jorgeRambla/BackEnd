@@ -12,17 +12,14 @@ import java.util.stream.Collectors;
 @NoArgsConstructor
 @AllArgsConstructor
 public class IndividualAnswerDto {
+
     @Getter
     @Setter
     private long id;
 
     @Getter
     @Setter
-    private long timeInMillis;
-
-    @Getter
-    @Setter
-    private int points;
+    private long userId;
 
     @Getter
     @Setter
@@ -30,19 +27,22 @@ public class IndividualAnswerDto {
 
     @Getter
     @Setter
-    private long answerId;
+    private long timeInMillis;
 
     @Getter
     @Setter
     private List<OptionDto> options;
 
-    public IndividualAnswerDto(IndividualAnswer individualAnswer){
+    public IndividualAnswerDto(IndividualAnswer individualAnswer) {
         this.id = individualAnswer.getId();
+        this.userId = individualAnswer.getUser().getId();
         this.timeInMillis = individualAnswer.getTimeInMillis();
-        this.points = individualAnswer.getPoints();
         this.questionId = individualAnswer.getQuestion().getId();
-        this.answerId = individualAnswer.getAnswer().getId();
-        this.options = individualAnswer.getOptions().stream().map(OptionDto::new).collect(Collectors.toList());
+
+        this.options = individualAnswer.getOptions()
+                .stream()
+                .map(OptionDto::new)
+                .collect(Collectors.toList());
     }
 
 }

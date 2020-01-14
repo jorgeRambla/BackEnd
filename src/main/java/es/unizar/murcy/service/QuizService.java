@@ -22,6 +22,14 @@ public class QuizService {
     @Autowired
     QuizRepositoryPaging quizRepositoryPaging;
 
+    private Set<Workflow.Status> getWorkflowRequestsStatus() {
+        Set<Workflow.Status> validStatus = new HashSet<>();
+        validStatus.add(Workflow.Status.PENDING);
+        validStatus.add(Workflow.Status.APPROVED);
+        validStatus.add(Workflow.Status.DENIED);
+        return validStatus;
+    }
+
     public List<Quiz> findAll() {
         return quizRepository.findQuizzesByDeletedIsFalse();
     }
@@ -62,15 +70,14 @@ public class QuizService {
     }
 
     public Set<Quiz> findByClosedAndApproved(boolean closed, boolean approved) {
-        Set<Workflow.Status> validStatus = new HashSet<>();
-        validStatus.add(Workflow.Status.PENDING);
-        validStatus.add(Workflow.Status.APPROVED);
-        validStatus.add(Workflow.Status.DENIED);
+        return quizRepository.findQuizByDeletedIsFalseAndClosedAndApprovedAndWorkflow_StatusInOrderByCreateDateDesc(closed, approved, getWorkflowRequestsStatus());
+    }
 
-        return quizRepository.findQuizByDeletedIsFalseAndClosedAndApprovedAndWorkflow_StatusInOrderByCreateDateDesc(closed, approved, validStatus);
+    public Optional<Quiz> findByPublishAndId(long id) {
+        return quizRepository.findQuizByIdAndDeletedIsFalseAndClosedIsTrueAndApprovedIsTrue(id);
     }
 
     public List<Quiz> searchQuizzes(String query, Pageable pageable) {
-        return quizRepositoryPaging.findQuizzesByDeletedIsFalseAndTitleContainingIgnoreCaseOrDeletedIsFalseAndDescriptionIgnoreCaseContaining(query, query, pageable);
+        return quizRepositoryPaging.findQuizzesByApprovedIsTrueAndClosedIsTrueAndDeletedIsFalseAndTitleContainingIgnoreCaseOrApprovedIsTrueAndClosedIsTrueAndDeletedIsFalseAndDescriptionIgnoreCaseContaining(query, query, pageable);
     }
 }

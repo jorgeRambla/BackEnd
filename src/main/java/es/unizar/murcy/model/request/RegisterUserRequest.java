@@ -8,6 +8,7 @@ import java.util.Set;
 
 @NoArgsConstructor
 @AllArgsConstructor
+@SuppressWarnings("Duplicates")
 public class RegisterUserRequest {
 
     @Getter

@@ -19,11 +19,7 @@ public class AnswerDto {
 
     @Getter
     @Setter
-    private Integer timeInMillis;
-
-    @Getter
-    @Setter
-    private Integer totalPoints;
+    private long userId;
 
     @Getter
     @Setter
@@ -31,12 +27,22 @@ public class AnswerDto {
 
     @Getter
     @Setter
+    private long timeInMillis;
+
+    @Getter
+    @Setter
+    private long totalPoints;
+
+    @Getter
+    @Setter
     private List<IndividualAnswerDto> individualAnswers;
 
     public AnswerDto(Answer answer) {
-        this.id=answer.getId();
-        this.totalPoints=answer.getTotalPoints();
-        this.quizId=answer.getQuiz().getId();
+        this.id = answer.getId();
+        this.userId = answer.getUser().getId();
+        this.quizId = answer.getQuiz().getId();
+        this.timeInMillis = answer.getTimeInMillis();
+        this.totalPoints = answer.getTotalPoints();
         this.individualAnswers = answer.getIndividualAnswers().stream().map(IndividualAnswerDto::new).collect(Collectors.toList());
     }
 

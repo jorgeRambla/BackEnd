@@ -1,6 +1,7 @@
 package es.unizar.murcy.model.request;
 
 import es.unizar.murcy.model.Answer;
+import es.unizar.murcy.model.IndividualAnswer;
 import es.unizar.murcy.model.Quiz;
 import es.unizar.murcy.service.*;
 import lombok.AllArgsConstructor;
@@ -8,6 +9,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -18,32 +20,34 @@ public class AnswerRequest {
 
     @Getter
     @Setter
-    private long idUser;
+    private List<IndividualAnswerRequest> individualAnswers = new ArrayList<>();
 
-    @Getter
-    @Setter
-    private long quizId;
-
-    @Getter
-    @Setter
-    private List<IndividualAnswerRequest> individualAnswers;
-
-    public Boolean isCreateValid(QuizService quizService) {
-        Optional<Quiz> quizOptional=quizService.findById(quizId);
-        if(quizOptional.isPresent()&&individualAnswers!=null&&!individualAnswers.isEmpty()){
-            return quizOptional.get().getQuestions().size()==individualAnswers.size();
-        }
-        else{
-            return false;
-        }
+    public Boolean isCreateValid(Quiz quiz) {
+        return !individualAnswers.isEmpty() && quiz.getQuestions().size() == individualAnswers.size();
     }
 
-    public Answer toEntity(IndividualAnswerService individualAnswerService, UserService userService, QuizService quizService,
-                           QuestionService questionService, AnswerService answerService) {
-        Answer answer=new Answer();
-        answer.setUser(userService.findUserById(this.idUser).orElse(null));
-        answer.setQuiz(quizService.findById(this.quizId).orElse(null));
-        answer.setIndividualAnswers(individualAnswers.stream().map(item -> item.toEntity(answerService, questionService)).collect(Collectors.toList()));
+    public Answer toEntity(QuestionService questionService) {
+        Answer answer = new Answer();
+
+        answer.setIndividualAnswers(
+                individualAnswers
+                        .stream()
+                        .filter(individualAnswer -> individualAnswer.isCreateValid(questionService))
+                        .map(item -> item.toEntity(questionService))
+                        .collect(Collectors.toList()));
+
+        answer.getIndividualAnswers()
+                .stream()
+                .map(IndividualAnswer::getTimeInMillis)
+                .reduce(Long::sum)
+                .ifPresent(answer::setTimeInMillis);
+
+        answer.getIndividualAnswers()
+                .stream()
+                .map(IndividualAnswer::getPoints)
+                .reduce(Long::sum)
+                .ifPresent(answer::setTotalPoints);
+
         return answer;
     }
 

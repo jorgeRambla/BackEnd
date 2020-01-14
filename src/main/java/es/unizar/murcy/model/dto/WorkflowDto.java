@@ -7,6 +7,7 @@ import java.util.Date;
 
 @NoArgsConstructor
 @AllArgsConstructor
+@SuppressWarnings("Duplicates")
 public class WorkflowDto {
 
     @Getter
