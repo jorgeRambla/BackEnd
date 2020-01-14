@@ -1,9 +1,9 @@
 package es.unizar.murcy.controllers;
 
 import es.unizar.murcy.controllers.utilities.AuthUtilities;
+import es.unizar.murcy.model.IndividualAnswer;
 import es.unizar.murcy.model.Question;
 import es.unizar.murcy.model.User;
-import es.unizar.murcy.model.dto.AnswerDto;
 import es.unizar.murcy.model.dto.ErrorMessageDto;
 import es.unizar.murcy.service.AnswerService;
 import es.unizar.murcy.service.IndividualAnswerService;
@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.List;
 import java.util.Optional;
 
 public class IndividualAnswerController {
@@ -41,15 +42,17 @@ public class IndividualAnswerController {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ErrorMessageDto(HttpStatus.UNAUTHORIZED));
         }
 
-        Question
+        Optional<Question> question = questionService.findById(id);
+        if(!question.isPresent()){
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ErrorMessageDto(HttpStatus.NOT_FOUND));
+        }
 
+        List<IndividualAnswer> individualAnswers = individualAnswerService.findIndividualAnswersByQuestionId(id);
 
-
-        if (user.equals(user.get()) || user.get().getRoles().contains(User.Rol.REVIEWER)) {
-            return ResponseEntity.status(HttpStatus.OK).body(new AnswerDto(optionalAnswer.get()));
+        if (question.get().getUser().equals(user.get()) || user.get().getRoles().contains(User.Rol.REVIEWER)) {
+            return ResponseEntity.status(HttpStatus.OK).body(individualAnswers);
         }
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ErrorMessageDto(HttpStatus.UNAUTHORIZED));
 
     }
-    //TODO: controller for getting all individual answers for one question GET /api/question/{id}/anwsers -> Lista de respuestas individuales
 }

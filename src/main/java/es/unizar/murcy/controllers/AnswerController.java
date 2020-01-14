@@ -6,10 +6,7 @@ import es.unizar.murcy.model.User;
 import es.unizar.murcy.model.dto.AnswerDto;
 import es.unizar.murcy.model.dto.ErrorMessageDto;
 import es.unizar.murcy.model.request.AnswerRequest;
-import es.unizar.murcy.service.AnswerService;
-import es.unizar.murcy.service.IndividualAnswerService;
-import es.unizar.murcy.service.QuizService;
-import es.unizar.murcy.service.UserService;
+import es.unizar.murcy.service.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -30,6 +27,9 @@ public class AnswerController {
     private AnswerService answerService;
 
     @Autowired
+    private QuestionService questionService;
+
+    @Autowired
     private QuizService quizService;
 
     @Autowired
@@ -44,11 +44,12 @@ public class AnswerController {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ErrorMessageDto(HttpStatus.UNAUTHORIZED));
         }
 
-        if (answerRequest.isCreateValid().equals(Boolean.FALSE)) {
+        if (answerRequest.isCreateValid(quizService).equals(Boolean.FALSE)) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ErrorMessageDto(HttpStatus.BAD_REQUEST));
         }
 
-        Answer answer = answerRequest.toEntity(individualAnswerService, userService, quizService);
+        Answer answer = answerRequest.toEntity(individualAnswerService, userService, quizService,
+                questionService, answerService);
         answerService.create(answer);
 
         return ResponseEntity.status(HttpStatus.CREATED).build();
@@ -69,7 +70,7 @@ public class AnswerController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ErrorMessageDto(HttpStatus.NOT_FOUND));
         }
 
-        if (user.equals(user.get()) || user.get().getRoles().contains(User.Rol.REVIEWER)) {
+        if (optionalAnswer.get().getUser().equals(user.get()) || user.get().getRoles().contains(User.Rol.REVIEWER)) {
             return ResponseEntity.status(HttpStatus.OK).body(new AnswerDto(optionalAnswer.get()));
         }
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ErrorMessageDto(HttpStatus.UNAUTHORIZED));
@@ -90,11 +91,10 @@ public class AnswerController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ErrorMessageDto(HttpStatus.NOT_FOUND));
         }
 
-        if (user.equals(user.get()) || user.get().getRoles().contains(User.Rol.REVIEWER)) {
+        if (optionalAnswer.get().getUser().equals(user.get()) || user.get().getRoles().contains(User.Rol.REVIEWER)) {
             answerService.delete(optionalAnswer.get());
             return ResponseEntity.status(HttpStatus.ACCEPTED).build();
         }
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ErrorMessageDto(HttpStatus.UNAUTHORIZED));
     }
-
 }
