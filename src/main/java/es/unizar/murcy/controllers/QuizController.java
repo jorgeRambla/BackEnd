@@ -187,6 +187,8 @@ public class QuizController {
                     workflow.setStatusUser(null);
                     workflow.setTitle("Solicitud publicar quiz");
                     workflow.addAuditableWorkflowEntity(quiz);
+                    quiz.setClosed(false);
+                    quiz.setApproved(false);
                 }
                 workflow = workflowService.create(workflow);
 

@@ -72,6 +72,8 @@ public class QuestionController {
             workflow.setDescription(null);
             workflow.setStatusUser(null);
             workflow.setTitle("Solicitud publicar pregunta");
+            question.setClosed(false);
+            question.setApproved(false);
         }
         workflow = workflowService.create(workflow);
 
