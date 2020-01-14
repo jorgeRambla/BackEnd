@@ -1698,6 +1698,7 @@
             }
           }
         },
+        "deprecated" : true,
         "security" : [ {
           "bearerAuth" : [ ]
         } ]
@@ -1752,6 +1753,7 @@
             }
           }
         },
+        "deprecated" : true,
         "security" : [ {
           "bearerAuth" : [ ]
         } ]
@@ -1884,7 +1886,7 @@
             "minItems" : 2,
             "type" : "array",
             "items" : {
-              "$ref" : "#/components/schemas/OptionRequest"
+              "$ref" : "#/components/schemas/OptionDto"
             }
           }
         }
@@ -1910,7 +1912,7 @@
             "minItems" : 2,
             "type" : "array",
             "items" : {
-              "$ref" : "#/components/schemas/OptionRequest"
+              "$ref" : "#/components/schemas/OptionDto"
             }
           },
           "isPublic" : {
@@ -2177,6 +2179,20 @@
         }
       },
       "OptionRequest" : {
+        "required" : [ "correct", "title" ],
+        "type" : "object",
+        "properties" : {
+          "title" : {
+            "type" : "string",
+            "description" : "Option text"
+          },
+          "correct" : {
+            "type" : "boolean",
+            "description" : "is option correct"
+          }
+        }
+      },
+      "OptionDto" : {
         "required" : [ "correct", "id", "title" ],
         "type" : "object",
         "properties" : {
