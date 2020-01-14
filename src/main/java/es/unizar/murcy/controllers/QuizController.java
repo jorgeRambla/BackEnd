@@ -74,9 +74,12 @@ public class QuizController {
             createdQuiz.setApproved(false);
         } else {
             workflow = new Workflow();
-            workflow.setStatusUser(null);
+            workflow.setStatusUser(user);
+            workflow.setStatus(Workflow.Status.APPROVED);
             workflow.setTitle("Solicitud publicar quiz");
             workflow.setDescription(null);
+            createdQuiz.setClosed(true);
+            createdQuiz.setApproved(true);
         }
 
         workflow = workflowService.create(workflow);
@@ -185,10 +188,11 @@ public class QuizController {
                     workflow = new Workflow();
                     workflow.setDescription(null);
                     workflow.setStatusUser(null);
+                    workflow.setStatus(Workflow.Status.APPROVED);
                     workflow.setTitle("Solicitud publicar quiz");
                     workflow.addAuditableWorkflowEntity(quiz);
-                    quiz.setClosed(false);
-                    quiz.setApproved(false);
+                    quiz.setClosed(true);
+                    quiz.setApproved(true);
                 }
                 workflow = workflowService.create(workflow);
 
