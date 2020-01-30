@@ -28,7 +28,7 @@ jacocoTestReport {
         xml.enabled true
     }
 }
-
+/*
 jacocoTestCoverageVerification {
     violationRules {
         rule {
@@ -38,7 +38,7 @@ jacocoTestCoverageVerification {
         }
     }
 }
-check.dependsOn jacocoTestCoverageVerification
+*/
 
 group = 'es.unizar.murcy'
 version = '0.0.1-SNAPSHOT'
