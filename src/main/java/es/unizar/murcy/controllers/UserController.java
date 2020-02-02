@@ -174,7 +174,7 @@ public class UserController {
         user.setLastIp(request.getRemoteAddr());
         userService.update(user);
 
-        return ResponseEntity.status(HttpStatus.OK).body(new JsonWebTokenDto(token));
+        return ResponseEntity.status(HttpStatus.OK).body(new JsonWebTokenDto(token, Token.DEFAULT_TOKEN_EXPIRATION_TIME));
     }
 
     @CrossOrigin

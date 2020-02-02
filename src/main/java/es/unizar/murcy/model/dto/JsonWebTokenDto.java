@@ -14,4 +14,8 @@ public class JsonWebTokenDto implements Serializable {
     @Getter
     @Setter
     private @NonNull String jsonWebToken;
+
+    @Getter
+    @Setter
+    private long expirationTime;
 }
