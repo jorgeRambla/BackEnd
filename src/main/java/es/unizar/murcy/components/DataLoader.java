@@ -18,11 +18,14 @@ public class DataLoader implements ApplicationRunner {
     @Autowired
     private UserRepository userRepository;
 
-    @Value("${murcy.administrator:test}")
+    @Value("${murcy.administrator:admin}")
     private String adminUsername;
 
     @Value("${murcy.administrator.password:supersecretpassword}")
     private String adminPassword;
+
+    @Value("${murcy.administrator.email:admin@domain.com}")
+    private String adminEmail;
 
 
     public DataLoader(UserRepository userRepository) {
@@ -35,7 +38,8 @@ public class DataLoader implements ApplicationRunner {
             rolSet.add(User.Rol.USER);
             rolSet.add(User.Rol.EDITOR);
             rolSet.add(User.Rol.REVIEWER);
-            userRepository.save(new User(adminUsername, new BCryptPasswordEncoder().encode(adminPassword), adminUsername, adminUsername + "@murcy.com", null, true, new HashSet<>(), rolSet));
+            rolSet.add(User.Rol.ADMINISTRATOR);
+            userRepository.save(new User(adminUsername, new BCryptPasswordEncoder().encode(adminPassword), adminUsername, adminEmail, null, true, new HashSet<>(), rolSet));
         }
     }
 }

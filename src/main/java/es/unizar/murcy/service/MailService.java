@@ -66,7 +66,7 @@ public class MailService {
     private String formatTemplate(String template, String token) {
         template = template.replace("${blank_gmail}", currentBackEndURL.concat("/blank.gif"));
         template = template.replace("${logotipo_URL}", currentBackEndURL.concat("/logotype.jpeg"));
-        template = template.replace("${confirmation_URL}", currentFrontEndURL.concat("?token=").concat(token));
+        template = template.replace("${confirmation_URL}", currentFrontEndURL.concat("/confirm-token/").concat(token));
         template = template.replace(("${MURCY_URL}"), currentFrontEndURL);
         return template;
     }
