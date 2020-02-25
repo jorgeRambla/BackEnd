@@ -3,10 +3,7 @@ package es.unizar.murcy.controllers;
 import es.unizar.murcy.components.JsonWebTokenUtil;
 import es.unizar.murcy.controllers.utilities.AuthUtilities;
 import es.unizar.murcy.exceptions.token.TokenNotFoundException;
-import es.unizar.murcy.exceptions.user.UserForbiddenException;
-import es.unizar.murcy.exceptions.user.UserNotConfirmedException;
-import es.unizar.murcy.exceptions.user.UserNotFoundException;
-import es.unizar.murcy.exceptions.user.UserUnauthorizedException;
+import es.unizar.murcy.exceptions.user.*;
 import es.unizar.murcy.exceptions.user.validation.UserBadRequestEmailAlreadyExistsException;
 import es.unizar.murcy.exceptions.user.validation.UserBadRequestEmailNotValidException;
 import es.unizar.murcy.exceptions.user.validation.UserBadRequestUsernameAlreadyExistsException;
@@ -61,19 +58,19 @@ public class UserController {
     @PostMapping("/api/user")
     public ResponseEntity create(@RequestBody RegisterUserRequest registerUserRequest) {
         if(Boolean.FALSE.equals(registerUserRequest.isComplete())) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ErrorMessageDto(HttpStatus.BAD_REQUEST, "Faltan campos"));
+            throw new UserBadRequestException();
         }
 
         if (Boolean.FALSE.equals(isMailValid(registerUserRequest.getEmail()))) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ErrorMessageDto(HttpStatus.BAD_REQUEST, "Email is not valid"));
+            throw new UserBadRequestEmailNotValidException();
         }
 
         if (userService.existsByUsername(registerUserRequest.getUsername())){
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ErrorMessageDto(HttpStatus.BAD_REQUEST, "Ya existe un usuario con ese nombre"));
+            throw new UserBadRequestUsernameAlreadyExistsException();
         }
 
         if (userService.existsByEmail(registerUserRequest.getEmail())){
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ErrorMessageDto(HttpStatus.BAD_REQUEST, "Ya existe un usuario con ese email"));
+            throw new UserBadRequestEmailAlreadyExistsException();
         }
 
         registerUserRequest.setPassword(new BCryptPasswordEncoder().encode(registerUserRequest.getPassword()));
@@ -82,6 +79,7 @@ public class UserController {
         Token token = tokenService.create(new Token(user, UUID.randomUUID().toString(), new Date(System.currentTimeMillis() + Token.DEFAULT_TOKEN_EXPIRATION_TIME)));
 
         mailService.sendTokenConfirmationMail(token.getTokenValue(), user.getEmail());
+//        mailService.sendTokenConfirmationMail("test", registerUserRequest.toEntity().getEmail());
 
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
