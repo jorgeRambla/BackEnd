@@ -1,41 +1,25 @@
 sudo: required
 language: java
 jdk:
-  - openjdk8
-
+- openjdk8
 services:
-  - docker
-
+- docker
 env:
   global:
-  - secure: "dIaqh/isRqCmWWSCeEqDMT2FSWRBY/pSD+MUTwgBsMoK4nWP0jIGb2zeAAwVKw8FO95uKaJf2eTmKuAP5Arye2sAVotaAW1eZpxzb5H1GkcMaZmwJDs6+L+mGAvaMbJhbuwd08LrjR9SiCYILMqtG3X1O/3fjX7JQhKXulbXy9wZlaHxs36rabpzvxHEQS4h/gphtF0bDtwJniuxPSV+jF8H2qIBLwp77iqtq2T2KBrMwD7cEYVMNeNYyeB/pHJ1w1p22fEt7ZnyH3ygYeCLa4l7n86V/ATtsNiP46rojNCtomw1CxiPdTRex55/oSYICiZ4j3dc2PQyzMt7qNa08YWdUGfeG8bp7RJyLTxjxJSja2v+ezfC8vxgD/TZKLLrwxBaUndq9/gNnBSlpxcmw8wn/TuMDsRXohYNxlm3CoXn7ocQnCpaOIep2vdGFnElRYcUhvOWziMDEtJSZfECyot5ncbitViM3EjyKa4azg9xRwQ3JJ0yNRyodebt6h4Cfk4pIFpElN83Dzw7ScrIgEXZqrEenlzCY9PSfO74UrCGqoSH+o9p225uVHTLihgaFod3FfZWtvAoYRok5fAP3kcu7KNFqYG37FoS4yMNLboQEZIAhi9iGEghTPaz4nKYkTkNaWmzl6GK1dvb9lfv3k4EoWON4q0A64Kotbfb34g="
-  - secure: "Suuezv7ZYxbbuShpItvsoUbp7kEWJjAY6op3Ykuc4Qehpd3C1L5OFT740SLrrBCrvlfSiWKBfB25MPw339IkFmu7Lu+5RstgmuXcuYSTG/CBBrBFJMhjQxzyyKOMNjq+yjiWWwg381C7R2mRyB9vuR66o3IyLiuURQ9+zQMaZ5hj++Czk0V+1D+r6pXloDamN+MFPeIYsX2ePiu+qcBazgVP8ohqbWK0fJ3rMFZ4WONrm+1AHygV8wFNgdWA6hzJ3HCrv1gYDvN0f2LZb3jUGxZjxQyPOjx2YWPB72TLJ+M6HP6WLDBgmPbtbKkLe6SzuEZ722dsKuucRP0ADjMvsTsiPp1wEL6QCYo5R8jH6H/3z5gZ6uW+ikWf3RxoJi95UDpByPeTqRQQKGPduyAeVcBVKkdQlF3Vk48Q5cZZNroDX9cZ17/sHjrgZq6Nqyt99YqArEoOxfr/FQi7lEmGJAVn8Ah53yssjMk4ub5b6gCtHj//EsF2jwCQs3MmdUjLtuVxQ/6Xc3vjOUEYZ/GahFHVVfb1a3nf8mZ2ZfK35Vfu8M2UzE48Demcuvek43ghKLyKYijtNEG8favt/YnUSOS7viPqRFIuBImEl0Id4HaKBJbhJJie0j9QDjJzl9tI8j1bBpzEvyK+bJZWhUB58F8MNtU4Kv468an40w3PoaM="
-  - secure: "qZKncAduFGD8i/mdg0RLtT3z/oR+8tJGCPbje1y7Mh2Mdco4p0wFJKrfpCnMAfmxZLn9cIHBT9bBn8s36WM+TGbOXPbpVQlc6J4cNasludD7Vb8CueTYnhvVpL9dUGEtWRptYE5CYpIKm/LDcoD4aQiDTH27p6oSEDj2wGEyFK28kb2RrUzm1oDFCGIf0KwNT0mTuhvRirqhiR+RolpNKYI42nGgSWHzGrLnIy1hV5FBTK6vhRx48qLwviQ1X4F/GBmDfiXWq5W9vFeLuJ9hgRlum1hLKPxGkoaA6wrgpl+6VnbYq4VhqPS88X3kSKqOpXZjksO6fYsrs46Ru1w3Cz+imiw6cvhE2gixEgSq+vIDGGOZCQFAdnNr/rzvXPnz9oI5JzXHnC2HsLPhfyun7Rxf1M6CVRaxaloUahC4/NH+M4deUSMbRYKohkR1FobwmYTVb67KKV7kbwpOfEvM9qHKe+MRf2DNTt40mvP04MyFe+GN2DS5APxvCRNj/RLvfvjZllsTCpbYazByxxJx5/JegOmU0k9TWAqjop2y6XFL0Lxdlt3zV9HQ3/mduAhhJdK+5BlV4EtFsw/lnHlirlgFsDB5VebyQDKMmZdktUo2+ZphzsLEEtalEnpINfaZE2g2KVJacgAydNSsDPbQ3CGi3nvCucssbYMQEuZnc0g="
-  - secure: "TcGapPo/0sF5o6FIh+k0ZagWVhG2kWArW8OwpR4sz09cUdjoT5F4AtVCfkih1sqeT9/1U6Ic7SRBJnbji8g7RbcBYNfp7MPWUbaDM3N79nX9t68lEKvu+ZA5WOcCNEizuOYrbWBjgsY/pCg1IfBCZgZbgNhS80c72hBO+JYP7+/xLboLBBaejF/PPHx3kVeJjqylUQkh69QZ+sQvy3Hgx1Nf09d3pWaOA2d4ZIX+Dc38kLMJfT2V6VF9g22SMJ9W3OME46+NpjCqpeRRStQbRCdhCf3nANWAQZHANYqh8H2iLPtq4BOjUXzMg1jYzkx7T71HovdEE1FqJYYdCkoH1Y7GRiocitk0h67QBsEkhV5ghIamZR/8BfR1EoVvPoFCMUASFbg3SQdChbqu6fwtIg9gz0xieaAKjhWtdxKanUObZhaX7Bc3omzs1LiYDqwdKY1KBnNhWgMD5LD9F+68xQbfI1QSjDO9lGacjl1pcUBJEWcfgCz5sqazxCyLJfHlhzO+Y/20xR390ozpos8JHNrxdgQ3ZI+4CwJFu0LgVdroIM5Mrz6Wyo5svZ3eQ2lgBPh/rSHyL+D7A78a/87HUFC27NdO3hE7rjrG97CMdSm8vkPx0v5Tfg8Hu2dfPhUEl447oK/2DCnr39pGdMEL6LWHogXSqNzX/wgxy+ebAqU="
-  - COMMIT=${TRAVIS_COMMIT::7}
+  - secure: Pur4U/QtoYbes/V9vkApU4Eq4yGWS6BVDRVLkmLNIy3VmlsKBsgFK+95iH0LS79+F4cF6R67jruxhbDtQZ6i+2t/WoCVZ0T/AQvn3uW/dgKMHwtYBxXcGzyaPx0KTSt9eoPlO6KGclFkXBZ0JR9PEvv1yoHq1EEGWq25Pt/D8bvsl10sJI5mxjquSGJY6aMaOzsZ1GaQJFXt3VNhk0cjl3iqAwdZZYx11lRZHljye4S5bAQrI29AD6jL2f26Ej2SLJQfszH2ampbBEaddp5C3m/YrhvGJM2i98nA0u2U1KlM1aJNhcsJBnI530+Itco7DVU3jDbhoHlq0mUsgrnlktUgXA8Gb1qR0Kr5gbjy+OfkWpzfVSKblrJbvG1BlrUlyvHt1gVxdvWQBFPG+Hgs7kDuTArKbW0Xf9uv3toGUhhSuVzAbHYEH4dE0wzpQlrhR2KiSVqCJuHDD5ysrMZq990Pp2mOU7f6sZoVve8XZdIvNmwgAxi6Vz54T2UmApIIOQMWbN2csgN4NPDCXfN+HUW77JCleXcq15f+8wDm97LswCC8KPfVljAtqbUZeyiyKU7koX+TzHVkqsHD6z7Vw/HuqXOf0yDx4etDkOPEWcTYA6cvy8f0PY68Ch2fDSAoSGrkXjn7RftQwtZbcYIJ24yzdf2O/Z2Zg5dQaMm1L80=
+  - secure: gVcr2mLjbHzEO7C7TXvfeAeZ+gh210WuvlOLulZLEFvEvl8lXbj7ySY1pvA3KeyoWMfwWeE7HsWE/xlnme/iXAm8D9g5TwTyM23cuhsWiJ+dBqiZLKVt3YO8mrrJewOQLo3wjHkbgXIZFaoSayeQZkJjX2lX0qj6rHSqpDuSturl8G9LqhEPdkAddx/AY3O0Ra98GaduBx4ipeK0yF4OG18So0dKYR/ck/BMS2AV+7GPgfflkfuwwBL9zVoCsrPdCXH32Up0Wo3k9AMx99keXbePxmw+JBmKuOTX9qgXs8K4A1p0013aWZafw5YsD6hG4JVt8akk0ECg1mvTe1U1LkLCLPY2Lsef+imRp5anrM5c32DJXw5pGcelRe+rea+aE/C5PVFNc+RcvtLeBkzvtmyNeaqULzbyK0tiaBWIsQ8yYNk60LI+Frysp5RAr+3n7agGkwnK/UFWRAV6OvBXn/bHgGNUqDYEdU+TumEvRavUffwGIv9CyRGrhqafah2l9892a5uTObhX8990dWMRO9GBnMpU8TvtpHzvXyuPy+ytZfbchxpVFXfvVEpXeyeELvBy0sChTNhqfldlgqucEVlylCfz1QqWsZRfrE2UJ6hd/59/7TCCttKwtFAvD0J+vBSEvdukDldrv2ivJBmd5ISRNapWldlITF1ouGLRZeg=
 addons:
   sonarcloud:
-    organization: "unizar-30248-2019-murcy"
+    organization: jorgerambla
     token:
-      secure: $SONAR_TOKEN
-
+      secure: "$SONAR_TOKEN"
 script:
-- ./gradlew clean build
-- ./gradlew test jacocoTestReport
-- ./gradlew jacocoTestCoverageVerification #Check if % code is covered by tests
+- "./gradlew clean build"
+- "./gradlew test jacocoTestReport"
 - sonar-scanner
-
-after_success:
-- docker login -u $DOCKER_USER -p $DOCKER_PASS
-- export TAG=`if [ "$TRAVIS_BRANCH" == "master" ]; then echo "latest"; else echo $TRAVIS_BRANCH; fi`
-- export IMAGE_NAME=$DOCKER_USER/unizar-30248-2019-murcy
-- docker build -t $IMAGE_NAME:$COMMIT .
-- docker tag $IMAGE_NAME:$COMMIT $IMAGE_NAME:$TAG
-- docker push $IMAGE_NAME
-
 deploy:
   provider: heroku
-  api_key: $HEROKU_API_KEY
+  api_key: "$HEROKU_API_KEY"
   app:
-    master: unizar-30248-2019-murcy
-    develop: preunizar-30248-2019-murcy
+    master: murcy-api
+    develop: pre-murcy-api
