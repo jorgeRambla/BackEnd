@@ -1,0 +1,13 @@
+spring:
+  datasource:
+    driver-class-name: org.postgresql.Driver
+    url: ${JDBC_DATABASE_URL}
+  jpa:
+    database-platform: org.hibernate.dialect.PostgreSQL9Dialect
+    properties.hibernate.temp.use_jdbc_metadata_defaults: false
+logging:
+  level:
+    es.unizar.murcy.controllers: INFO
+    es.unizar.murcy.MurcyApplication: INFO
+    o.s.b.w.embedded.tomcat.TomcatWebServer: INFO
+    root: ERROR

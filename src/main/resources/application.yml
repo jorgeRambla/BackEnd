@@ -1,0 +1,58 @@
+spring:
+  jpa:
+    hibernate.ddl-auto: update
+    show-sql: true
+  mail:
+    enable: true
+    host: ${MAIL_SERVER:localhost}
+    port: ${MAIL_SERVER_PORT:25}
+    username: ${MAIL:admin@murcy.es}
+    password: ${MAIL_PASSWORD:passwd123}
+    protocol: ${MAIL_PROTOCOL:smtp}
+    properties:
+      mail:
+        smtp:
+          auth: ${MAIL_AUTH:false}
+          starttls.enable: ${MAIL_TTLS:false}
+
+server:
+  error:
+    whitelabel.enabled: false
+    include-stacktrace: on_trace_param
+  port: 8080
+
+murcy:
+  config:
+    jwt.secret: ${JWT_SECRET:randomjwt}
+    front-end.application-url: ${FRONT_END_URL:http://localhost:4200}
+    back-end.application-url: ${BACK_END_URL:http://localhost:8090}
+    admin:
+      username: ${ADMIN_USERNAME:admin}
+      password: ${ADMIN_PASS:supersecretpassword}
+      email: ${ADMIN_EMAIL:admin@murcy.es}
+---
+spring:
+  profiles: debug
+logging:
+  level:
+    es.unizar.murcy: INFO
+    o.s.b.w.embedded.tomcat.TomcatWebServer: INFO
+    root: ERROR
+---
+spring:
+  profiles: reduce-logging
+logging:
+  level:
+    es.unizar.murcy.controllers: INFO
+    o.s.b.w.embedded.tomcat.TomcatWebServer: INFO
+    root: ERROR
+---
+spring:
+  profiles: dev-logging
+logging:
+  level:
+    o.s.b.w.embedded.tomcat.TomcatWebServer: INFO
+    es.unizar.murcy.service.MailService: DEBUG
+    es.unizar.murcy.controllers: INFO
+    es.unizar.murcy.MurcyApplication: INFO
+    root: ERROR

@@ -64,8 +64,6 @@ dependencies {
     implementation 'org.projectlombok:lombok:1.18.10'
 
     implementation 'com.h2database:h2'
-
-
     compile group: 'io.jsonwebtoken', name: 'jjwt', version: '0.9.1'
 
 
@@ -77,4 +75,5 @@ dependencies {
     testImplementation group: 'org.apache.httpcomponents', name: 'httpclient', version: '4.5.10'
 
     annotationProcessor 'org.projectlombok:lombok:1.18.10'
+    annotationProcessor "org.springframework.boot:spring-boot-configuration-processor"
 }

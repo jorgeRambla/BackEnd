@@ -1,0 +1,38 @@
+{
+  "properties": [
+    {
+      "name": "murcy.config.jwt.secret",
+      "type": "java.lang.String",
+      "description": "JWT config value."
+    },
+    {
+      "name": "murcy.config.front-end.application-url",
+      "type": "java.lang.String",
+      "description": "Murcy front-end URI."
+    },
+    {
+      "name": "murcy.config.back-end.application-url",
+      "type": "java.lang.String",
+      "description": "Murcy back-end URI."
+    },
+    {
+      "name": "spring.mail.enable",
+      "type": "java.lang.String",
+      "description": "Enable external mail server, if false just log entry and not send mail."
+    },
+    {
+      "name": "murcy.config.admin.username",
+      "type": "java.lang.String",
+      "description": "murcy.config.admin.username."
+    },
+    {
+      "name": "murcy.config.admin.password",
+      "type": "java.lang.String",
+      "description": "murcy.config.admin.password."
+    },
+    {
+      "name": "murcy.config.admin.email",
+      "type": "java.lang.String",
+      "description": "murcy.config.admin.email."
+    }
+  ] }

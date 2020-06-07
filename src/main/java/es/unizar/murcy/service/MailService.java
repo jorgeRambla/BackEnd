@@ -2,7 +2,6 @@ package es.unizar.murcy.service;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.mail.javamail.JavaMailSender;
@@ -18,22 +17,24 @@ import java.nio.charset.StandardCharsets;
 @Service
 public class MailService {
 
-    @Autowired
-    public JavaMailSender emailSender;
-
     @Value("${spring.mail.enable}")
     private Boolean mailEnabled;
 
-    @Value("${murcy.back-end.application-url}")
+    @Value("${murcy.config.back-end.application-url}")
     private String currentBackEndURL;
 
-    @Value("${murcy.front-end.application-url}")
+    @Value("${murcy.config.front-end.application-url}")
     private String currentFrontEndURL;
 
-    @Autowired
-    private ResourceLoader resourceLoader;
+    private final JavaMailSender emailSender;
+    private final ResourceLoader resourceLoader;
 
     private Logger logger = LoggerFactory.getLogger(MailService.class);
+
+    public MailService(JavaMailSender emailSender, ResourceLoader resourceLoader) {
+        this.emailSender = emailSender;
+        this.resourceLoader = resourceLoader;
+    }
 
     public void sendTokenConfirmationMail(String token, String email) {
 
@@ -54,6 +55,7 @@ public class MailService {
                     message.setSubject("Confirm account");
                     message.setText(finalTemplate, true);
                 };
+                logger.debug("[FAKE EMAIL] From: {}, body: {}", email, token);
                 emailSender.send(preparation);
             } else {
                 logger.info("[FAKE EMAIL] From: {}, body: {}", email, token);
