@@ -1,0 +1,16 @@
+spring:
+  datasource:
+    driver-class-name: org.postgresql.Driver
+    url: jdbc:postgresql://localhost:5432/murcy
+    username: postgres
+    password: admin
+  jpa:
+    properties.hibernate.temp.use_jdbc_metadata_defaults: false
+    database-platform: org.hibernate.dialect.PostgreSQL9Dialect
+#logging:
+#  level:
+#    es.unizar.murcy.service.MailService: DEBUG
+#    es.unizar.murcy.controllers: INFO
+#    es.unizar.murcy.MurcyApplication: INFO
+#    o.s.b.w.embedded.tomcat.TomcatWebServer: INFO
+#    root: ERROR
