@@ -9,7 +9,6 @@ import es.unizar.murcy.exceptions.user.validation.UserBadRequestEmailNotValidExc
 import es.unizar.murcy.exceptions.user.validation.UserBadRequestUsernameAlreadyExistsException;
 import es.unizar.murcy.model.Token;
 import es.unizar.murcy.model.User;
-import es.unizar.murcy.model.dto.ErrorMessageDto;
 import es.unizar.murcy.model.dto.JsonWebTokenDto;
 import es.unizar.murcy.model.dto.UserDto;
 import es.unizar.murcy.model.request.JsonWebTokenRequest;
@@ -19,7 +18,8 @@ import es.unizar.murcy.service.JwtUserDetailsService;
 import es.unizar.murcy.service.MailService;
 import es.unizar.murcy.service.TokenService;
 import es.unizar.murcy.service.UserService;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -30,33 +30,45 @@ import javax.mail.internet.AddressException;
 import javax.mail.internet.InternetAddress;
 import javax.servlet.http.HttpServletRequest;
 import java.util.Date;
+import java.util.Optional;
 import java.util.UUID;
 
 @CrossOrigin
 @RestController
 public class UserController {
 
-    @Autowired
-    private UserService userService;
+    private final UserService userService;
+    private final TokenService tokenService;
+    private final MailService mailService;
+    private final JsonWebTokenUtil jsonWebTokenUtil;
+    private final JwtUserDetailsService jwtUserDetailsService;
+    private final AuthUtilities authUtilities;
 
-    @Autowired
-    private TokenService tokenService;
+    private Logger logger = LoggerFactory.getLogger(UserController.class);
 
-    @Autowired
-    private MailService mailService;
-
-    @Autowired
-    private JsonWebTokenUtil jsonWebTokenUtil;
-
-    @Autowired
-    private JwtUserDetailsService userDetailsService;
-
-    @Autowired
-    private AuthUtilities authUtilities;
+    public UserController(UserService userService, TokenService tokenService, MailService mailService,
+                          JsonWebTokenUtil jsonWebTokenUtil, JwtUserDetailsService jwtUserDetailsService,
+                          AuthUtilities authUtilities) {
+        this.userService = userService;
+        this.tokenService = tokenService;
+        this.mailService = mailService;
+        this.jsonWebTokenUtil = jsonWebTokenUtil;
+        this.jwtUserDetailsService = jwtUserDetailsService;
+        this.authUtilities = authUtilities;
+    }
 
     @CrossOrigin
     @PostMapping("/api/user")
-    public ResponseEntity create(@RequestBody RegisterUserRequest registerUserRequest) {
+    public ResponseEntity create(@RequestBody RegisterUserRequest registerUserRequest,
+                                 HttpServletRequest request) {
+        final String authorization = request.getHeader("Authorization");
+        Optional<User> optionalUser = Optional.empty();
+        if(authorization != null) {
+            final String username = jsonWebTokenUtil.getUserNameFromToken(authorization.substring(7));
+
+            optionalUser = userService.findUserByUserName(username);
+        }
+
         if(Boolean.FALSE.equals(registerUserRequest.isComplete())) {
             throw new UserBadRequestException();
         }
@@ -76,10 +88,15 @@ public class UserController {
         registerUserRequest.setPassword(new BCryptPasswordEncoder().encode(registerUserRequest.getPassword()));
         User user = userService.create(registerUserRequest.toEntity());
 
-        Token token = tokenService.create(new Token(user, UUID.randomUUID().toString(), new Date(System.currentTimeMillis() + Token.DEFAULT_TOKEN_EXPIRATION_TIME)));
+        if(optionalUser.isPresent() && !registerUserRequest.isSendMail() &&
+                optionalUser.get().getRoles().contains(User.Rol.ADMINISTRATOR)) {
+            user.setConfirmed(true);
+            userService.update(user);
+        } else {
+            Token token = tokenService.create(new Token(user, UUID.randomUUID().toString(), new Date(System.currentTimeMillis() + Token.DEFAULT_TOKEN_EXPIRATION_TIME)));
 
-        mailService.sendTokenConfirmationMail(token.getTokenValue(), user.getEmail());
-//        mailService.sendTokenConfirmationMail("test", registerUserRequest.toEntity().getEmail());
+            mailService.sendTokenConfirmationMail(token.getTokenValue(), user.getEmail());
+        }
 
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
@@ -156,6 +173,8 @@ public class UserController {
     @CrossOrigin
     @PostMapping(value = "/api/user/login")
     public ResponseEntity<JsonWebTokenDto> createAuthenticationToken(@RequestBody JsonWebTokenRequest jsonWebTokenRequest, HttpServletRequest request) {
+        logger.info("Handle request POST /user/login, username: {{}}",
+                (jsonWebTokenRequest==null) ? null : jsonWebTokenRequest.getUsername());
         User user = userService.findUserByUserName(jsonWebTokenRequest.getUsername()).orElseThrow(UserForbiddenException::new);
 
         if(Boolean.FALSE.equals(user.getConfirmed())) {
@@ -164,7 +183,7 @@ public class UserController {
 
         authUtilities.authenticate(jsonWebTokenRequest.getUsername(), jsonWebTokenRequest.getPassword());
 
-        final UserDetails userDetails = userDetailsService
+        final UserDetails userDetails = jwtUserDetailsService
                 .loadUserByUsername(jsonWebTokenRequest.getUsername());
 
         final String token = jsonWebTokenUtil.generateToken(userDetails);

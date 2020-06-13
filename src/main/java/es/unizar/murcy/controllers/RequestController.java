@@ -7,33 +7,37 @@ import es.unizar.murcy.model.User;
 import es.unizar.murcy.model.Workflow;
 import es.unizar.murcy.model.dto.EditorRequestDto;
 import es.unizar.murcy.model.dto.ErrorMessageDto;
+import es.unizar.murcy.model.dto.PageableCollectionDto;
 import es.unizar.murcy.model.request.EditorRequestRequest;
 import es.unizar.murcy.service.EditorRequestService;
 import es.unizar.murcy.service.WorkflowService;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 @CrossOrigin
 @RestController
 public class RequestController {
 
+    private final EditorRequestService editorRequestService;
+    private final AuthUtilities authUtilities;
+    private final WorkflowService workflowService;
 
-    @Autowired
-    private EditorRequestService editorRequestService;
-
-    @Autowired
-    private AuthUtilities authUtilities;
-
-    @Autowired
-    private WorkflowService workflowService;
+    public RequestController(EditorRequestService editorRequestService, AuthUtilities authUtilities,
+                             WorkflowService workflowService) {
+        this.editorRequestService = editorRequestService;
+        this.authUtilities = authUtilities;
+        this.workflowService = workflowService;
+    }
 
     @CrossOrigin
     @GetMapping("/api/request/editor")
@@ -83,7 +87,7 @@ public class RequestController {
             Workflow workflow = new Workflow();
             workflow.setDescription(description);
             workflow.setStatusUser(null);
-            workflow.setTitle("Solicitud para ser editor");
+            workflow.setTitle("Application to be an editor");
 
             workflow = workflowService.create(workflow);
 
@@ -103,7 +107,7 @@ public class RequestController {
                 Workflow workflow = new Workflow();
                 workflow.setDescription(description);
                 workflow.setStatusUser(null);
-                workflow.setTitle("[RE] Solicitud para ser editor");
+                workflow.setTitle("Application to be an editor");
 
                 workflow = workflowService.create(workflow);
 
@@ -130,13 +134,32 @@ public class RequestController {
 
     @CrossOrigin
     @GetMapping("/api/request/editor/list")
-    public ResponseEntity<List<EditorRequestDto>> getOpenedEditorRequest(HttpServletRequest request,
+    public ResponseEntity<PageableCollectionDto<EditorRequestDto>> getOpenedEditorRequest(HttpServletRequest request,
                                                                          @RequestParam(value = "closed", defaultValue = "false") Boolean isClosed,
-                                                                         @RequestParam(value = "approved", defaultValue = "false") Boolean isApproved) {
+                                                                         @RequestParam(value = "approved", defaultValue = "false") Boolean isApproved,
+                                                                         @RequestParam(value = "page", defaultValue = "-1") int page,
+                                                                         @RequestParam(value = "size", defaultValue = "50") int size,
+                                                                         @RequestParam(value = "sortColumn", defaultValue = "createDate") String sortColumn,
+                                                                         @RequestParam(value = "sortType", defaultValue = "desc") String sortType) {
         authUtilities.getUserFromRequest(request, User.Rol.REVIEWER, true);
 
-        Set<EditorRequest> editorRequestSet = editorRequestService.findByClosedAndApproved(isClosed, isApproved);
+        Collection<EditorRequest> editorRequestSet;
+        long totalItems;
+        if (page == -1) {
+            editorRequestSet = editorRequestService.findByClosedAndApproved(isClosed, isApproved);
+            totalItems = editorRequestSet.size();
+        } else {
+            Page<EditorRequest> editorRequestPage;
+            if (sortType.equalsIgnoreCase("asc")) {
+                editorRequestPage = editorRequestService.findByClosedAndApproved(isClosed, isApproved, PageRequest.of(page, size, Sort.by(sortColumn).ascending()));
+            } else {
+                editorRequestPage = editorRequestService.findByClosedAndApproved(isClosed, isApproved, PageRequest.of(page, size, Sort.by(sortColumn).descending()));
+            }
+            editorRequestSet = editorRequestPage.getContent();
+            totalItems = editorRequestPage.getTotalElements();
+        }
 
-        return ResponseEntity.status(HttpStatus.OK).body(editorRequestSet.stream().map(EditorRequestDto::new).collect(Collectors.toList()));
+        return ResponseEntity.status(HttpStatus.OK).body(
+                new PageableCollectionDto<>(editorRequestSet.stream().map(EditorRequestDto::new).collect(Collectors.toList()),  totalItems));
     }
 }

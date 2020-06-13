@@ -5,6 +5,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import es.unizar.murcy.components.JsonWebTokenUtil;
 import es.unizar.murcy.model.EditorRequest;
 import es.unizar.murcy.model.User;
+import es.unizar.murcy.model.dto.EditorRequestDto;
+import es.unizar.murcy.model.dto.PageableCollectionDto;
 import es.unizar.murcy.service.JwtUserDetailsService;
 import es.unizar.murcy.service.UserService;
 import org.junit.Before;
@@ -300,12 +302,17 @@ public class RequestControllerTest {
         headers.setContentType(MediaType.APPLICATION_JSON);
         headers.setBearerAuth(reviewerUserToken);
 
-        ResponseEntity response = restTemplate.exchange(URI.create("http://localhost:" + port + "/api/request/editor/list"), HttpMethod.GET, new HttpEntity<>(headers), Object.class);
+        ResponseEntity<Object> response =
+                restTemplate.exchange(
+                        URI.create("http://localhost:" + port + "/api/request/editor/list"),
+                        HttpMethod.GET,
+                        new HttpEntity<>(headers),
+                        Object.class);
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
-        Set<EditorRequest> returnData = objectMapper.readValue(objectMapper.writeValueAsString(response.getBody()), new TypeReference<Set<EditorRequest>>(){});
+        PageableCollectionDto<EditorRequest> returnData = objectMapper.readValue(objectMapper.writeValueAsString(response.getBody()), new TypeReference<PageableCollectionDto<EditorRequest>>(){});
 
-        assertEquals(0, returnData.size());
+        assertEquals(0, returnData.getLength());
     }
 
 }

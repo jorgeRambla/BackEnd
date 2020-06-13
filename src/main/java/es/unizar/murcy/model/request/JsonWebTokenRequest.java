@@ -6,6 +6,7 @@ import java.io.Serializable;
 
 @NoArgsConstructor
 @AllArgsConstructor
+@ToString
 @SuppressWarnings("Duplicates")
 public class JsonWebTokenRequest implements Serializable {
 

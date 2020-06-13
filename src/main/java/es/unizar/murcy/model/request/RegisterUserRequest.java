@@ -23,6 +23,9 @@ public class RegisterUserRequest {
     @Getter
     @Setter
     private String fullName;
+    @Getter
+    @Setter
+    private boolean sendMail;
 
     public User toEntity() {
         User user = new User();

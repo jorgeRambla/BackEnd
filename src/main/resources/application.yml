@@ -1,7 +1,8 @@
 spring:
   jpa:
     hibernate.ddl-auto: update
-    show-sql: true
+  datasource:
+    initialization-mode: embedded
   mail:
     enable: true
     host: ${MAIL_SERVER:localhost}
