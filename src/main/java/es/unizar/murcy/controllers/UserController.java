@@ -181,8 +181,8 @@ public class UserController {
     @CrossOrigin
     @PostMapping(value = "/api/user/login")
     public ResponseEntity<JsonWebTokenDto> createAuthenticationToken(@RequestBody JsonWebTokenRequest jsonWebTokenRequest, HttpServletRequest request) {
-        logger.info("Handle request POST /user/login, username: {{}}",
-                (jsonWebTokenRequest==null) ? null : jsonWebTokenRequest.getUsername());
+        logger.info("Handle request POST /user/login, username: {{}}", jsonWebTokenRequest.getUsername());
+
         User user = userService.findUserByUserName(jsonWebTokenRequest.getUsername()).orElseThrow(UserForbiddenException::new);
 
         if(Boolean.FALSE.equals(user.getConfirmed())) {
