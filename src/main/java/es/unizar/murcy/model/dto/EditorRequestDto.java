@@ -39,7 +39,7 @@ public class EditorRequestDto {
 
     public EditorRequestDto(EditorRequest editorRequest) {
         this.id = editorRequest.getId();
-        this.applicantId = editorRequest.getApplicant().getId();
+        this.applicantId = editorRequest.getOwner().getId();
         this.description = editorRequest.getDescription();
         this.closed = editorRequest.isClosed();
         this.approved = editorRequest.isApproved();

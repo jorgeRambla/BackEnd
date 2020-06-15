@@ -24,11 +24,6 @@ public class Question extends AuditableWorkflowEntity {
     @Setter
     private String title;
 
-    @ManyToOne
-    @Getter
-    @Setter
-    private User user;
-
     @Getter
     @Setter
     private String description;

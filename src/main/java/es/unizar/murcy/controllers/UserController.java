@@ -22,6 +22,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.mail.MailException;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.*;
@@ -44,7 +45,7 @@ public class UserController {
     private final JwtUserDetailsService jwtUserDetailsService;
     private final AuthUtilities authUtilities;
 
-    private Logger logger = LoggerFactory.getLogger(UserController.class);
+    private final Logger logger = LoggerFactory.getLogger(UserController.class);
 
     public UserController(UserService userService, TokenService tokenService, MailService mailService,
                           JsonWebTokenUtil jsonWebTokenUtil, JwtUserDetailsService jwtUserDetailsService,
@@ -94,8 +95,15 @@ public class UserController {
             userService.update(user);
         } else {
             Token token = tokenService.create(new Token(user, UUID.randomUUID().toString(), new Date(System.currentTimeMillis() + Token.DEFAULT_TOKEN_EXPIRATION_TIME)));
+            try {
+                mailService.sendTokenConfirmationMail(token.getTokenValue(), user.getEmail());
+            } catch (MailException me) {
+                logger.error("Cannot mail to {}, with exception: {}", user.getUsername(), me.getMessage());
 
-            mailService.sendTokenConfirmationMail(token.getTokenValue(), user.getEmail());
+                //FIXME: Temporal fix, auto auth user if service fails.
+                user.setConfirmed(true);
+                userService.update(user);
+            }
         }
 
         return ResponseEntity.status(HttpStatus.CREATED).build();

@@ -60,7 +60,7 @@ public class QuizController {
         }
 
         Quiz createdQuiz = quizRequest.toEntity(questionService);
-        createdQuiz.setUser(user);
+        createdQuiz.setOwner(user);
 
         Workflow workflow;
         if(Boolean.FALSE.equals(quizRequest.getPublish())) {
@@ -127,7 +127,7 @@ public class QuizController {
 
         Quiz quiz = quizService.findById(id).orElseThrow(QuizNotFoundException::new);
 
-        if (quiz.getUser().equals(user) || user.getRoles().contains(User.Rol.REVIEWER)) {
+        if (quiz.getOwner().equals(user) || user.getRoles().contains(User.Rol.REVIEWER)) {
             return ResponseEntity.status(HttpStatus.OK).body(new QuizDto(quiz));
         }
         throw new UserUnauthorizedException();
@@ -149,7 +149,7 @@ public class QuizController {
         Quiz quiz = quizService.findById(id).orElseThrow(QuizNotFoundException::new);
 
 
-        if (quiz.getUser().equals(user) || user.getRoles().contains(User.Rol.REVIEWER)) {
+        if (quiz.getOwner().equals(user) || user.getRoles().contains(User.Rol.REVIEWER)) {
 
             if (quizRequest.getTitle() != null && !quizRequest.getTitle().equals("")) {
                 quiz.setTitle(quizRequest.getTitle());
@@ -215,7 +215,7 @@ public class QuizController {
 
         Quiz quiz = quizService.findById(id).orElseThrow(QuizNotFoundException::new);
 
-        if (quiz.getUser().equals(user) || user.getRoles().contains(User.Rol.REVIEWER)) {
+        if (quiz.getOwner().equals(user) || user.getRoles().contains(User.Rol.REVIEWER)) {
 
             quizService.delete(quiz);
             return ResponseEntity.status(HttpStatus.ACCEPTED).build();
@@ -271,7 +271,7 @@ public class QuizController {
 
         Quiz quiz = quizService.findById(id).orElseThrow(QuizNotFoundException::new);
 
-        if (quiz.getUser().equals(user) || user.getRoles().contains(User.Rol.REVIEWER)) {
+        if (quiz.getOwner().equals(user) || user.getRoles().contains(User.Rol.REVIEWER)) {
             return ResponseEntity.status(HttpStatus.OK).body(
                     answerService.findAnswersByQuizId(quiz.getId())
                             .stream()

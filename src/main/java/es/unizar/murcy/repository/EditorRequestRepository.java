@@ -9,7 +9,7 @@ import java.util.Set;
 
 public interface EditorRequestRepository extends JpaRepository<EditorRequest, Long> {
 
-    Optional<EditorRequest> findEditorRequestByApplicant(User user);
+    Optional<EditorRequest> findEditorRequestByOwner(User user);
 
     Set<EditorRequest> findEditorRequestByClosedIsFalse();
 

@@ -66,7 +66,7 @@ public class QuizService {
     }
 
     public List<Quiz> findQuizzesByOwnerId(long userId) {
-        return quizRepository.findByDeletedIsFalseAndUser_id(userId);
+        return quizRepository.findByDeletedIsFalseAndOwner_id(userId);
     }
 
     public Set<Quiz> findByClosedAndApproved(boolean closed, boolean approved) {

@@ -20,7 +20,7 @@ public interface QuizRepository extends JpaRepository<Quiz, Long> {
 
     Boolean existsByTitleAndDeletedIsFalse(String title);
 
-    List<Quiz> findByDeletedIsFalseAndUser_id(long id);
+    List<Quiz> findByDeletedIsFalseAndOwner_id(long id);
 
     Set<Quiz> findQuizByDeletedIsFalseAndClosedAndApprovedAndLastWorkflow_StatusInOrderByCreateDateDesc(boolean closed, boolean approved, Collection<Workflow.Status> validStatus);
 

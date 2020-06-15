@@ -11,16 +11,16 @@ import es.unizar.murcy.model.dto.PageableCollectionDto;
 import es.unizar.murcy.model.request.EditorRequestRequest;
 import es.unizar.murcy.service.EditorRequestService;
 import es.unizar.murcy.service.WorkflowService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.Arrays;
 import java.util.Collection;
-import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -31,6 +31,9 @@ public class RequestController {
     private final EditorRequestService editorRequestService;
     private final AuthUtilities authUtilities;
     private final WorkflowService workflowService;
+
+    private final Logger logger = LoggerFactory.getLogger(RequestController.class);
+
 
     public RequestController(EditorRequestService editorRequestService, AuthUtilities authUtilities,
                              WorkflowService workflowService) {
@@ -81,7 +84,7 @@ public class RequestController {
 
         if (!editorRequest.isPresent()) {
             EditorRequest finalEditorRequest = new EditorRequest();
-            finalEditorRequest.setApplicant(user);
+            finalEditorRequest.setOwner(user);
             finalEditorRequest.setDescription(description);
 
             Workflow workflow = new Workflow();
@@ -134,32 +137,30 @@ public class RequestController {
 
     @CrossOrigin
     @GetMapping("/api/request/editor/list")
-    public ResponseEntity<PageableCollectionDto<EditorRequestDto>> getOpenedEditorRequest(HttpServletRequest request,
-                                                                         @RequestParam(value = "closed", defaultValue = "false") Boolean isClosed,
-                                                                         @RequestParam(value = "approved", defaultValue = "false") Boolean isApproved,
-                                                                         @RequestParam(value = "page", defaultValue = "-1") int page,
-                                                                         @RequestParam(value = "size", defaultValue = "50") int size,
-                                                                         @RequestParam(value = "sortColumn", defaultValue = "createDate") String sortColumn,
-                                                                         @RequestParam(value = "sortType", defaultValue = "desc") String sortType) {
+    public ResponseEntity<PageableCollectionDto<EditorRequestDto>> getOpenedEditorRequest(
+            HttpServletRequest request,
+            @RequestParam(value = "all", defaultValue = "false") Boolean fetchAll,
+            @RequestParam(value = "closed", defaultValue = "false") Boolean isClosed,
+            @RequestParam(value = "approved", defaultValue = "false") Boolean isApproved,
+            @RequestParam(value = "page", defaultValue = "-1") int page,
+            @RequestParam(value = "size", defaultValue = "50") int size,
+            @RequestParam(value = "sortColumn", defaultValue = "createDate") String sortColumn,
+            @RequestParam(value = "sortType", defaultValue = "desc") String sortType) {
+
+        logger.info("Handle get request /api/request/editor/list: all[{}] closed[{}] approved[{}] page[{}] size[{}] sortColumn[{}] sortType[{}]",
+                fetchAll, isClosed, isApproved, page, size, sortColumn, sortType);
+
         authUtilities.getUserFromRequest(request, User.Rol.REVIEWER, true);
 
-        Collection<EditorRequest> editorRequestSet;
-        long totalItems;
-        if (page == -1) {
-            editorRequestSet = editorRequestService.findByClosedAndApproved(isClosed, isApproved);
-            totalItems = editorRequestSet.size();
-        } else {
-            Page<EditorRequest> editorRequestPage;
-            if (sortType.equalsIgnoreCase("asc")) {
-                editorRequestPage = editorRequestService.findByClosedAndApproved(isClosed, isApproved, PageRequest.of(page, size, Sort.by(sortColumn).ascending()));
-            } else {
-                editorRequestPage = editorRequestService.findByClosedAndApproved(isClosed, isApproved, PageRequest.of(page, size, Sort.by(sortColumn).descending()));
-            }
-            editorRequestSet = editorRequestPage.getContent();
-            totalItems = editorRequestPage.getTotalElements();
-        }
+
+        Page<EditorRequest> editorRequestPage = editorRequestService.findByClosedAndApproved(
+                fetchAll, isClosed, isApproved, page, size, sortColumn, sortType);
+
+        Collection<EditorRequest> editorRequestSet = editorRequestPage.getContent();
+        long totalItems = editorRequestPage.getTotalElements();
+
 
         return ResponseEntity.status(HttpStatus.OK).body(
-                new PageableCollectionDto<>(editorRequestSet.stream().map(EditorRequestDto::new).collect(Collectors.toList()),  totalItems));
+                new PageableCollectionDto<>(editorRequestSet.stream().map(EditorRequestDto::new).collect(Collectors.toList()), totalItems));
     }
 }

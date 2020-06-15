@@ -1,5 +1,6 @@
 package es.unizar.murcy.model.extendable.jpa;
 
+import es.unizar.murcy.model.User;
 import lombok.*;
 
 import javax.persistence.*;
@@ -39,6 +40,11 @@ public class AuditableEntity{
     @Getter
     @Setter
     private Date forceDeleteDate;
+
+    @ManyToOne
+    @Getter
+    @Setter
+    private User owner;
 
     public AuditableEntity() {
         super();

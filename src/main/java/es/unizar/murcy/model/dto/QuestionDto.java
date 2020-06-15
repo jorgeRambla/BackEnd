@@ -58,8 +58,8 @@ public class QuestionDto {
     public QuestionDto(Question question) {
         this.id = question.getId();
         this.title = question.getTitle();
-        this.ownerUserName = question.getUser().getUsername();
-        this.ownerId = question.getUser().getId();
+        this.ownerUserName = question.getOwner().getUsername();
+        this.ownerId = question.getOwner().getId();
         this.isMultiple = question.getIsMultiple();
         this.description = question.getDescription();
         this.options = question.getOptions().stream().map(OptionDto::new).collect(Collectors.toList());

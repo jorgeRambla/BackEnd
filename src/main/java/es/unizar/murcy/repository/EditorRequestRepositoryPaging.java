@@ -8,5 +8,8 @@ import org.springframework.data.repository.PagingAndSortingRepository;
 
 public interface EditorRequestRepositoryPaging extends PagingAndSortingRepository<EditorRequest, Long> {
 
-    Page<EditorRequest> findEditorRequestByClosedAndAndApprovedAndDeletedIsFalse(Boolean closed, Boolean approved, Pageable pageable);
+    Page<EditorRequest> findEditorRequestsByClosedAndAndApprovedAndDeletedIsFalse(Boolean closed, Boolean approved, Pageable pageable);
+
+    Page<EditorRequest> findEditorRequestsByDeletedIsFalse(Pageable pageable);
+
 }

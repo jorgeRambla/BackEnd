@@ -29,7 +29,7 @@ public class MailService {
     private final JavaMailSender emailSender;
     private final ResourceLoader resourceLoader;
 
-    private Logger logger = LoggerFactory.getLogger(MailService.class);
+    private final Logger logger = LoggerFactory.getLogger(MailService.class);
 
     public MailService(JavaMailSender emailSender, ResourceLoader resourceLoader) {
         this.emailSender = emailSender;

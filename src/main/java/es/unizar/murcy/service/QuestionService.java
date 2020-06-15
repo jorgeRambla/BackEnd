@@ -71,7 +71,7 @@ public class QuestionService {
     }
 
     public List<Question> findQuestionsByOwnerId(long userId) {
-        return questionRepository.findQuestionsByUser_IdAndDeletedIsFalse(userId);
+        return questionRepository.findQuestionsByOwner_IdAndDeletedIsFalse(userId);
     }
 
     public Set<Question> findByClosedAndApproved(boolean closed, boolean approved) {

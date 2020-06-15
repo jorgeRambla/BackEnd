@@ -94,7 +94,7 @@ public class WorkflowService {
     private void manageWorkflowActionsEditorRequest(AuditableWorkflowEntity auditableWorkflowEntity, Workflow.Status status) {
         if(status.equals(Workflow.Status.APPROVED)) {
             EditorRequest editorRequest = (EditorRequest) auditableWorkflowEntity;
-            User applicant = editorRequest.getApplicant();
+            User applicant = editorRequest.getOwner();
             applicant.addRol(User.Rol.EDITOR);
             userService.update(applicant);
         }

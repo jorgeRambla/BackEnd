@@ -475,7 +475,7 @@ public class QuizControllerTest {
         List<Quiz> quizzes = quizService.findAll();
         for(Quiz quiz : quizzes) {
             ResponseEntity response = restTemplate.exchange(URI.create("http://localhost:" + port + "/api/quiz/" + quiz.getId()), HttpMethod.GET, new HttpEntity<>(headers), Object.class);
-            if(quiz.getUser().equals(editorUser)) {
+            if(quiz.getOwner().equals(editorUser)) {
                 assertEquals(quiz.getId(), objectMapper.readValue(objectMapper.writeValueAsString(response.getBody()), QuizDto.class).getId());
                 assertEquals(HttpStatus.OK, response.getStatusCode());
             } else {
@@ -600,7 +600,7 @@ public class QuizControllerTest {
 
         for(Quiz quiz : quizzes) {
             ResponseEntity response = restTemplate.exchange(URI.create("http://localhost:" + port + "/api/quiz/" + quiz.getId()), HttpMethod.PUT, new HttpEntity<>(objectMapper.writeValueAsString(quizRequest), headers), Object.class);
-            if(quiz.getUser().equals(editorUser)) {
+            if(quiz.getOwner().equals(editorUser)) {
                 assertEquals(quiz.getId(), objectMapper.readValue(objectMapper.writeValueAsString(response.getBody()), QuizDto.class).getId());
                 assertEquals(HttpStatus.CREATED, response.getStatusCode());
             } else {
@@ -654,8 +654,8 @@ public class QuizControllerTest {
         assertEquals(quiz.getId(), quizDto.getId());
         assertEquals(quiz.getTitle(), quizDto.getTitle());
         assertEquals(quiz.getDescription(), quizDto.getDescription());
-        assertEquals(quiz.getUser().getUsername(), quizDto.getOwnerUserName());
-        assertEquals(quiz.getUser().getId(), quizDto.getOwnerId());
+        assertEquals(quiz.getOwner().getUsername(), quizDto.getOwnerUserName());
+        assertEquals(quiz.getOwner().getId(), quizDto.getOwnerId());
         assertEquals(quiz.getQuestions().size(), quizDto.getQuestions().size());
         for(int iterator = 0; iterator < quizDto.getQuestions().size(); iterator++) {
             assertEquals(quiz.getQuestions().get(iterator).getId(), quizDto.getQuestions().get(iterator).getId());
@@ -686,8 +686,8 @@ public class QuizControllerTest {
         assertEquals(quiz.getId(), quizDto.getId());
         assertEquals(quiz.getTitle(), quizDto.getTitle());
         assertEquals(quiz.getDescription(), quizDto.getDescription());
-        assertEquals(quiz.getUser().getUsername(), quizDto.getOwnerUserName());
-        assertEquals(quiz.getUser().getId(), quizDto.getOwnerId());
+        assertEquals(quiz.getOwner().getUsername(), quizDto.getOwnerUserName());
+        assertEquals(quiz.getOwner().getId(), quizDto.getOwnerId());
         assertEquals(quiz.getQuestions().size(), quizDto.getQuestions().size());
         for(int iterator = 0; iterator < quizDto.getQuestions().size(); iterator++) {
             assertEquals(quiz.getQuestions().get(iterator).getId(), quizDto.getQuestions().get(iterator).getId());
@@ -718,8 +718,8 @@ public class QuizControllerTest {
         assertEquals(quiz.getId(), quizDto.getId());
         assertEquals(quiz.getTitle(), quizDto.getTitle());
         assertEquals(quiz.getDescription(), quizDto.getDescription());
-        assertEquals(quiz.getUser().getUsername(), quizDto.getOwnerUserName());
-        assertEquals(quiz.getUser().getId(), quizDto.getOwnerId());
+        assertEquals(quiz.getOwner().getUsername(), quizDto.getOwnerUserName());
+        assertEquals(quiz.getOwner().getId(), quizDto.getOwnerId());
         assertEquals(quiz.getQuestions().size(), quizDto.getQuestions().size());
         for(int iterator = 0; iterator < quizDto.getQuestions().size(); iterator++) {
             assertEquals(quiz.getQuestions().get(iterator).getId(), quizDto.getQuestions().get(iterator).getId());
@@ -755,8 +755,8 @@ public class QuizControllerTest {
         assertEquals(quiz.getId(), quizDto.getId());
         assertEquals(quiz.getTitle(), quizDto.getTitle());
         assertEquals(quiz.getDescription(), quizDto.getDescription());
-        assertEquals(quiz.getUser().getUsername(), quizDto.getOwnerUserName());
-        assertEquals(quiz.getUser().getId(), quizDto.getOwnerId());
+        assertEquals(quiz.getOwner().getUsername(), quizDto.getOwnerUserName());
+        assertEquals(quiz.getOwner().getId(), quizDto.getOwnerId());
         assertEquals(questionIds.size(), quizDto.getQuestions().size());
         for(int iterator = 0; iterator < quizDto.getQuestions().size(); iterator++) {
             assertTrue(questionIds.contains(quiz.getQuestions().get(iterator).getId()));
@@ -784,8 +784,8 @@ public class QuizControllerTest {
         assertEquals(quiz.getId(), quizDto.getId());
         assertEquals("new", quizDto.getTitle());
         assertEquals(quiz.getDescription(), quizDto.getDescription());
-        assertEquals(quiz.getUser().getUsername(), quizDto.getOwnerUserName());
-        assertEquals(quiz.getUser().getId(), quizDto.getOwnerId());
+        assertEquals(quiz.getOwner().getUsername(), quizDto.getOwnerUserName());
+        assertEquals(quiz.getOwner().getId(), quizDto.getOwnerId());
         assertEquals(quiz.getQuestions().size(), quizDto.getQuestions().size());
         for(int iterator = 0; iterator < quizDto.getQuestions().size(); iterator++) {
             assertEquals(quiz.getQuestions().get(iterator).getId(), quizDto.getQuestions().get(iterator).getId());
@@ -816,8 +816,8 @@ public class QuizControllerTest {
         assertEquals(quiz.getId(), quizDto.getId());
         assertEquals(quiz.getTitle(), quizDto.getTitle());
         assertEquals("new", quizDto.getDescription());
-        assertEquals(quiz.getUser().getUsername(), quizDto.getOwnerUserName());
-        assertEquals(quiz.getUser().getId(), quizDto.getOwnerId());
+        assertEquals(quiz.getOwner().getUsername(), quizDto.getOwnerUserName());
+        assertEquals(quiz.getOwner().getId(), quizDto.getOwnerId());
         assertEquals(quiz.getQuestions().size(), quizDto.getQuestions().size());
         for(int iterator = 0; iterator < quizDto.getQuestions().size(); iterator++) {
             assertEquals(quiz.getQuestions().get(iterator).getId(), quizDto.getQuestions().get(iterator).getId());
@@ -870,7 +870,7 @@ public class QuizControllerTest {
 
         for(Quiz quiz : quizzes) {
             ResponseEntity response = restTemplate.exchange(URI.create("http://localhost:" + port + "/api/quiz/" + quiz.getId()), HttpMethod.DELETE, new HttpEntity<>(headers), Object.class);
-            if(quiz.getUser().equals(editorUser)) {
+            if(quiz.getOwner().equals(editorUser)) {
                 assertEquals(HttpStatus.ACCEPTED, response.getStatusCode());
             } else {
                 assertEquals(HttpStatus.UNAUTHORIZED, response.getStatusCode());

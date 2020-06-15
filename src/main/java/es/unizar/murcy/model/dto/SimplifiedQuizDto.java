@@ -35,7 +35,7 @@ public class SimplifiedQuizDto {
         this.id = quiz.getId();
         this.title = quiz.getTitle();
         this.description = quiz.getDescription();
-        this.ownerUserName = quiz.getUser().getUsername();
+        this.ownerUserName = quiz.getOwner().getUsername();
         this.questions = quiz.getQuestions().stream().map(SimplifiedQuestionDto::new).collect(Collectors.toList());
     }
 }

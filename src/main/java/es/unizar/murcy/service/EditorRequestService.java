@@ -4,31 +4,30 @@ import es.unizar.murcy.model.EditorRequest;
 import es.unizar.murcy.model.User;
 import es.unizar.murcy.repository.EditorRequestRepository;
 import es.unizar.murcy.repository.EditorRequestRepositoryPaging;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
-import java.util.*;
+import java.util.Date;
+import java.util.Optional;
 
 @Service
 @Transactional
 public class EditorRequestService {
 
-    private final WorkflowService workflowService;
     private final EditorRequestRepository editorRequestRepository;
     private final EditorRequestRepositoryPaging editorRequestRepositoryPaging;
 
-    public EditorRequestService(WorkflowService workflowService, EditorRequestRepository editorRequestRepository,
+    public EditorRequestService(EditorRequestRepository editorRequestRepository,
                                 EditorRequestRepositoryPaging editorRequestRepositoryPaging) {
-        this.workflowService = workflowService;
         this.editorRequestRepository = editorRequestRepository;
         this.editorRequestRepositoryPaging = editorRequestRepositoryPaging;
     }
 
     public Optional<EditorRequest> findEditorRequestByApplicant(User user) {
-        return editorRequestRepository.findEditorRequestByApplicant(user);
+        return editorRequestRepository.findEditorRequestByOwner(user);
     }
 
     public EditorRequest create(EditorRequest editorRequest) {
@@ -40,11 +39,35 @@ public class EditorRequestService {
         return editorRequestRepository.save(editorRequest);
     }
 
-    public Collection<EditorRequest> findByClosedAndApproved(Boolean isClosed, Boolean isApproved) {
-        return editorRequestRepository.findEditorRequestByClosedAndAndApprovedAndDeletedIsFalseOrderByCreateDateDesc(isClosed, isApproved);
+    public Page<EditorRequest> findByClosedAndApproved(Boolean isClosed, Boolean isApproved) {
+        return this.findByClosedAndApproved(false, isClosed, isApproved, -1, 0, "createDate", "desc");
     }
 
-    public Page<EditorRequest> findByClosedAndApproved(Boolean isClosed, Boolean isApproved, Pageable pageable) {
-        return editorRequestRepositoryPaging.findEditorRequestByClosedAndAndApprovedAndDeletedIsFalse(isClosed, isApproved, pageable);
+    public Page<EditorRequest> findByClosedAndApproved(Boolean all, Boolean isClosed, Boolean isApproved, int page,
+                                                       int size, String sortColumn, String sortType) {
+        PageRequest pageRequest;
+        Sort sort;
+        Page<EditorRequest> editorRequests;
+
+        // Build sort type asc/desc and sort column
+        if(sortType.equalsIgnoreCase("asc")) {
+            sort = Sort.by(sortColumn).ascending();
+        } else {
+            sort = Sort.by(sortColumn).descending();
+        }
+
+        if(page == -1) {
+            pageRequest = PageRequest.of(0, Integer.MAX_VALUE, sort);
+        } else {
+            pageRequest = PageRequest.of(page, size, sort);
+        }
+
+        if(all.equals(Boolean.FALSE)) {
+            editorRequests = editorRequestRepositoryPaging.findEditorRequestsByClosedAndAndApprovedAndDeletedIsFalse(isClosed, isApproved, pageRequest);
+        } else {
+            editorRequests = editorRequestRepositoryPaging.findEditorRequestsByDeletedIsFalse(pageRequest);
+        }
+
+        return editorRequests;
     }
 }

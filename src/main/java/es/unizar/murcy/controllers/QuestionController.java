@@ -55,7 +55,7 @@ public class QuestionController {
         }
 
         Question question = questionRequest.toEntity();
-        question.setUser(user);
+        question.setOwner(user);
 
         Workflow workflow;
         if(Boolean.FALSE.equals(questionRequest.getPublish())) {
@@ -119,7 +119,7 @@ public class QuestionController {
         User user = authUtilities.getUserFromRequest(request, User.Rol.EDITOR, true);
         Question question = questionService.findById(id).orElseThrow(QuestionNotFoundException::new);
 
-        if (question.getUser().equals(user) || user.getRoles().contains(User.Rol.REVIEWER)) {
+        if (question.getOwner().equals(user) || user.getRoles().contains(User.Rol.REVIEWER)) {
             return ResponseEntity.status(HttpStatus.OK).body(new QuestionDto(question));
         }
 
@@ -137,7 +137,7 @@ public class QuestionController {
             throw new QuestionBadRequestException();
         }
 
-        if (question.getUser().equals(user) || user.getRoles().contains(User.Rol.REVIEWER)) {
+        if (question.getOwner().equals(user) || user.getRoles().contains(User.Rol.REVIEWER)) {
 
             if (questionRequest.getTitle() != null && !questionRequest.getTitle().equals("")) {
                 question.setTitle(questionRequest.getTitle());
@@ -198,7 +198,7 @@ public class QuestionController {
 
         Question question = questionService.findById(id).orElseThrow(QuestionNotFoundException::new);
 
-        if (question.getUser().equals(user) || user.getRoles().contains(User.Rol.REVIEWER)) {
+        if (question.getOwner().equals(user) || user.getRoles().contains(User.Rol.REVIEWER)) {
             questionService.deleteOptions(question.getOptions(), false);
             questionService.delete(question);
             return ResponseEntity.status(HttpStatus.ACCEPTED).build();
@@ -225,7 +225,7 @@ public class QuestionController {
 
         Question question = questionService.findById(id).orElseThrow(QuestionNotFoundException::new);
 
-        if (question.getUser().equals(user) || user.getRoles().contains(User.Rol.REVIEWER)) {
+        if (question.getOwner().equals(user) || user.getRoles().contains(User.Rol.REVIEWER)) {
             return ResponseEntity.status(HttpStatus.OK).body(
                     individualAnswerService.findIndividualAnswersByQuestionId(id)
                             .stream()

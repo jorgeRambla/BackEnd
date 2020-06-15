@@ -55,8 +55,8 @@ public class QuizDto {
         this.id = quiz.getId();
         this.title = quiz.getTitle();
         this.description = quiz.getDescription();
-        this.ownerUserName = quiz.getUser().getUsername();
-        this.ownerId = quiz.getUser().getId();
+        this.ownerUserName = quiz.getOwner().getUsername();
+        this.ownerId = quiz.getOwner().getId();
         this.questions = quiz.getQuestions().stream().map(SimplifiedQuestionDto::new).collect(Collectors.toList());
         if(quiz.getWorkflow() != null) {
             this.workflow = new WorkflowDto(quiz.getWorkflow());

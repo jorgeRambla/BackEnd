@@ -95,7 +95,7 @@ public class WorkflowControllerTest {
         question.setTitle("title");
         question.setDescription("description");
         question.setIsMultiple(false);
-        question.setUser(reviewerUser);
+        question.setOwner(reviewerUser);
         question.setOptions(optionList);
 
         Workflow workflow = new Workflow();

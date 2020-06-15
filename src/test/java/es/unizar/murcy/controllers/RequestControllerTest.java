@@ -96,7 +96,7 @@ public class RequestControllerTest {
 
         EditorRequest editorRequest = new EditorRequest();
         editorRequest.setDescription("Description");
-        editorRequest.setApplicant(editorUser);
+        editorRequest.setOwner(editorUser);
 
         ResponseEntity response = restTemplate.exchange(
                 URI.create("http://localhost:" + port + "/api/request/editor/"),
@@ -114,7 +114,7 @@ public class RequestControllerTest {
 
         EditorRequest editorRequest = new EditorRequest();
         editorRequest.setDescription("Description");
-        editorRequest.setApplicant(editorUser);
+        editorRequest.setOwner(editorUser);
 
         ResponseEntity response = restTemplate.exchange(
                 URI.create("http://localhost:" + port + "/api/request/editor/"),
@@ -141,7 +141,7 @@ public class RequestControllerTest {
 
         EditorRequest editorRequest = new EditorRequest();
         editorRequest.setDescription("Description");
-        editorRequest.setApplicant(editorUser);
+        editorRequest.setOwner(editorUser);
 
         ResponseEntity response = restTemplate.exchange(
                 URI.create("http://localhost:" + port + "/api/request/editor/"),
@@ -159,7 +159,7 @@ public class RequestControllerTest {
 
         EditorRequest editorRequest = new EditorRequest();
         editorRequest.setDescription("Description");
-        editorRequest.setApplicant(editorUser);
+        editorRequest.setOwner(editorUser);
 
         ResponseEntity response = restTemplate.exchange(
                 URI.create("http://localhost:" + port + "/api/request/editor/"),
@@ -177,7 +177,7 @@ public class RequestControllerTest {
 
         EditorRequest editorRequest = new EditorRequest();
         editorRequest.setDescription("Description");
-        editorRequest.setApplicant(editorUser);
+        editorRequest.setOwner(editorUser);
 
         ResponseEntity response = restTemplate.exchange(URI.create("http://localhost:" + port + "/api/request/editor/"),
                 HttpMethod.POST, new HttpEntity<>(objectMapper.writeValueAsString(editorRequest), headers),
@@ -194,7 +194,7 @@ public class RequestControllerTest {
 
         EditorRequest editorRequest = new EditorRequest();
         editorRequest.setDescription("Description");
-        editorRequest.setApplicant(editorUser);
+        editorRequest.setOwner(editorUser);
 
         ResponseEntity response = restTemplate.exchange(
                 URI.create("http://localhost:" + port + "/api/request/editor/"),
@@ -213,7 +213,7 @@ public class RequestControllerTest {
 
         EditorRequest editorRequest = new EditorRequest();
         editorRequest.setDescription("Description");
-        editorRequest.setApplicant(editorUser);
+        editorRequest.setOwner(editorUser);
 
         ResponseEntity response = restTemplate.exchange(
                 URI.create("http://localhost:" + port + "/api/request/editor/"),
@@ -232,7 +232,7 @@ public class RequestControllerTest {
 
         EditorRequest editorRequest = new EditorRequest();
         editorRequest.setDescription("Description");
-        editorRequest.setApplicant(editorUser);
+        editorRequest.setOwner(editorUser);
 
         ResponseEntity response = restTemplate.exchange(
                 URI.create("http://localhost:" + port + "/api/request/editor/"),
@@ -250,7 +250,7 @@ public class RequestControllerTest {
 
         EditorRequest editorRequest = new EditorRequest();
         editorRequest.setDescription("Description");
-        editorRequest.setApplicant(editorUser);
+        editorRequest.setOwner(editorUser);
 
         ResponseEntity response = restTemplate.exchange(
                 URI.create("http://localhost:" + port + "/api/request/editor/list"),
@@ -269,7 +269,7 @@ public class RequestControllerTest {
 
         EditorRequest editorRequest = new EditorRequest();
         editorRequest.setDescription("Description");
-        editorRequest.setApplicant(editorUser);
+        editorRequest.setOwner(editorUser);
 
         ResponseEntity response = restTemplate.exchange(
                 URI.create("http://localhost:" + port + "/api/request/editor/list"),
@@ -287,7 +287,7 @@ public class RequestControllerTest {
 
         EditorRequest editorRequest = new EditorRequest();
         editorRequest.setDescription("Description");
-        editorRequest.setApplicant(editorUser);
+        editorRequest.setOwner(editorUser);
 
         ResponseEntity response = restTemplate.exchange(
                 URI.create("http://localhost:" + port + "/api/request/editor/list"),
