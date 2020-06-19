@@ -1523,9 +1523,20 @@
         "summary" : "Get users requests",
         "description" : "Get users request",
         "parameters" : [ {
+          "name" : "all",
+          "in" : "query",
+          "description" : "Ignore closed and approved filter",
+          "required" : false,
+          "style" : "form",
+          "explode" : true,
+          "schema" : {
+            "type" : "boolean",
+            "default" : false
+          }
+        }, {
           "name" : "closed",
           "in" : "query",
-          "description" : "editor request is closed",
+          "description" : "Editor request is closed",
           "required" : false,
           "style" : "form",
           "explode" : true,
@@ -1536,13 +1547,60 @@
         }, {
           "name" : "approved",
           "in" : "query",
-          "description" : "editor request is approved",
+          "description" : "Editor request is approved",
           "required" : false,
           "style" : "form",
           "explode" : true,
           "schema" : {
             "type" : "boolean",
             "default" : false
+          }
+        }, {
+          "name" : "page",
+          "in" : "query",
+          "description" : "Pagination -> Page number, if page = -1, then return all results in same page",
+          "required" : false,
+          "style" : "form",
+          "explode" : true,
+          "schema" : {
+            "type" : "integer",
+            "format" : "int32",
+            "default" : -1
+          }
+        }, {
+          "name" : "size",
+          "in" : "query",
+          "description" : "Pagination -> Page size, ignored value if page = -1",
+          "required" : false,
+          "style" : "form",
+          "explode" : true,
+          "schema" : {
+            "type" : "integer",
+            "format" : "int32",
+            "default" : 50
+          }
+        }, {
+          "name" : "sortColumn",
+          "in" : "query",
+          "description" : "Pagination -> Sort Column",
+          "required" : false,
+          "style" : "form",
+          "explode" : true,
+          "schema" : {
+            "type" : "string",
+            "default" : "createDate"
+          }
+        }, {
+          "name" : "sortType",
+          "in" : "query",
+          "description" : "Pagination -> Sort Column",
+          "required" : false,
+          "style" : "form",
+          "explode" : true,
+          "schema" : {
+            "type" : "string",
+            "default" : "desc",
+            "enum" : [ "asc", "desc" ]
           }
         } ],
         "responses" : {
