@@ -1,1 +1,1 @@
-web java -Dserver.port=$PORT -Dspring.profiles.active=$ACTIVE_PROFILES $JAVA_OPTS -jar build/libs/murcyBackEnd-0.0.1-SNAPSHOT.jar
+web java -Dserver.port=$PORT -Dspring.profiles.active=$ACTIVE_PROFILES $JAVA_OPTS -jar build/libs/murcyBackEnd-*.jar

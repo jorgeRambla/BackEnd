@@ -8,7 +8,6 @@ import es.unizar.murcy.model.Workflow;
 import es.unizar.murcy.model.dto.WorkflowDto;
 import es.unizar.murcy.model.request.UpdateWorkflowStatusRequest;
 import es.unizar.murcy.service.WorkflowService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -19,15 +18,17 @@ import javax.servlet.http.HttpServletRequest;
 @CrossOrigin
 public class WorkflowController {
 
-    @Autowired
-    WorkflowService workflowService;
+    private final WorkflowService workflowService;
+    private final AuthUtilities authUtilities;
 
-    @Autowired
-    private AuthUtilities authUtilities;
+    public WorkflowController(WorkflowService workflowService, AuthUtilities authUtilities) {
+        this.workflowService = workflowService;
+        this.authUtilities = authUtilities;
+    }
 
     @CrossOrigin
     @PutMapping("/api/workflow/{id}/approve")
-    public ResponseEntity approveWorkflow(HttpServletRequest request, @PathVariable long id, @RequestBody UpdateWorkflowStatusRequest updateWorkflowStatusRequest) {
+    public ResponseEntity<WorkflowDto> approveWorkflow(HttpServletRequest request, @PathVariable long id, @RequestBody UpdateWorkflowStatusRequest updateWorkflowStatusRequest) {
         User user = authUtilities.getUserFromRequest(request, User.Rol.REVIEWER, true);
 
         if(!updateWorkflowStatusRequest.isValid()) {
@@ -41,7 +42,7 @@ public class WorkflowController {
 
     @CrossOrigin
     @PutMapping("/api/workflow/{id}/deny")
-    public ResponseEntity denyWorkflow(HttpServletRequest request, @PathVariable long id, @RequestBody UpdateWorkflowStatusRequest updateWorkflowStatusRequest) {
+    public ResponseEntity<WorkflowDto> denyWorkflow(HttpServletRequest request, @PathVariable long id, @RequestBody UpdateWorkflowStatusRequest updateWorkflowStatusRequest) {
 
         User user = authUtilities.getUserFromRequest(request, User.Rol.REVIEWER, true);
 
