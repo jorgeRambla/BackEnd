@@ -16,7 +16,8 @@ import es.unizar.murcy.service.IndividualAnswerService;
 import es.unizar.murcy.service.QuestionService;
 import es.unizar.murcy.service.UserService;
 import es.unizar.murcy.service.WorkflowService;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -30,24 +31,28 @@ import java.util.stream.Collectors;
 @RestController
 public class QuestionController {
 
-    @Autowired
-    private AuthUtilities authUtilities;
+    private final AuthUtilities authUtilities;
+    private final QuestionService questionService;
+    private final UserService userService;
+    private final WorkflowService workflowService;
+    private final IndividualAnswerService individualAnswerService;
 
-    @Autowired
-    private QuestionService questionService;
+    private final Logger logger = LoggerFactory.getLogger(QuestionController.class);
 
-    @Autowired
-    private UserService userService;
-
-    @Autowired
-    private WorkflowService workflowService;
-
-    @Autowired
-    private IndividualAnswerService individualAnswerService;
+    public QuestionController(AuthUtilities authUtilities, QuestionService questionService,
+                              UserService userService, WorkflowService workflowService,
+                              IndividualAnswerService individualAnswerService) {
+        this.authUtilities = authUtilities;
+        this.questionService = questionService;
+        this.userService = userService;
+        this.workflowService = workflowService;
+        this.individualAnswerService = individualAnswerService;
+    }
 
     @CrossOrigin
     @PostMapping(value = "/api/question")
     public ResponseEntity create(HttpServletRequest request, @RequestBody QuestionRequest questionRequest) {
+        this.logger.info("Handle request POST /api/question: {}", questionRequest);
         User user = authUtilities.getUserFromRequest(request, User.Rol.EDITOR, true);
 
         if (!questionRequest.isValid()) {
@@ -57,9 +62,10 @@ public class QuestionController {
         Question question = questionRequest.toEntity();
         question.setOwner(user);
 
-        Workflow workflow;
+        question = questionService.create(question);
+
+        Workflow workflow = new Workflow();
         if(Boolean.FALSE.equals(questionRequest.getPublish())) {
-            workflow = new Workflow();
             workflow.setDescription(null);
             workflow.setStatusUser(user);
             workflow.setTitle(Workflow.DRAFT_MESSAGE);
@@ -68,12 +74,13 @@ public class QuestionController {
             question.setClosed(true);
             question.setApproved(false);
         } else {
-            workflow = new Workflow();
             workflow.setDescription(null);
-            workflow.setStatusUser(null);
-            workflow.setTitle("Solicitud publicar pregunta");
-            question.setClosed(false);
-            question.setApproved(false);
+            workflow.setStatusUser(user);
+            workflow.setTitle("Publish question request");
+            workflow.setResponse("Automatic approved question");
+            workflow.setStatus(Workflow.Status.APPROVED);
+            question.setClosed(true);
+            question.setApproved(true);
         }
         workflow = workflowService.create(workflow);
 

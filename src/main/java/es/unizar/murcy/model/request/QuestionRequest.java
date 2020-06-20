@@ -8,6 +8,7 @@ import java.util.stream.Collectors;
 
 @NoArgsConstructor
 @AllArgsConstructor
+@ToString
 @SuppressWarnings("Duplicates")
 public class QuestionRequest {
 

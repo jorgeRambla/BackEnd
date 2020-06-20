@@ -6,7 +6,6 @@ import es.unizar.murcy.model.User;
 import es.unizar.murcy.model.Workflow;
 import es.unizar.murcy.repository.OptionRepository;
 import es.unizar.murcy.repository.QuestionRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
@@ -16,11 +15,16 @@ import java.util.*;
 @Transactional
 public class QuestionService {
 
-    @Autowired
     QuestionRepository questionRepository;
-
-    @Autowired
     OptionRepository optionRepository;
+    WorkflowService workflowService;
+
+    public QuestionService(QuestionRepository questionRepository, OptionRepository optionRepository,
+                           WorkflowService workflowService ) {
+        this.questionRepository = questionRepository;
+        this.optionRepository = optionRepository;
+        this.workflowService = workflowService;
+    }
 
     public List<Question> findAll() {
         return questionRepository.findQuestionsByDeletedIsFalse();
