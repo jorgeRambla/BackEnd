@@ -67,6 +67,7 @@ public class User extends AuditableEntity {
 
     public enum Rol {
         USER, EDITOR, REVIEWER, ADMINISTRATOR
+        
     }
 
     public void addRol(Rol rol) {

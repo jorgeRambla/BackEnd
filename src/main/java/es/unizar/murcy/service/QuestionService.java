@@ -1,29 +1,35 @@
 package es.unizar.murcy.service;
 
-import es.unizar.murcy.model.Option;
-import es.unizar.murcy.model.Question;
-import es.unizar.murcy.model.User;
-import es.unizar.murcy.model.Workflow;
+import es.unizar.murcy.model.*;
 import es.unizar.murcy.repository.OptionRepository;
 import es.unizar.murcy.repository.QuestionRepository;
+import es.unizar.murcy.repository.QuestionRepositoryPaging;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
 import java.util.*;
+
+import static es.unizar.murcy.service.utilities.SortUtilities.buildSort;
+import static es.unizar.murcy.service.utilities.SortUtilities.buildPageRequest;
 
 @Service
 @Transactional
 public class QuestionService {
 
     QuestionRepository questionRepository;
+    QuestionRepositoryPaging questionRepositoryPaging;
     OptionRepository optionRepository;
     WorkflowService workflowService;
 
     public QuestionService(QuestionRepository questionRepository, OptionRepository optionRepository,
-                           WorkflowService workflowService ) {
+                           WorkflowService workflowService, QuestionRepositoryPaging questionRepositoryPaging) {
         this.questionRepository = questionRepository;
         this.optionRepository = optionRepository;
         this.workflowService = workflowService;
+        this.questionRepositoryPaging = questionRepositoryPaging;
     }
 
     public List<Question> findAll() {
@@ -76,6 +82,29 @@ public class QuestionService {
 
     public List<Question> findQuestionsByOwnerId(long userId) {
         return questionRepository.findQuestionsByOwner_IdAndDeletedIsFalse(userId);
+    }
+
+    public Page<Question> findQuestionsByOwnerId(Boolean all, Boolean publish, User user, int page,
+                                                 int size, String sortColumn, String sortType, String query) {
+        Sort sort = buildSort(sortType, sortColumn);
+        PageRequest pageRequest = buildPageRequest(page, size, sort);
+        Page<Question> questions;
+
+        if(all.equals(Boolean.FALSE)) {
+            if (query.isEmpty()) {
+                questions = questionRepositoryPaging.findQuestionsByOwner_idAndApprovedAndDeletedIsFalse(user.getId(), publish, pageRequest);
+            } else {
+                questions = questionRepositoryPaging.findQuestionsByOwner_idAndApprovedAndDeletedIsFalseAndTitleContainingIgnoreCase(user.getId(), publish, query, pageRequest);
+            }
+        } else {
+            if (query.isEmpty()) {
+                questions = questionRepositoryPaging.findQuestionsByOwner_idAndDeletedIsFalse(user.getId(), pageRequest);
+            } else {
+                questions = questionRepositoryPaging.findQuestionsByOwner_idAndDeletedIsFalseAndTitleContainingIgnoreCase(user.getId(), query, pageRequest);
+            }
+        }
+
+        return questions;
     }
 
     public Set<Question> findByClosedAndApproved(boolean closed, boolean approved) {

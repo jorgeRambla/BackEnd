@@ -5,10 +5,13 @@ import es.unizar.murcy.exceptions.user.UserNotFoundException;
 import es.unizar.murcy.exceptions.user.UserUnauthorizedException;
 import es.unizar.murcy.exceptions.question.QuestionBadRequestException;
 import es.unizar.murcy.exceptions.question.QuestionNotFoundException;
+import es.unizar.murcy.model.EditorRequest;
 import es.unizar.murcy.model.Question;
 import es.unizar.murcy.model.User;
 import es.unizar.murcy.model.Workflow;
+import es.unizar.murcy.model.dto.EditorRequestDto;
 import es.unizar.murcy.model.dto.IndividualAnswerDto;
+import es.unizar.murcy.model.dto.PageableCollectionDto;
 import es.unizar.murcy.model.dto.QuestionDto;
 import es.unizar.murcy.model.request.OptionRequest;
 import es.unizar.murcy.model.request.QuestionRequest;
@@ -18,11 +21,13 @@ import es.unizar.murcy.service.UserService;
 import es.unizar.murcy.service.WorkflowService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -98,26 +103,51 @@ public class QuestionController {
 
     @CrossOrigin
     @GetMapping("/api/question/list")
-    public ResponseEntity<List<QuestionDto>> fetchCurrentUserQuestionList(HttpServletRequest request) {
+    public ResponseEntity<PageableCollectionDto<QuestionDto>> fetchCurrentUserQuestionList(
+            HttpServletRequest request,
+            @RequestParam(value = "all", defaultValue = "true") Boolean fetchAll,
+            @RequestParam(value = "published", defaultValue = "false") Boolean published,
+            @RequestParam(value = "page", defaultValue = "-1") int page,
+            @RequestParam(value = "size", defaultValue = "50") int size,
+            @RequestParam(value = "sortColumn", defaultValue = "createDate") String sortColumn,
+            @RequestParam(value = "sortType", defaultValue = "desc") String sortType,
+            @RequestParam(value = "query", defaultValue = "") String query) {
+
         User user = authUtilities.getUserFromRequest(request, User.Rol.EDITOR, true);
 
-        return ResponseEntity.status(HttpStatus.OK).body(questionService.findQuestionsByOwner(user).stream().map(QuestionDto::new).collect(Collectors.toList()));
+        return this.fetchCurrentUserQuestionListByOwnerId(request, user.getId(), fetchAll, published, page,
+                size, sortColumn, sortType, query);
     }
 
     @CrossOrigin
     @GetMapping("/api/question/list/{id}")
-    public ResponseEntity<List<QuestionDto>> fetchCurrentUserQuestionListByOwnerId(HttpServletRequest request, @PathVariable long id) {
+    public ResponseEntity<PageableCollectionDto<QuestionDto>> fetchCurrentUserQuestionListByOwnerId(
+            HttpServletRequest request,
+            @PathVariable long id,
+            @RequestParam(value = "all", defaultValue = "true") Boolean fetchAll,
+            @RequestParam(value = "published", defaultValue = "true") Boolean published,
+            @RequestParam(value = "page", defaultValue = "-1") int page,
+            @RequestParam(value = "size", defaultValue = "50") int size,
+            @RequestParam(value = "sortColumn", defaultValue = "createDate") String sortColumn,
+            @RequestParam(value = "sortType", defaultValue = "desc") String sortType,
+            @RequestParam(value = "query", defaultValue = "") String query) {
+
+        logger.info("Handle get request /api/question/list/{}: query[{}] all[{}] published[{}] page[{}] size[{}] sortColumn[{}] sortType[{}]",
+                id, query, fetchAll, published, page, size, sortColumn, sortType);
+
         User user = authUtilities.getUserFromRequest(request, User.Rol.EDITOR, true);
 
-        if (user.getId() == id) {
-            return ResponseEntity.status(HttpStatus.OK).body(questionService.findQuestionsByOwnerId(id).stream().map(QuestionDto::new).collect(Collectors.toList()));
-        } else if (user.getRoles().contains(User.Rol.REVIEWER)) {
-            if (userService.findUserById(id).isPresent()) {
-                return ResponseEntity.status(HttpStatus.OK).body(questionService.findQuestionsByOwner(user).stream().map(QuestionDto::new).collect(Collectors.toList()));
-            }
-            throw new UserNotFoundException();
-        }
-        throw new UserUnauthorizedException();
+        User searchedUser = this.authUtilities.filterUserAuthorized(user, id, User.Rol.REVIEWER);
+
+        Page<Question> questionPage = questionService.findQuestionsByOwnerId(fetchAll, published, searchedUser, page,
+                size, sortColumn, sortType, query);
+
+        Collection<Question> questionCollection = questionPage.getContent();
+        long totalItems = questionPage.getTotalElements();
+
+
+        return ResponseEntity.status(HttpStatus.OK).body(
+                new PageableCollectionDto<>(questionCollection.stream().map(QuestionDto::new).collect(Collectors.toList()), totalItems));
     }
 
     @CrossOrigin
@@ -179,10 +209,13 @@ public class QuestionController {
                         workflow.setStatus(Workflow.Status.DRAFT);
                     }
                 } else {
-                    workflow = new Workflow();
                     workflow.setDescription(null);
-                    workflow.setStatusUser(null);
-                    workflow.setTitle("Solicitud publicar pregunta");
+                    workflow.setStatusUser(user);
+                    workflow.setTitle("Publish question request");
+                    workflow.setResponse("Automatic approved question");
+                    workflow.setStatus(Workflow.Status.APPROVED);
+                    question.setClosed(true);
+                    question.setApproved(true);
                     workflow.addAuditableWorkflowEntity(question);
                 }
                 workflow = workflowService.create(workflow);

@@ -45,11 +45,7 @@ public class QuestionDto {
 
     @Getter
     @Setter
-    private boolean approved;
-
-    @Getter
-    @Setter
-    private boolean closed;
+    private boolean published;
 
     @Getter
     @Setter
@@ -69,7 +65,6 @@ public class QuestionDto {
         if(question.getLastWorkflow() != null) {
             this.lastWorkflow = new WorkflowDto(question.getLastWorkflow());
         }
-        this.approved = question.isApproved();
-        this.closed = question.isClosed();
+        this.published = question.isApproved();
     }
 }

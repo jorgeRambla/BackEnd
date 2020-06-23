@@ -13,6 +13,9 @@ import javax.transaction.Transactional;
 import java.util.Date;
 import java.util.Optional;
 
+import static es.unizar.murcy.service.utilities.SortUtilities.buildPageRequest;
+import static es.unizar.murcy.service.utilities.SortUtilities.buildSort;
+
 @Service
 @Transactional
 public class EditorRequestService {
@@ -45,22 +48,9 @@ public class EditorRequestService {
 
     public Page<EditorRequest> findByClosedAndApproved(Boolean all, Boolean isClosed, Boolean isApproved, int page,
                                                        int size, String sortColumn, String sortType) {
-        PageRequest pageRequest;
-        Sort sort;
+        Sort sort = buildSort(sortType, sortColumn);
+        PageRequest pageRequest = buildPageRequest(page, size, sort);
         Page<EditorRequest> editorRequests;
-
-        // Build sort type asc/desc and sort column
-        if(sortType.equalsIgnoreCase("asc")) {
-            sort = Sort.by(sortColumn).ascending();
-        } else {
-            sort = Sort.by(sortColumn).descending();
-        }
-
-        if(page == -1) {
-            pageRequest = PageRequest.of(0, Integer.MAX_VALUE, sort);
-        } else {
-            pageRequest = PageRequest.of(page, size, sort);
-        }
 
         if(all.equals(Boolean.FALSE)) {
             editorRequests = editorRequestRepositoryPaging.findEditorRequestsByClosedAndAndApprovedAndDeletedIsFalse(isClosed, isApproved, pageRequest);

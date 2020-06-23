@@ -42,11 +42,8 @@ public class QuestionDtoTest {
         questionDto.setLastWorkflow(workflowDto);
         assertEquals(workflowDto, questionDto.getLastWorkflow());
 
-        questionDto.setApproved(true);
-        assertEquals(true, questionDto.isApproved());
-
-        questionDto.setClosed(true);
-        assertEquals(true, questionDto.isClosed());
+        questionDto.setPublished(true);
+        assertEquals(true, questionDto.isPublished());
     }
 
     @Test
