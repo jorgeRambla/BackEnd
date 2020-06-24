@@ -70,6 +70,25 @@ public class Workflow extends AuditableEntity {
         this.auditableWorkflowEntities.add(auditableWorkflowEntity);
     }
 
+    public static Workflow draftWorkflow(User requester, AuditableWorkflowEntity entity) {
+        Workflow workflow = new Workflow();
+        workflow.setDescription(null);
+        workflow.setStatusUser(requester);
+        workflow.setTitle(Workflow.DRAFT_MESSAGE);
+        workflow.setResponse(Workflow.DRAFT_MESSAGE);
+        entity.setClosed(true);
+        entity.setApproved(false);
+        if(entity.getLastWorkflow().getStatus().equals(Workflow.Status.APPROVED)){
+            workflow.setStatus(Workflow.Status.DRAFT_FROM_APPROVED);
+        } else if (entity.getLastWorkflow().getStatus().equals(Workflow.Status.DRAFT_FROM_APPROVED)){
+            workflow.setStatus(Workflow.Status.DRAFT_FROM_APPROVED);
+        } else {
+            workflow.setStatus(Workflow.Status.DRAFT);
+        }
+
+        return workflow;
+    }
+
     @Override
     public boolean equals(Object o) {
         return super.equals(o);

@@ -29,13 +29,13 @@ public class WorkflowController {
     @CrossOrigin
     @PutMapping("/api/workflow/{id}/approve")
     public ResponseEntity<WorkflowDto> approveWorkflow(HttpServletRequest request, @PathVariable long id, @RequestBody UpdateWorkflowStatusRequest updateWorkflowStatusRequest) {
-        User user = authUtilities.getUserFromRequest(request, User.Rol.REVIEWER, true);
+        final User requester = authUtilities.newUserMiddlewareCheck(request, User.Rol.REVIEWER);
 
         if(!updateWorkflowStatusRequest.isValid()) {
             throw new WorkflowBadRequestException();
         }
 
-        Workflow workflow = workflowService.approveById(id, user, updateWorkflowStatusRequest.getResponse()).orElseThrow(WorkflowNotFoundException::new);
+        Workflow workflow = workflowService.approveById(id, requester, updateWorkflowStatusRequest.getResponse()).orElseThrow(WorkflowNotFoundException::new);
 
         return ResponseEntity.status(HttpStatus.CREATED).body(new WorkflowDto(workflow));
     }
@@ -43,14 +43,13 @@ public class WorkflowController {
     @CrossOrigin
     @PutMapping("/api/workflow/{id}/deny")
     public ResponseEntity<WorkflowDto> denyWorkflow(HttpServletRequest request, @PathVariable long id, @RequestBody UpdateWorkflowStatusRequest updateWorkflowStatusRequest) {
-
-        User user = authUtilities.getUserFromRequest(request, User.Rol.REVIEWER, true);
+        final User requester = authUtilities.newUserMiddlewareCheck(request, User.Rol.REVIEWER);
 
         if(!updateWorkflowStatusRequest.isValid()) {
             throw new WorkflowBadRequestException();
         }
 
-        Workflow workflow = workflowService.denyById(id, user, updateWorkflowStatusRequest.getResponse()).orElseThrow(WorkflowNotFoundException::new);
+        Workflow workflow = workflowService.denyById(id, requester, updateWorkflowStatusRequest.getResponse()).orElseThrow(WorkflowNotFoundException::new);
 
         return ResponseEntity.status(HttpStatus.CREATED).body(new WorkflowDto(workflow));
     }

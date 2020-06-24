@@ -1,15 +1,11 @@
 package es.unizar.murcy.controllers;
 
 import es.unizar.murcy.controllers.utilities.AuthUtilities;
-import es.unizar.murcy.exceptions.user.UserNotFoundException;
-import es.unizar.murcy.exceptions.user.UserUnauthorizedException;
 import es.unizar.murcy.exceptions.question.QuestionBadRequestException;
 import es.unizar.murcy.exceptions.question.QuestionNotFoundException;
-import es.unizar.murcy.model.EditorRequest;
 import es.unizar.murcy.model.Question;
 import es.unizar.murcy.model.User;
 import es.unizar.murcy.model.Workflow;
-import es.unizar.murcy.model.dto.EditorRequestDto;
 import es.unizar.murcy.model.dto.IndividualAnswerDto;
 import es.unizar.murcy.model.dto.PageableCollectionDto;
 import es.unizar.murcy.model.dto.QuestionDto;
@@ -17,7 +13,6 @@ import es.unizar.murcy.model.request.OptionRequest;
 import es.unizar.murcy.model.request.QuestionRequest;
 import es.unizar.murcy.service.IndividualAnswerService;
 import es.unizar.murcy.service.QuestionService;
-import es.unizar.murcy.service.UserService;
 import es.unizar.murcy.service.WorkflowService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -38,18 +33,16 @@ public class QuestionController {
 
     private final AuthUtilities authUtilities;
     private final QuestionService questionService;
-    private final UserService userService;
     private final WorkflowService workflowService;
     private final IndividualAnswerService individualAnswerService;
 
     private final Logger logger = LoggerFactory.getLogger(QuestionController.class);
 
     public QuestionController(AuthUtilities authUtilities, QuestionService questionService,
-                              UserService userService, WorkflowService workflowService,
+                              WorkflowService workflowService,
                               IndividualAnswerService individualAnswerService) {
         this.authUtilities = authUtilities;
         this.questionService = questionService;
-        this.userService = userService;
         this.workflowService = workflowService;
         this.individualAnswerService = individualAnswerService;
     }
@@ -58,21 +51,21 @@ public class QuestionController {
     @PostMapping(value = "/api/question")
     public ResponseEntity create(HttpServletRequest request, @RequestBody QuestionRequest questionRequest) {
         this.logger.info("Handle request POST /api/question: {}", questionRequest);
-        User user = authUtilities.getUserFromRequest(request, User.Rol.EDITOR, true);
-
+        User requester = authUtilities.newUserMiddlewareCheck(request, User.Rol.EDITOR);
+        
         if (!questionRequest.isValid()) {
             throw new QuestionBadRequestException();
         }
 
         Question question = questionRequest.toEntity();
-        question.setOwner(user);
+        question.setOwner(requester);
 
         question = questionService.create(question);
 
         Workflow workflow = new Workflow();
         if(Boolean.FALSE.equals(questionRequest.getPublish())) {
             workflow.setDescription(null);
-            workflow.setStatusUser(user);
+            workflow.setStatusUser(requester);
             workflow.setTitle(Workflow.DRAFT_MESSAGE);
             workflow.setResponse(Workflow.DRAFT_MESSAGE);
             workflow.setStatus(Workflow.Status.DRAFT);
@@ -80,7 +73,7 @@ public class QuestionController {
             question.setApproved(false);
         } else {
             workflow.setDescription(null);
-            workflow.setStatusUser(user);
+            workflow.setStatusUser(requester);
             workflow.setTitle("Publish question request");
             workflow.setResponse("Automatic approved question");
             workflow.setStatus(Workflow.Status.APPROVED);
@@ -113,9 +106,9 @@ public class QuestionController {
             @RequestParam(value = "sortType", defaultValue = "desc") String sortType,
             @RequestParam(value = "query", defaultValue = "") String query) {
 
-        User user = authUtilities.getUserFromRequest(request, User.Rol.EDITOR, true);
+        User requester = authUtilities.newUserMiddlewareCheck(request, User.Rol.EDITOR);
 
-        return this.fetchCurrentUserQuestionListByOwnerId(request, user.getId(), fetchAll, published, page,
+        return this.fetchCurrentUserQuestionListByOwnerId(request, requester.getId(), fetchAll, published, page,
                 size, sortColumn, sortType, query);
     }
 
@@ -135,9 +128,9 @@ public class QuestionController {
         logger.info("Handle get request /api/question/list/{}: query[{}] all[{}] published[{}] page[{}] size[{}] sortColumn[{}] sortType[{}]",
                 id, query, fetchAll, published, page, size, sortColumn, sortType);
 
-        User user = authUtilities.getUserFromRequest(request, User.Rol.EDITOR, true);
+        User requester = authUtilities.newUserMiddlewareCheck(request, User.Rol.EDITOR);
 
-        User searchedUser = this.authUtilities.filterUserAuthorized(user, id, User.Rol.REVIEWER);
+        User searchedUser = this.authUtilities.filterUserAuthorized(requester, id, User.Rol.REVIEWER);
 
         Page<Question> questionPage = questionService.findQuestionsByOwnerId(fetchAll, published, searchedUser, page,
                 size, sortColumn, sortType, query);
@@ -153,97 +146,78 @@ public class QuestionController {
     @CrossOrigin
     @GetMapping("/api/question/{id}")
     public ResponseEntity<QuestionDto> fetchQuestionById(HttpServletRequest request, @PathVariable long id) {
-        User user = authUtilities.getUserFromRequest(request, User.Rol.EDITOR, true);
+        User requester = authUtilities.newUserMiddlewareCheck(request, User.Rol.EDITOR);
         Question question = questionService.findById(id).orElseThrow(QuestionNotFoundException::new);
 
-        if (question.getOwner().equals(user) || user.getRoles().contains(User.Rol.REVIEWER)) {
-            return ResponseEntity.status(HttpStatus.OK).body(new QuestionDto(question));
-        }
+        authUtilities.filterUserAuthorized(requester, question.getOwner(), User.Rol.REVIEWER);
 
-        throw new UserUnauthorizedException();
+        return ResponseEntity.status(HttpStatus.OK).body(new QuestionDto(question));
     }
 
     @CrossOrigin
     @PutMapping(value = "/api/question/{id}")
     public ResponseEntity<QuestionDto> update(HttpServletRequest request, @RequestBody QuestionRequest questionRequest, @PathVariable long id) {
-        User user = authUtilities.getUserFromRequest(request, User.Rol.EDITOR, true);
+        User requester = authUtilities.newUserMiddlewareCheck(request, User.Rol.EDITOR);
 
         Question question = questionService.findById(id).orElseThrow(QuestionNotFoundException::new);
-
+        
         if(!questionRequest.isUpdateValid()) {
             throw new QuestionBadRequestException();
         }
 
-        if (question.getOwner().equals(user) || user.getRoles().contains(User.Rol.REVIEWER)) {
+        authUtilities.filterUserAuthorized(requester, question.getOwner(), User.Rol.REVIEWER);
 
-            if (questionRequest.getTitle() != null && !questionRequest.getTitle().equals("")) {
-                question.setTitle(questionRequest.getTitle());
-            }
-
-            if (questionRequest.getDescription() != null) {
-                question.setDescription(questionRequest.getDescription());
-            }
-
-            if (questionRequest.getOptions() != null && !questionRequest.getOptions().isEmpty()) {
-                questionService.deleteOptions(question.getOptions(), false);
-                question.setOptions(questionRequest.getOptions().stream().map(OptionRequest::toEntity).collect(Collectors.toList()));
-                question.setIsMultiple(questionRequest.isMultiple());
-            }
-
-            if(question.isClosed()) {
-                Workflow workflow = new Workflow();
-                if(Boolean.FALSE.equals(questionRequest.getPublish())){
-                    workflow.setStatusUser(user);
-                    workflow.setTitle(Workflow.DRAFT_MESSAGE);
-                    workflow.setResponse(Workflow.DRAFT_MESSAGE);
-                    workflow.setDescription(null);
-                    question.setClosed(true);
-                    question.setApproved(false);
-                    if(question.getLastWorkflow().getStatus().equals(Workflow.Status.APPROVED)) {
-                        workflow.setStatus(Workflow.Status.DRAFT_FROM_APPROVED);
-                    }
-                    else if(question.getLastWorkflow().getStatus().equals(Workflow.Status.DRAFT_FROM_APPROVED)) {
-                        workflow.setStatus(Workflow.Status.DRAFT_FROM_APPROVED);
-                    }
-                    else {
-                        workflow.setStatus(Workflow.Status.DRAFT);
-                    }
-                } else {
-                    workflow.setDescription(null);
-                    workflow.setStatusUser(user);
-                    workflow.setTitle("Publish question request");
-                    workflow.setResponse("Automatic approved question");
-                    workflow.setStatus(Workflow.Status.APPROVED);
-                    question.setClosed(true);
-                    question.setApproved(true);
-                    workflow.addAuditableWorkflowEntity(question);
-                }
-                workflow = workflowService.create(workflow);
-
-                question.getLastWorkflow().setNextWorkflow(workflow);
-                workflowService.update(question.getLastWorkflow());
-
-                question.setLastWorkflow(workflow);
-            }
-
-            return ResponseEntity.status(HttpStatus.CREATED).body(new QuestionDto(questionService.update(question)));
+        if (questionRequest.getTitle() != null && !questionRequest.getTitle().equals("")) {
+            question.setTitle(questionRequest.getTitle());
         }
-        throw new UserUnauthorizedException();
+
+        if (questionRequest.getDescription() != null) {
+            question.setDescription(questionRequest.getDescription());
+        }
+
+        if (questionRequest.getOptions() != null && !questionRequest.getOptions().isEmpty()) {
+            questionService.deleteOptions(question.getOptions(), false);
+            question.setOptions(questionRequest.getOptions().stream().map(OptionRequest::toEntity).collect(Collectors.toList()));
+            question.setIsMultiple(questionRequest.isMultiple());
+        }
+
+        if(question.isClosed()) {
+            Workflow workflow = new Workflow();
+            if(Boolean.FALSE.equals(questionRequest.getPublish())){
+                workflow = Workflow.draftWorkflow(requester, question);
+            } else {
+                workflow.setDescription(null);
+                workflow.setStatusUser(requester);
+                workflow.setTitle("Publish question request");
+                workflow.setResponse("Automatic approved question");
+                workflow.setStatus(Workflow.Status.APPROVED);
+                question.setClosed(true);
+                question.setApproved(true);
+                workflow.addAuditableWorkflowEntity(question);
+            }
+            workflow = workflowService.create(workflow);
+
+            question.getLastWorkflow().setNextWorkflow(workflow);
+            workflowService.update(question.getLastWorkflow());
+
+            question.setLastWorkflow(workflow);
+        }
+
+        return ResponseEntity.status(HttpStatus.CREATED).body(new QuestionDto(questionService.update(question)));
     }
 
     @CrossOrigin
     @DeleteMapping(value = "/api/question/{id}")
     public ResponseEntity delete(HttpServletRequest request, @PathVariable long id) {
-        User user = authUtilities.getUserFromRequest(request, User.Rol.EDITOR, true);
+        User requester = authUtilities.newUserMiddlewareCheck(request, User.Rol.EDITOR);
 
         Question question = questionService.findById(id).orElseThrow(QuestionNotFoundException::new);
 
-        if (question.getOwner().equals(user) || user.getRoles().contains(User.Rol.REVIEWER)) {
-            questionService.deleteOptions(question.getOptions(), false);
-            questionService.delete(question);
-            return ResponseEntity.status(HttpStatus.ACCEPTED).build();
-        }
-        throw new UserUnauthorizedException();
+        authUtilities.filterUserAuthorized(requester, question.getOwner(), User.Rol.REVIEWER);
+
+        questionService.deleteOptions(question.getOptions(), false);
+        questionService.delete(question);
+        return ResponseEntity.status(HttpStatus.ACCEPTED).build();
     }
 
     @CrossOrigin
@@ -251,7 +225,7 @@ public class QuestionController {
     public ResponseEntity<List<QuestionDto>> getQuestionsRequests(HttpServletRequest request,
                                                  @RequestParam(value = "closed", defaultValue = "false") Boolean isClosed,
                                                  @RequestParam(value = "approved", defaultValue = "false") Boolean isApproved) {
-        authUtilities.getUserFromRequest(request, User.Rol.REVIEWER, true);
+        authUtilities.newUserMiddlewareCheck(request, User.Rol.REVIEWER);
 
         Set<Question> editorRequestSet = questionService.findByClosedAndApproved(isClosed, isApproved);
 
@@ -261,19 +235,18 @@ public class QuestionController {
     @CrossOrigin
     @GetMapping("/api/question/{id}/answers")
     public ResponseEntity<List<IndividualAnswerDto>> fetchAnswersByQuestionId(HttpServletRequest request, @PathVariable long id) {
-        User user = authUtilities.getUserFromRequest(request, User.Rol.EDITOR, true);
+        User requester = authUtilities.newUserMiddlewareCheck(request, User.Rol.EDITOR);
 
         Question question = questionService.findById(id).orElseThrow(QuestionNotFoundException::new);
 
-        if (question.getOwner().equals(user) || user.getRoles().contains(User.Rol.REVIEWER)) {
-            return ResponseEntity.status(HttpStatus.OK).body(
-                    individualAnswerService.findIndividualAnswersByQuestionId(id)
-                            .stream()
-                            .map(
-                            IndividualAnswerDto::new)
-                            .collect(Collectors.toList()));
-        }
-        throw new UserUnauthorizedException();
+        authUtilities.filterUserAuthorized(requester, question.getOwner(), User.Rol.REVIEWER);
+
+        return ResponseEntity.status(HttpStatus.OK).body(
+                individualAnswerService.findIndividualAnswersByQuestionId(id)
+                        .stream()
+                        .map(
+                        IndividualAnswerDto::new)
+                        .collect(Collectors.toList()));
     }
 
 }

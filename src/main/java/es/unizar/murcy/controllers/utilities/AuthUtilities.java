@@ -5,7 +5,6 @@ import es.unizar.murcy.exceptions.user.UserNotFoundException;
 import es.unizar.murcy.exceptions.user.UserUnauthorizedException;
 import es.unizar.murcy.model.User;
 import es.unizar.murcy.service.UserService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.stereotype.Component;
@@ -28,39 +27,61 @@ public class AuthUtilities {
         this.authenticationManager = authenticationManager;
     }
 
-    public User getUserFromRequest(HttpServletRequest request) {
+    public User newUserMiddlewareCheck(HttpServletRequest request, User.Rol minRol) {
         final String authorization = request.getHeader("Authorization");
-
+        if (authorization == null) {
+            return null;
+        }
         final String username = jsonWebTokenUtil.getUserNameFromToken(authorization.substring(7));
+        Optional<User> user = userService.findUserByUserName(username);
 
-        return userService.findUserByUserName(username).orElseThrow(UserUnauthorizedException::new);
+        if(minRol == User.Rol.UNLOGGED) {
+            return user.orElseGet(() -> null);
+        } else {
+            if(user.isPresent()) {
+                Optional<User.Rol> maxRol = getMaxRol(user.get());
+                if (maxRol.isPresent() && maxRol.get().ordinal() >= minRol.ordinal()) {
+                    return user.get();
+                }
+            }
+            throw new UserUnauthorizedException();
+        }
     }
 
-    public User getUserFromRequest(HttpServletRequest request, User.Rol rol, boolean canBeReviewer) {
-        final String authorization = request.getHeader("Authorization");
+    public boolean hasPermission(User requester, User.Rol minRol) {
+        Optional<User.Rol> maxRol = getMaxRol(requester);
+        return maxRol.filter(rol -> hasPermission(rol, minRol)).isPresent();
+    }
 
-        final String username = jsonWebTokenUtil.getUserNameFromToken(authorization.substring(7));
-
-        Optional<User> user = userService.findUserByUserName(username);
-        if (user.isPresent() && (user.get().getRoles().contains(rol) || (canBeReviewer && user.get().getRoles().contains(User.Rol.REVIEWER)))) {
-            return user.get();
-        }
-        throw new UserUnauthorizedException();
+    public boolean hasPermission(User.Rol requesterRol, User.Rol minRol) {
+        return requesterRol.ordinal() >= minRol.ordinal();
     }
 
     public void authenticate(String username, String password) {
         authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(username, password));
     }
 
-    public User filterUserAuthorized(User user, long id, User.Rol minRol) {
-        if (user.getId() != id) {
-            Optional<User.Rol> maxRol = getMaxRol(user);
+    public User filterUserAuthorized(User requester, long id, User.Rol minRol) {
+        if (requester.getId() != id) {
+            Optional<User.Rol> maxRol = getMaxRol(requester);
             if (maxRol.isPresent() && maxRol.get().ordinal() >= minRol.ordinal()) {
                 return userService.findUserById(id).orElseThrow(UserNotFoundException::new);
             }
             throw new UserUnauthorizedException();
         } else {
             return userService.findUserById(id).orElseThrow(UserNotFoundException::new);
+        }
+    }
+
+    public User filterUserAuthorized(User requester, User user, User.Rol minRol) {
+        if (requester.getId() != user.getId()) {
+            Optional<User.Rol> maxRol = getMaxRol(requester);
+            if (maxRol.isPresent() && maxRol.get().ordinal() >= minRol.ordinal()) {
+                return user;
+            }
+            throw new UserUnauthorizedException();
+        } else {
+            return user;
         }
     }
 

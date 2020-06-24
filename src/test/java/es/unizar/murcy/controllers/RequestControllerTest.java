@@ -5,7 +5,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import es.unizar.murcy.components.JsonWebTokenUtil;
 import es.unizar.murcy.model.EditorRequest;
 import es.unizar.murcy.model.User;
-import es.unizar.murcy.model.dto.EditorRequestDto;
 import es.unizar.murcy.model.dto.PageableCollectionDto;
 import es.unizar.murcy.service.JwtUserDetailsService;
 import es.unizar.murcy.service.UserService;
@@ -22,7 +21,6 @@ import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import java.net.URI;
-import java.util.Set;
 
 import static org.junit.Assert.assertEquals;
 
@@ -57,6 +55,7 @@ public class RequestControllerTest {
     public void setUp() {
         User user = new User("testUser", new BCryptPasswordEncoder().encode("test"), "testUser@test.com", "Test Test");
         user.setConfirmed(true);
+        user.addRol(User.Rol.USER);
         User userUser = userService.create(user);
 
         user = new User("testEditor", new BCryptPasswordEncoder().encode("test"), "testEditor@test.com", "Test Test");

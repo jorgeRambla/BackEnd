@@ -44,7 +44,7 @@ public class RequestController {
     @CrossOrigin
     @GetMapping("/api/request/editor")
     public ResponseEntity<EditorRequestDto> getCurrentUserEditorRequest(HttpServletRequest request) {
-        User user = authUtilities.getUserFromRequest(request);
+        User user = authUtilities.newUserMiddlewareCheck(request, User.Rol.USER);
 
         EditorRequest editorRequest = editorRequestService.findEditorRequestByApplicant(user).orElseThrow(EditorRequestNotFoundException::new);
 
@@ -54,7 +54,7 @@ public class RequestController {
     @CrossOrigin
     @PutMapping("/api/request/editor")
     public ResponseEntity putCurrentUserEditorRequest(HttpServletRequest request, @RequestBody EditorRequestRequest editorRequestRequest) {
-        User user = authUtilities.getUserFromRequest(request);
+        User user = authUtilities.newUserMiddlewareCheck(request, User.Rol.USER);
 
         EditorRequest editorRequest = editorRequestService.findEditorRequestByApplicant(user).orElseThrow(EditorRequestNotFoundException::new);
 
@@ -75,7 +75,7 @@ public class RequestController {
     @CrossOrigin
     @PostMapping("/api/request/editor")
     public ResponseEntity createCurrentUserEditorRequest(HttpServletRequest request, @RequestBody EditorRequestRequest editorRequestRequest) {
-        User user = authUtilities.getUserFromRequest(request);
+        User user = authUtilities.newUserMiddlewareCheck(request, User.Rol.USER);
 
         Optional<EditorRequest> editorRequest = editorRequestService.findEditorRequestByApplicant(user);
 
@@ -149,15 +149,13 @@ public class RequestController {
         logger.info("Handle get request /api/request/editor/list: all[{}] closed[{}] approved[{}] page[{}] size[{}] sortColumn[{}] sortType[{}]",
                 fetchAll, isClosed, isApproved, page, size, sortColumn, sortType);
 
-        authUtilities.getUserFromRequest(request, User.Rol.REVIEWER, true);
-
+        authUtilities.newUserMiddlewareCheck(request, User.Rol.REVIEWER);
 
         Page<EditorRequest> editorRequestPage = editorRequestService.findByClosedAndApproved(
                 fetchAll, isClosed, isApproved, page, size, sortColumn, sortType);
 
         Collection<EditorRequest> editorRequestSet = editorRequestPage.getContent();
         long totalItems = editorRequestPage.getTotalElements();
-
 
         return ResponseEntity.status(HttpStatus.OK).body(
                 new PageableCollectionDto<>(editorRequestSet.stream().map(EditorRequestDto::new).collect(Collectors.toList()), totalItems));
