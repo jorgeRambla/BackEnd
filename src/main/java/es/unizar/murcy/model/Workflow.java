@@ -38,7 +38,7 @@ public class Workflow extends AuditableEntity {
     @Setter
     private String response;
 
-    @OneToOne
+    @OneToOne(cascade = CascadeType.ALL)
     @Getter
     @Setter
     private Workflow nextWorkflow;
@@ -48,7 +48,7 @@ public class Workflow extends AuditableEntity {
     @Setter
     private User statusUser;
 
-    @ManyToMany
+    @ManyToMany(cascade = CascadeType.ALL)
     @Getter
     @Setter
     private Set<AuditableWorkflowEntity> auditableWorkflowEntities;

@@ -4,6 +4,7 @@ import es.unizar.murcy.model.*;
 import es.unizar.murcy.repository.OptionRepository;
 import es.unizar.murcy.repository.QuestionRepository;
 import es.unizar.murcy.repository.QuestionRepositoryPaging;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
@@ -18,6 +19,9 @@ import static es.unizar.murcy.service.utilities.SortUtilities.buildPageRequest;
 @Service
 @Transactional
 public class QuestionService {
+
+    @Value("${murcy.config.entity.hard-delete}")
+    private Boolean hardDelete;
 
     QuestionRepository questionRepository;
     QuestionRepositoryPaging questionRepositoryPaging;
@@ -62,14 +66,34 @@ public class QuestionService {
 
 
     public void delete(Question question) {
-        optionRepository.saveAll(question.getOptions());
-        question.delete();
-        update(question);
+        delete(question, hardDelete);
     }
 
-    public void deleteOptions(List<Option> options, Boolean hardDelete) {
+    protected void delete(Question question, Boolean hardDelete) {
         if(hardDelete.equals(Boolean.TRUE)) {
-            optionRepository.deleteInBatch(options);
+            question.setOptions(Collections.emptyList());
+            questionRepository.delete(question);
+        } else {
+            deleteOptions(question.getOptions(), false);
+            question.delete(); // Mark question as deleted
+            update(question);
+        }
+    }
+
+    public void deleteOptions(Question question) {
+        List<Option> options = new ArrayList<>(question.getOptions());
+        if(hardDelete.equals(Boolean.TRUE)){
+            question.getOptions().clear();
+            questionRepository.save(question);
+            deleteOptions(options, hardDelete);
+        } else {
+            deleteOptions(question.getOptions(), false);
+        }
+    }
+
+    protected void deleteOptions(List<Option> options, Boolean hardDelete) {
+        if(hardDelete.equals(Boolean.TRUE)) {
+            options.forEach(optionRepository::delete);
         } else {
             options.forEach(Option::delete);
             optionRepository.saveAll(options);
@@ -103,7 +127,6 @@ public class QuestionService {
                 questions = questionRepositoryPaging.findQuestionsByOwner_idAndDeletedIsFalseAndTitleContainingIgnoreCase(user.getId(), query, pageRequest);
             }
         }
-
         return questions;
     }
 

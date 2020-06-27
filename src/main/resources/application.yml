@@ -24,6 +24,7 @@ server:
 
 murcy:
   config:
+    entity.hard-delete: ${HARD_DELETE:false}
     jwt.secret: ${JWT_SECRET:randomjwt}
     front-end.application-url: ${FRONT_END_URL:http://localhost:4200}
     back-end.application-url: ${BACK_END_URL:http://localhost:8090}

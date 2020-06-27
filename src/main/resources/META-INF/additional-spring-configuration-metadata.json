@@ -34,5 +34,10 @@
       "name": "murcy.config.admin.email",
       "type": "java.lang.String",
       "description": "murcy.config.admin.email."
+    },
+    {
+      "name": "murcy.config.entity.hard-delete",
+      "type": "java.lang.Boolean",
+      "description": "murcy.config.entity.hard-delete."
     }
   ] }

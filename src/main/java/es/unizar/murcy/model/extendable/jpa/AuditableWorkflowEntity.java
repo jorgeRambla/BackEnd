@@ -1,5 +1,6 @@
 package es.unizar.murcy.model.extendable.jpa;
 
+import es.unizar.murcy.model.User;
 import es.unizar.murcy.model.Workflow;
 import lombok.*;
 
@@ -13,12 +14,12 @@ import java.util.Objects;
 @ToString(callSuper = true)
 public class AuditableWorkflowEntity extends AuditableEntity{
 
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.ALL)
     @Getter
     @Setter
     private Workflow workflow;
 
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.ALL)
     @Getter
     @Setter
     private Workflow lastWorkflow;
@@ -34,6 +35,11 @@ public class AuditableWorkflowEntity extends AuditableEntity{
     @Getter
     @Setter
     private String classname;
+
+    @ManyToOne
+    @Getter
+    @Setter
+    private User owner;
 
     public AuditableWorkflowEntity() {
         super();

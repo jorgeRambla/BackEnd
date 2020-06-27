@@ -176,7 +176,7 @@ public class QuestionController {
         }
 
         if (questionRequest.getOptions() != null && !questionRequest.getOptions().isEmpty()) {
-            questionService.deleteOptions(question.getOptions(), false);
+            questionService.deleteOptions(question);
             question.setOptions(questionRequest.getOptions().stream().map(OptionRequest::toEntity).collect(Collectors.toList()));
             question.setIsMultiple(questionRequest.isMultiple());
         }
@@ -208,16 +208,16 @@ public class QuestionController {
 
     @CrossOrigin
     @DeleteMapping(value = "/api/question/{id}")
-    public ResponseEntity delete(HttpServletRequest request, @PathVariable long id) {
+    public ResponseEntity<String> delete(HttpServletRequest request, @PathVariable long id) {
+        this.logger.info("Handle DELETE /api/question/{}", id);
         User requester = authUtilities.newUserMiddlewareCheck(request, User.Rol.EDITOR);
 
         Question question = questionService.findById(id).orElseThrow(QuestionNotFoundException::new);
 
         authUtilities.filterUserAuthorized(requester, question.getOwner(), User.Rol.REVIEWER);
 
-        questionService.deleteOptions(question.getOptions(), false);
         questionService.delete(question);
-        return ResponseEntity.status(HttpStatus.ACCEPTED).build();
+        return ResponseEntity.status(HttpStatus.ACCEPTED).body(HttpStatus.ACCEPTED.toString());
     }
 
     @CrossOrigin
