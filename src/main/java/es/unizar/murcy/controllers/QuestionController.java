@@ -80,16 +80,11 @@ public class QuestionController {
             question.setClosed(true);
             question.setApproved(true);
         }
-        workflow = workflowService.create(workflow);
 
         question.setWorkflow(workflow);
         question.setLastWorkflow(workflow);
 
-        question = questionService.create(question);
-
-        workflow.addAuditableWorkflowEntity(question);
-
-        workflowService.update(workflow);
+        questionService.create(question);
 
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }

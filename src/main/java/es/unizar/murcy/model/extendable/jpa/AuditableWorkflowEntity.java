@@ -3,6 +3,7 @@ package es.unizar.murcy.model.extendable.jpa;
 import es.unizar.murcy.model.User;
 import es.unizar.murcy.model.Workflow;
 import lombok.*;
+import org.hibernate.jdbc.Work;
 
 import javax.persistence.*;
 import java.util.Objects;
@@ -16,12 +17,10 @@ public class AuditableWorkflowEntity extends AuditableEntity{
 
     @ManyToOne(cascade = CascadeType.ALL)
     @Getter
-    @Setter
     private Workflow workflow;
 
     @ManyToOne(cascade = CascadeType.ALL)
     @Getter
-    @Setter
     private Workflow lastWorkflow;
 
     @Getter
@@ -55,6 +54,16 @@ public class AuditableWorkflowEntity extends AuditableEntity{
     @Override
     public int hashCode() {
         return Objects.hash(super.hashCode());
+    }
+
+    public void setWorkflow(Workflow workflow) {
+        this.workflow = workflow;
+        workflow.clear();
+        this.workflow.addAuditableWorkflowEntity(this);
+    }
+
+    public void setLastWorkflow(Workflow workflow) {
+        this.lastWorkflow = workflow;
     }
 
 }

@@ -91,15 +91,10 @@ public class RequestController {
             workflow.setStatusUser(null);
             workflow.setTitle("Application to be an editor");
 
-            workflow = workflowService.create(workflow);
-
             finalEditorRequest.setWorkflow(workflow);
             finalEditorRequest.setLastWorkflow(workflow);
 
-            EditorRequest updatedEditorRequest = editorRequestService.create(finalEditorRequest);
-            workflow.addAuditableWorkflowEntity(updatedEditorRequest);
-
-            workflowService.update(workflow);
+            editorRequestService.create(finalEditorRequest);
 
             return ResponseEntity.status(HttpStatus.CREATED).build();
         } else {

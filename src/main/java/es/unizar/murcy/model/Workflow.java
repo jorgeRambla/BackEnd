@@ -98,4 +98,8 @@ public class Workflow extends AuditableEntity {
     public int hashCode() {
         return Objects.hash(super.hashCode());
     }
+
+    public void clear() {
+        this.auditableWorkflowEntities.clear();
+    }
 }
