@@ -5,19 +5,17 @@ import es.unizar.murcy.controllers.utilities.AuthUtilities;
 import es.unizar.murcy.exceptions.answer.AnswerBadRequestException;
 import es.unizar.murcy.exceptions.quiz.QuizBadRequestException;
 import es.unizar.murcy.exceptions.quiz.QuizNotFoundException;
-import es.unizar.murcy.model.Answer;
-import es.unizar.murcy.model.Quiz;
-import es.unizar.murcy.model.User;
-import es.unizar.murcy.model.Workflow;
-import es.unizar.murcy.model.dto.AnswerDto;
-import es.unizar.murcy.model.dto.QuizDto;
-import es.unizar.murcy.model.dto.SimplifiedQuizDto;
+import es.unizar.murcy.model.*;
+import es.unizar.murcy.model.dto.*;
 import es.unizar.murcy.model.request.AnswerRequest;
 import es.unizar.murcy.model.request.QuizRequest;
 import es.unizar.murcy.service.AnswerService;
 import es.unizar.murcy.service.QuestionService;
 import es.unizar.murcy.service.QuizService;
 import es.unizar.murcy.service.WorkflowService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
@@ -25,6 +23,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -39,6 +38,8 @@ public class QuizController {
     private final QuestionService questionService;
     private final AnswerService answerService;
     private final WorkflowService workflowService;
+
+    private final Logger logger = LoggerFactory.getLogger(QuizController.class);
 
     public QuizController(AuthUtilities authUtilities, QuizService quizService, QuestionService questionService,
                           AnswerService answerService, WorkflowService workflowService) {
@@ -97,28 +98,54 @@ public class QuizController {
 
     @CrossOrigin
     @GetMapping(value = "/api/quiz/list")
-    public ResponseEntity<List<QuizDto>> fetchCurrentUserQuizList(HttpServletRequest request) {
+    public ResponseEntity<PageableCollectionDto<QuizDto>> fetchCurrentUserQuizList(
+            HttpServletRequest request,
+            @RequestParam(value = "all", defaultValue = "true") Boolean fetchAll,
+            @RequestParam(value = "published", defaultValue = "false") Boolean published,
+            @RequestParam(value = "page", defaultValue = "-1") int page,
+            @RequestParam(value = "size", defaultValue = "50") int size,
+            @RequestParam(value = "sortColumn", defaultValue = "createDate") String sortColumn,
+            @RequestParam(value = "sortType", defaultValue = "desc") String sortType,
+            @RequestParam(value = "query", defaultValue = "") String query) {
+
         User requester = authUtilities.newUserMiddlewareCheck(request, User.Rol.EDITOR);
 
-        return ResponseEntity.status(HttpStatus.OK).body(
-                quizService.findQuizzesByOwnerId(requester)
-                        .stream()
-                        .map(QuizDto::new)
-                        .collect(Collectors.toList()));
+        return this.fetchUserByIdQuizList(request, requester.getId(), fetchAll, published, page, size, sortColumn, sortType, query);
     }
 
     @CrossOrigin
     @GetMapping(value = "/api/quiz/list/{id}")
-    public ResponseEntity<List<QuizDto>> fetchUserByIdQuizList(HttpServletRequest request, @PathVariable long id) {
+    public ResponseEntity<PageableCollectionDto<QuizDto>> fetchUserByIdQuizList(
+            HttpServletRequest request,
+            @PathVariable long id,
+            @RequestParam(value = "all", defaultValue = "true") Boolean fetchAll,
+            @RequestParam(value = "published", defaultValue = "false") Boolean published,
+            @RequestParam(value = "page", defaultValue = "-1") int page,
+            @RequestParam(value = "size", defaultValue = "50") int size,
+            @RequestParam(value = "sortColumn", defaultValue = "createDate") String sortColumn,
+            @RequestParam(value = "sortType", defaultValue = "desc") String sortType,
+            @RequestParam(value = "query", defaultValue = "") String query) {
+
+        logger.info("Handle get request /api/quiz/list/{}: query[{}] all[{}] published[{}] page[{}] size[{}] sortColumn[{}] sortType[{}]",
+                id, query, fetchAll, published, page, size, sortColumn, sortType);
+
         User requester = authUtilities.newUserMiddlewareCheck(request, User.Rol.EDITOR);
 
-        authUtilities.filterUserAuthorized(requester, id, User.Rol.REVIEWER);
+        User searchedUser;
+        if (requester.getId() == id) {
+            searchedUser = requester;
+        } else {
+            searchedUser = this.authUtilities.filterUserAuthorized(requester, id, User.Rol.REVIEWER);
+        }
+
+        Page<Quiz> quizPage = quizService.findQuizzesByOwnerId(fetchAll, published, searchedUser, page,
+                size, sortColumn, sortType, query);
+
+        Collection<Quiz> quizCollection = quizPage.getContent();
+        long totalItems = quizPage.getTotalElements();
 
         return ResponseEntity.status(HttpStatus.OK).body(
-                quizService.findQuizzesByOwnerId(id)
-                        .stream()
-                        .map(QuizDto::new)
-                        .collect(Collectors.toList()));
+                new PageableCollectionDto<>(quizCollection.stream().map(QuizDto::new).collect(Collectors.toList()), totalItems));
     }
 
     @CrossOrigin

@@ -7,6 +7,7 @@ import es.unizar.murcy.components.JsonWebTokenUtil;
 import es.unizar.murcy.model.Question;
 import es.unizar.murcy.model.Quiz;
 import es.unizar.murcy.model.User;
+import es.unizar.murcy.model.dto.PageableCollectionDto;
 import es.unizar.murcy.model.dto.QuizDto;
 import es.unizar.murcy.model.request.OptionRequest;
 import es.unizar.murcy.model.request.QuestionRequest;
@@ -297,9 +298,9 @@ public class QuizControllerTest {
         ResponseEntity response = restTemplate.exchange(URI.create("http://localhost:" + port + "/api/quiz/list"), HttpMethod.GET, new HttpEntity<>(headers), Object.class);
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
-        List<QuizDto> returnData = objectMapper.readValue(objectMapper.writeValueAsString(response.getBody()), new TypeReference<List<QuizDto>>(){});
+        PageableCollectionDto<QuizDto> returnData = objectMapper.readValue(objectMapper.writeValueAsString(response.getBody()), new TypeReference<PageableCollectionDto<QuizDto>>(){});
 
-        assertEquals(0, returnData.size());
+        assertEquals(0, returnData.getLength());
     }
 
     @Test
@@ -312,9 +313,9 @@ public class QuizControllerTest {
         ResponseEntity response = restTemplate.exchange(URI.create("http://localhost:" + port + "/api/quiz/list"), HttpMethod.GET, new HttpEntity<>(headers), Object.class);
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
-        List<QuizDto> returnData = objectMapper.readValue(objectMapper.writeValueAsString(response.getBody()), new TypeReference<List<QuizDto>>(){});
+        PageableCollectionDto<QuizDto> returnData = objectMapper.readValue(objectMapper.writeValueAsString(response.getBody()), new TypeReference<PageableCollectionDto<QuizDto>>(){});
 
-        assertEquals(1, returnData.size());
+        assertEquals(1, returnData.getLength());
     }
 
     @Test
@@ -328,9 +329,9 @@ public class QuizControllerTest {
         ResponseEntity response = restTemplate.exchange(URI.create("http://localhost:" + port + "/api/quiz/list"), HttpMethod.GET, new HttpEntity<>(headers), Object.class);
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
-        List<QuizDto> returnData = objectMapper.readValue(objectMapper.writeValueAsString(response.getBody()), new TypeReference<List<QuizDto>>(){});
+        PageableCollectionDto<QuizDto> returnData = objectMapper.readValue(objectMapper.writeValueAsString(response.getBody()), new TypeReference<PageableCollectionDto<QuizDto>>(){});
 
-        assertEquals(1, returnData.size());
+        assertEquals(1, returnData.getLength());
     }
 
     @Test
@@ -375,9 +376,9 @@ public class QuizControllerTest {
         ResponseEntity response = restTemplate.exchange(URI.create("http://localhost:" + port + "/api/quiz/list/" + editorUser.getId()), HttpMethod.GET, new HttpEntity<>(headers), Object.class);
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
-        List<QuizDto> returnData = objectMapper.readValue(objectMapper.writeValueAsString(response.getBody()), new TypeReference<List<QuizDto>>(){});
+        PageableCollectionDto<QuizDto> returnData = objectMapper.readValue(objectMapper.writeValueAsString(response.getBody()), new TypeReference<PageableCollectionDto<QuizDto>>(){});
 
-        assertEquals(0, returnData.size());
+        assertEquals(0, returnData.getLength());
     }
 
     @Test
@@ -390,9 +391,9 @@ public class QuizControllerTest {
         ResponseEntity response = restTemplate.exchange(URI.create("http://localhost:" + port + "/api/quiz/list/" + editorUser.getId()), HttpMethod.GET, new HttpEntity<>(headers), Object.class);
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
-        List<QuizDto> returnData = objectMapper.readValue(objectMapper.writeValueAsString(response.getBody()), new TypeReference<List<QuizDto>>(){});
+        PageableCollectionDto<QuizDto> returnData = objectMapper.readValue(objectMapper.writeValueAsString(response.getBody()), new TypeReference<PageableCollectionDto<QuizDto>>(){});
 
-        assertEquals(1, returnData.size());
+        assertEquals(1, returnData.getLength());
     }
 
     @Test
@@ -406,9 +407,9 @@ public class QuizControllerTest {
         ResponseEntity response = restTemplate.exchange(URI.create("http://localhost:" + port + "/api/quiz/list/" + editorUser.getId()), HttpMethod.GET, new HttpEntity<>(headers), Object.class);
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
-        List<QuizDto> returnData = objectMapper.readValue(objectMapper.writeValueAsString(response.getBody()), new TypeReference<List<QuizDto>>(){});
+        PageableCollectionDto<QuizDto> returnData = objectMapper.readValue(objectMapper.writeValueAsString(response.getBody()), new TypeReference<PageableCollectionDto<QuizDto>>(){});
 
-        assertEquals(1, returnData.size());
+        assertEquals(1, returnData.getLength());
     }
 
     @Test
@@ -422,9 +423,9 @@ public class QuizControllerTest {
         ResponseEntity response = restTemplate.exchange(URI.create("http://localhost:" + port + "/api/quiz/list/" + editorUser.getId()), HttpMethod.GET, new HttpEntity<>(headers), Object.class);
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
-        List<QuizDto> returnData = objectMapper.readValue(objectMapper.writeValueAsString(response.getBody()), new TypeReference<List<QuizDto>>(){});
+        PageableCollectionDto<QuizDto> returnData = objectMapper.readValue(objectMapper.writeValueAsString(response.getBody()), new TypeReference<PageableCollectionDto<QuizDto>>(){});
 
-        assertEquals(1, returnData.size());
+        assertEquals(1, returnData.getLength());
     }
 
     @Test

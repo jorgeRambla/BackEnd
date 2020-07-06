@@ -133,7 +133,6 @@ public class QuestionController {
         Collection<Question> questionCollection = questionPage.getContent();
         long totalItems = questionPage.getTotalElements();
 
-
         return ResponseEntity.status(HttpStatus.OK).body(
                 new PageableCollectionDto<>(questionCollection.stream().map(QuestionDto::new).collect(Collectors.toList()), totalItems));
     }
