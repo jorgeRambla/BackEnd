@@ -142,10 +142,10 @@ public class QuizControllerTest {
         headers.setContentType(MediaType.APPLICATION_JSON);
         headers.setBearerAuth(userUserToken);
 
-        Set<Long> questionIds = new HashSet<>();
+        List<Long> questionIds = new ArrayList<>();
         questionIds.add(question1.getId());
 
-        QuizRequest quizRequest = new QuizRequest("title", "description", questionIds, true);
+        QuizRequest quizRequest = new QuizRequest("title", "description", questionIds, true, true);
 
         HttpEntity<String> entity = new HttpEntity<>(new ObjectMapper().writeValueAsString(quizRequest), headers);
         ResponseEntity response = restTemplate.postForEntity("http://localhost:" + port + "/api/quiz", entity, Object.class);
@@ -171,11 +171,11 @@ public class QuizControllerTest {
         headers.setContentType(MediaType.APPLICATION_JSON);
         headers.setBearerAuth(editorUserToken);
 
-        Set<Long> questionIds = new HashSet<>();
+        List<Long> questionIds = new ArrayList<>();
         questionIds.add(question1.getId());
         questionIds.add(question2.getId());
 
-        QuizRequest quizRequest = new QuizRequest(null, "description", questionIds, true);
+        QuizRequest quizRequest = new QuizRequest(null, "description", questionIds, true, true);
 
         HttpEntity<String> entity = new HttpEntity<>(objectMapper.writeValueAsString(quizRequest), headers);
         ResponseEntity response = restTemplate.postForEntity("http://localhost:" + port + "/api/quiz", entity, Object.class);
@@ -189,11 +189,11 @@ public class QuizControllerTest {
         headers.setContentType(MediaType.APPLICATION_JSON);
         headers.setBearerAuth(editorUserToken);
 
-        Set<Long> questionIds = new HashSet<>();
+        List<Long> questionIds = new ArrayList<>();
         questionIds.add(question1.getId());
         questionIds.add(question2.getId());
 
-        QuizRequest quizRequest = new QuizRequest("", "description", questionIds, true);
+        QuizRequest quizRequest = new QuizRequest("", "description", questionIds, true, true);
 
         HttpEntity<String> entity = new HttpEntity<>(objectMapper.writeValueAsString(quizRequest), headers);
         ResponseEntity response = restTemplate.postForEntity("http://localhost:" + port + "/api/quiz", entity, Object.class);
@@ -207,7 +207,7 @@ public class QuizControllerTest {
         headers.setContentType(MediaType.APPLICATION_JSON);
         headers.setBearerAuth(editorUserToken);
 
-        QuizRequest quizRequest = new QuizRequest("title", "description", null, true);
+        QuizRequest quizRequest = new QuizRequest("title", "description", null, true, true);
 
         HttpEntity<String> entity = new HttpEntity<>(objectMapper.writeValueAsString(quizRequest), headers);
         ResponseEntity response = restTemplate.postForEntity("http://localhost:" + port + "/api/quiz", entity, Object.class);
@@ -221,9 +221,9 @@ public class QuizControllerTest {
         headers.setContentType(MediaType.APPLICATION_JSON);
         headers.setBearerAuth(editorUserToken);
 
-        Set<Long> questionIds = new HashSet<>();
+        List<Long> questionIds = new ArrayList<>();
 
-        QuizRequest quizRequest = new QuizRequest(null, "description", questionIds, true);
+        QuizRequest quizRequest = new QuizRequest(null, "description", questionIds, true, true);
 
         HttpEntity<String> entity = new HttpEntity<>(objectMapper.writeValueAsString(quizRequest), headers);
         ResponseEntity response = restTemplate.postForEntity("http://localhost:" + port + "/api/quiz", entity, Object.class);
@@ -237,11 +237,11 @@ public class QuizControllerTest {
         headers.setContentType(MediaType.APPLICATION_JSON);
         headers.setBearerAuth(editorUserToken);
 
-        Set<Long> questionIds = new HashSet<>();
+        List<Long> questionIds = new ArrayList<>();
         questionIds.add(question1.getId());
         questionIds.add(question2.getId());
 
-        QuizRequest quizRequest = new QuizRequest("title", "description", questionIds, true);
+        QuizRequest quizRequest = new QuizRequest("title", "description", questionIds, true, true);
 
         HttpEntity<String> entity = new HttpEntity<>(objectMapper.writeValueAsString(quizRequest), headers);
         ResponseEntity response = restTemplate.postForEntity("http://localhost:" + port + "/api/quiz", entity, Object.class);
@@ -255,11 +255,11 @@ public class QuizControllerTest {
         headers.setContentType(MediaType.APPLICATION_JSON);
         headers.setBearerAuth(reviewerUserToken);
 
-        Set<Long> questionIds = new HashSet<>();
+        List<Long> questionIds = new ArrayList<>();
         questionIds.add(question1.getId());
         questionIds.add(question2.getId());
 
-        QuizRequest quizRequest = new QuizRequest("title", "description", questionIds, true);
+        QuizRequest quizRequest = new QuizRequest("title", "description", questionIds, true, true);
 
         HttpEntity<String> entity = new HttpEntity<>(objectMapper.writeValueAsString(quizRequest), headers);
         ResponseEntity response = restTemplate.postForEntity("http://localhost:" + port + "/api/quiz", entity, Object.class);
@@ -527,11 +527,11 @@ public class QuizControllerTest {
         headers.setContentType(MediaType.APPLICATION_JSON);
         headers.setBearerAuth(randomToken);
 
-        Set<Long> questionIds = new HashSet<>();
+        List<Long> questionIds = new ArrayList<>();
         questionIds.add(question1.getId());
         questionIds.add(question2.getId());
 
-        QuizRequest quizRequest = new QuizRequest("title", "description", questionIds, true);
+        QuizRequest quizRequest = new QuizRequest("title", "description", questionIds, true, true);
 
         ResponseEntity response = restTemplate.exchange(URI.create("http://localhost:" + port + "/api/quiz/" + -1), HttpMethod.PUT, new HttpEntity<>(objectMapper.writeValueAsString(quizRequest), headers), Object.class);
         assertEquals(HttpStatus.UNAUTHORIZED, response.getStatusCode());
@@ -543,11 +543,11 @@ public class QuizControllerTest {
         headers.setContentType(MediaType.APPLICATION_JSON);
         headers.setBearerAuth(userUserToken);
 
-        Set<Long> questionIds = new HashSet<>();
+        List<Long> questionIds = new ArrayList<>();
         questionIds.add(question1.getId());
         questionIds.add(question2.getId());
 
-        QuizRequest quizRequest = new QuizRequest("title", "description", questionIds, true);
+        QuizRequest quizRequest = new QuizRequest("title", "description", questionIds, true, true);
 
         ResponseEntity response = restTemplate.exchange(URI.create("http://localhost:" + port + "/api/quiz/" + -1), HttpMethod.PUT, new HttpEntity<>(objectMapper.writeValueAsString(quizRequest), headers), Object.class);
         assertEquals(HttpStatus.UNAUTHORIZED, response.getStatusCode());
@@ -573,11 +573,11 @@ public class QuizControllerTest {
         headers.setContentType(MediaType.APPLICATION_JSON);
         headers.setBearerAuth(editorUserToken);
 
-        Set<Long> questionIds = new HashSet<>();
+        List<Long> questionIds = new ArrayList<>();
         questionIds.add(question1.getId());
         questionIds.add(question2.getId());
 
-        QuizRequest quizRequest = new QuizRequest("title", "description", questionIds, true);
+        QuizRequest quizRequest = new QuizRequest("title", "description", questionIds, true, true);
 
         ResponseEntity response = restTemplate.exchange(URI.create("http://localhost:" + port + "/api/quiz/" + -1), HttpMethod.PUT, new HttpEntity<>(objectMapper.writeValueAsString(quizRequest), headers), Object.class);
         assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
@@ -591,11 +591,11 @@ public class QuizControllerTest {
         headers.setContentType(MediaType.APPLICATION_JSON);
         headers.setBearerAuth(editorUserToken);
 
-        Set<Long> questionIds = new HashSet<>();
+        List<Long> questionIds = new ArrayList<>();
         questionIds.add(question1.getId());
         questionIds.add(question2.getId());
 
-        QuizRequest quizRequest = new QuizRequest("title", "description", questionIds, true);
+        QuizRequest quizRequest = new QuizRequest("title", "description", questionIds, true, true);
 
         List<Quiz> quizzes = quizService.findAll();
 
@@ -619,11 +619,11 @@ public class QuizControllerTest {
         headers.setContentType(MediaType.APPLICATION_JSON);
         headers.setBearerAuth(reviewerUserToken);
 
-        Set<Long> questionIds = new HashSet<>();
+        List<Long> questionIds = new ArrayList<>();
         questionIds.add(question1.getId());
         questionIds.add(question2.getId());
 
-        QuizRequest quizRequest = new QuizRequest("title", "description", questionIds, true);
+        QuizRequest quizRequest = new QuizRequest("title", "description", questionIds, true, true);
 
         List<Quiz> quizzes = quizService.findAll();
 
@@ -642,7 +642,7 @@ public class QuizControllerTest {
         headers.setContentType(MediaType.APPLICATION_JSON);
         headers.setBearerAuth(reviewerUserToken);
 
-        QuizRequest quizRequest = new QuizRequest(null, null, null, null);
+        QuizRequest quizRequest = new QuizRequest(null, null, null, null, null);
 
         Quiz quiz = quizService.findAll().get(0);
 
@@ -657,13 +657,7 @@ public class QuizControllerTest {
         assertEquals(quiz.getDescription(), quizDto.getDescription());
         assertEquals(quiz.getOwner().getUsername(), quizDto.getOwnerUserName());
         assertEquals(quiz.getOwner().getId(), quizDto.getOwnerId());
-        assertEquals(quiz.getQuestions().size(), quizDto.getQuestions().size());
-        for(int iterator = 0; iterator < quizDto.getQuestions().size(); iterator++) {
-            assertEquals(quiz.getQuestions().get(iterator).getId(), quizDto.getQuestions().get(iterator).getId());
-            assertEquals(quiz.getQuestions().get(iterator).getTitle(), quizDto.getQuestions().get(iterator).getTitle());
-            assertEquals(quiz.getQuestions().get(iterator).getIsMultiple(), quizDto.getQuestions().get(iterator).getIsMultiple());
-            assertEquals(quiz.getQuestions().get(iterator).getDescription(), quizDto.getQuestions().get(iterator).getDescription());
-        }
+        assertEquals(0, quizDto.getQuestions().size());
     }
 
     @Test
@@ -674,7 +668,7 @@ public class QuizControllerTest {
         headers.setContentType(MediaType.APPLICATION_JSON);
         headers.setBearerAuth(reviewerUserToken);
 
-        QuizRequest quizRequest = new QuizRequest(null, null, new HashSet<>(), null);
+        QuizRequest quizRequest = new QuizRequest(null, null, new ArrayList<>(), null, null);
 
         Quiz quiz = quizService.findAll().get(0);
 
@@ -706,7 +700,7 @@ public class QuizControllerTest {
         headers.setContentType(MediaType.APPLICATION_JSON);
         headers.setBearerAuth(reviewerUserToken);
 
-        QuizRequest quizRequest = new QuizRequest("", null, new HashSet<>(), null);
+        QuizRequest quizRequest = new QuizRequest("", null, new ArrayList<>(), null, null);
 
         Quiz quiz = quizService.findAll().get(0);
 
@@ -739,11 +733,11 @@ public class QuizControllerTest {
         headers.setBearerAuth(reviewerUserToken);
 
 
-        Set<Long> questionIds = new HashSet<>();
+        List<Long> questionIds = new ArrayList<>();
         questionIds.add(question2.getId());
         questionIds.add(question1.getId());
 
-        QuizRequest quizRequest = new QuizRequest("title", "description", questionIds, true);
+        QuizRequest quizRequest = new QuizRequest("title", "description", questionIds, true, true);
 
         Quiz quiz = quizService.findAll().get(0);
 
@@ -772,7 +766,7 @@ public class QuizControllerTest {
         headers.setContentType(MediaType.APPLICATION_JSON);
         headers.setBearerAuth(reviewerUserToken);
 
-        QuizRequest quizRequest = new QuizRequest("new", null, new HashSet<>(), true);
+        QuizRequest quizRequest = new QuizRequest("new", null, new ArrayList<>(), true, true);
 
         Quiz quiz = quizService.findAll().get(0);
 
@@ -804,7 +798,7 @@ public class QuizControllerTest {
         headers.setContentType(MediaType.APPLICATION_JSON);
         headers.setBearerAuth(reviewerUserToken);
 
-        QuizRequest quizRequest = new QuizRequest(null, "new", new HashSet<>(), true);
+        QuizRequest quizRequest = new QuizRequest(null, "new", new ArrayList<>(), true, true);
 
         Quiz quiz = quizService.findAll().get(0);
 

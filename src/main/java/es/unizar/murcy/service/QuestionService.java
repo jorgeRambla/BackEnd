@@ -138,4 +138,10 @@ public class QuestionService {
 
         return questionRepository.findQuestionsByDeletedIsFalseAndClosedAndApprovedAndLastWorkflow_StatusInOrderByCreateDateDesc(closed, approved, validStatus);
     }
+
+    public List<Question> findByIdsCollection(List<Long> ids) {
+        List<Question> questions = questionRepository.findQuestionsByDeletedIsFalseAndIdIn(ids);
+        questions.sort(Comparator.comparing(item -> ids.indexOf(item.getId())));
+        return questions;
+    }
 }

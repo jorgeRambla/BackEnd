@@ -51,6 +51,10 @@ public class QuizDto {
     @Setter
     private List<SimplifiedQuestionDto> questions;
 
+    @Getter
+    @Setter
+    private boolean ordered;
+
     public QuizDto(Quiz quiz){
         this.id = quiz.getId();
         this.title = quiz.getTitle();
@@ -66,5 +70,10 @@ public class QuizDto {
         }
         this.approved = quiz.isApproved();
         this.closed = quiz.isClosed();
+        if(quiz.getQuestionsOrdered() == null || !quiz.getQuestionsOrdered()) {
+            this.ordered = false;
+        } else {
+            this.ordered = true;
+        }
     }
 }

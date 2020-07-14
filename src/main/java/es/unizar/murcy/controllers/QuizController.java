@@ -23,10 +23,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.Collection;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @CrossOrigin
@@ -63,7 +60,7 @@ public class QuizController {
         createdQuiz.setOwner(requester);
 
         Workflow workflow;
-        if(Boolean.FALSE.equals(quizRequest.getPublish())) {
+        if(quizRequest.getPublish().equals(Boolean.FALSE)) {
             workflow = new Workflow();
             workflow.setTitle(Workflow.DRAFT_MESSAGE);
             workflow.setResponse(Workflow.DRAFT_MESSAGE);
@@ -74,12 +71,10 @@ public class QuizController {
             createdQuiz.setApproved(false);
         } else {
             workflow = new Workflow();
-            workflow.setStatusUser(requester);
-            workflow.setStatus(Workflow.Status.APPROVED);
-            workflow.setTitle("Solicitud publicar quiz");
-            workflow.setDescription(null);
-            createdQuiz.setClosed(true);
-            createdQuiz.setApproved(true);
+            workflow.setStatus(Workflow.Status.PENDING);
+            workflow.setTitle("Request to publish quiz");
+            createdQuiz.setClosed(false);
+            createdQuiz.setApproved(false);
         }
 
         workflow = workflowService.create(workflow);
@@ -185,28 +180,29 @@ public class QuizController {
             quiz.setDescription(quizRequest.getDescription());
         }
 
-        if (quizRequest.getQuestionIds() != null && !quizRequest.getQuestionIds().isEmpty()) {
-            quiz.setQuestions(quizRequest.getQuestionIds()
-                    .stream()
-                    .map(questionService::findById)
-                    .filter(Optional::isPresent)
-                    .map(Optional::get)
-                    .collect(Collectors.toList()));
+        if (quizRequest.getPublish() == null || quizRequest.getPublish().equals(Boolean.FALSE)) {
+            if(quizRequest.getQuestionsIds() == null) {
+                quiz.setQuestions(new ArrayList<>());
+            }
+        } else {
+            if ((quizRequest.getQuestionsIds() != null) && !quizRequest.getQuestionsIds().isEmpty()) {
+                quiz.setQuestions(questionService.findByIdsCollection(quizRequest.getQuestionsIds()));
+            }
         }
+
+        quiz.setQuestionsOrdered(quizRequest.getOrdered());
 
         if(quiz.isClosed()) {
             Workflow workflow;
-            if(Boolean.FALSE.equals(quizRequest.getPublish())){
+            if(quizRequest.getPublish().equals(Boolean.FALSE)){
                 workflow = Workflow.draftWorkflow(requester, quiz);
             } else {
                 workflow = new Workflow();
-                workflow.setDescription(null);
-                workflow.setStatusUser(null);
-                workflow.setStatus(Workflow.Status.APPROVED);
-                workflow.setTitle("Solicitud publicar quiz");
+                workflow.setStatus(Workflow.Status.PENDING);
+                workflow.setTitle("Request to publish quiz");
                 workflow.addAuditableWorkflowEntity(quiz);
-                quiz.setClosed(true);
-                quiz.setApproved(true);
+                quiz.setClosed(false);
+                quiz.setApproved(false);
             }
             workflow = workflowService.create(workflow);
 
@@ -221,7 +217,6 @@ public class QuizController {
 
     @CrossOrigin
     @DeleteMapping(value = "/api/quiz/{id}")
-    @SuppressWarnings("Duplicates")
     public ResponseEntity delete(HttpServletRequest request, @PathVariable long id) {
         User requester = authUtilities.newUserMiddlewareCheck(request, User.Rol.EDITOR);
 
