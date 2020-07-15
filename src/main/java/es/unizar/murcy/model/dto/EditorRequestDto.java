@@ -1,6 +1,7 @@
 package es.unizar.murcy.model.dto;
 
 import es.unizar.murcy.model.EditorRequest;
+import es.unizar.murcy.model.extendable.jpa.AuditableWorkflowEntity;
 import lombok.*;
 
 @NoArgsConstructor
@@ -35,7 +36,6 @@ public class EditorRequestDto {
     @Getter
     @Setter
     private WorkflowDto lastWorkflow;
-
 
     public EditorRequestDto(EditorRequest editorRequest) {
         this.id = editorRequest.getId();

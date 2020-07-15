@@ -85,7 +85,7 @@ public class Workflow extends AuditableEntity {
         } else {
             workflow.setStatus(Workflow.Status.DRAFT);
         }
-
+        workflow.addAuditableWorkflowEntity(entity);
         return workflow;
     }
 

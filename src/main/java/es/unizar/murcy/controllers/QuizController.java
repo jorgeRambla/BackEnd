@@ -230,18 +230,34 @@ public class QuizController {
 
     @CrossOrigin
     @GetMapping("/api/quiz/request/list")
-    public ResponseEntity<List<QuizDto>> getQuizRequests(HttpServletRequest request,
-                                                 @RequestParam(value = "closed", defaultValue = "false") Boolean isClosed,
-                                                 @RequestParam(value = "approved", defaultValue = "false") Boolean isApproved) {
+    public ResponseEntity<PageableCollectionDto<QuizDto>> getQuizRequests(
+            HttpServletRequest request,
+            @RequestParam(value = "all", defaultValue = "false") Boolean fetchAll,
+            @RequestParam(value = "closed", defaultValue = "false") Boolean isClosed,
+            @RequestParam(value = "approved", defaultValue = "false") Boolean isApproved,
+            @RequestParam(value = "page", defaultValue = "-1") int page,
+            @RequestParam(value = "size", defaultValue = "50") int size,
+            @RequestParam(value = "sortColumn", defaultValue = "createDate") String sortColumn,
+            @RequestParam(value = "sortType", defaultValue = "desc") String sortType) {
+
+        logger.info("Handle get request /api/quiz/request/list: all[{}] closed[{}] approved[{}] page[{}] size[{}] sortColumn[{}] sortType[{}]",
+                fetchAll, isClosed, isApproved, page, size, sortColumn, sortType);
+
         authUtilities.newUserMiddlewareCheck(request, User.Rol.REVIEWER);
 
-        Set<Quiz> editorRequestSet = quizService.findByClosedAndApproved(isClosed, isApproved);
+        Page<Quiz> quizPage = quizService.findByClosedAndApproved(
+                fetchAll, isClosed, isApproved, page, size, sortColumn, sortType);
+
+        Collection<Quiz> quizSet = quizPage.getContent();
+        long totalItems = quizPage.getTotalElements();
 
         return ResponseEntity.status(HttpStatus.OK).body(
-                editorRequestSet.stream()
-                        .map(QuizDto::new)
-                        .collect(Collectors.toList())
-        );
+                new PageableCollectionDto<>(
+                        quizSet
+                                .stream()
+                                .map(QuizDto::new)
+                                .collect(Collectors.toList()),
+                        totalItems));
     }
 
     @CrossOrigin

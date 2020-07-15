@@ -70,10 +70,6 @@ public class QuizDto {
         }
         this.approved = quiz.isApproved();
         this.closed = quiz.isClosed();
-        if(quiz.getQuestionsOrdered() == null || !quiz.getQuestionsOrdered()) {
-            this.ordered = false;
-        } else {
-            this.ordered = true;
-        }
+        this.ordered = quiz.getQuestionsOrdered() != null && quiz.getQuestionsOrdered();
     }
 }

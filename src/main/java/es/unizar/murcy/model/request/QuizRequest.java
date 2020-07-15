@@ -45,7 +45,7 @@ public class QuizRequest {
         quiz.setTitle(this.title);
         quiz.setDescription(this.description);
         quiz.setQuestionsOrdered(this.getOrdered());
-        if(questionsIds != null && questionsIds.size() > 0) {
+        if(questionsIds != null && !questionsIds.isEmpty()) {
             quiz.setQuestions(questionService.findByIdsCollection(questionsIds));
         } else {
             quiz.setQuestions(new ArrayList<>());

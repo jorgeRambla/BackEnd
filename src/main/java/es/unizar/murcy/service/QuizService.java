@@ -1,9 +1,6 @@
 package es.unizar.murcy.service;
 
-import es.unizar.murcy.model.Question;
-import es.unizar.murcy.model.Quiz;
-import es.unizar.murcy.model.User;
-import es.unizar.murcy.model.Workflow;
+import es.unizar.murcy.model.*;
 import es.unizar.murcy.repository.QuizRepository;
 import es.unizar.murcy.repository.QuizRepositoryPaging;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -96,6 +93,21 @@ public class QuizService {
 
     public Set<Quiz> findByClosedAndApproved(boolean closed, boolean approved) {
         return quizRepository.findQuizByDeletedIsFalseAndClosedAndApprovedAndLastWorkflow_StatusInOrderByCreateDateDesc(closed, approved, getWorkflowRequestsStatus());
+    }
+
+    public Page<Quiz> findByClosedAndApproved(Boolean all, Boolean isClosed, Boolean isApproved, int page,
+                                             int size, String sortColumn, String sortType) {
+        Sort sort = buildSort(sortType, sortColumn);
+        PageRequest pageRequest = buildPageRequest(page, size, sort);
+        Page<Quiz> quizzes;
+
+        if(all.equals(Boolean.FALSE)) {
+            quizzes = quizRepositoryPaging.findQuizzesByClosedAndAndApprovedAndDeletedIsFalseAndLastWorkflow_StatusIn(isClosed, isApproved, pageRequest, getWorkflowRequestsStatus());
+        } else {
+            quizzes = quizRepositoryPaging.findQuizzesByDeletedIsFalseAndLastWorkflow_StatusIn(pageRequest, getWorkflowRequestsStatus());
+        }
+
+        return quizzes;
     }
 
     public Optional<Quiz> findByPublishAndId(long id) {
