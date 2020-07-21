@@ -114,7 +114,9 @@ public class QuizService {
         return quizRepository.findQuizByIdAndDeletedIsFalseAndClosedIsTrueAndApprovedIsTrue(id);
     }
 
-    public List<Quiz> searchQuizzes(String query, Pageable pageable) {
-        return quizRepositoryPaging.findQuizzesByApprovedIsTrueAndClosedIsTrueAndDeletedIsFalseAndTitleContainingIgnoreCaseOrApprovedIsTrueAndClosedIsTrueAndDeletedIsFalseAndDescriptionIgnoreCaseContaining(query, query, pageable);
+    public Page<Quiz> searchQuizzes(String query, int page, int size, String sortColumn, String sortType) {
+        Sort sort = buildSort(sortType, sortColumn);
+        PageRequest pageRequest = buildPageRequest(page, size, sort);
+        return quizRepositoryPaging.findQuizzesByApprovedIsTrueAndClosedIsTrueAndDeletedIsFalseAndTitleContainingIgnoreCaseOrApprovedIsTrueAndClosedIsTrueAndDeletedIsFalseAndDescriptionIgnoreCaseContaining(query, query, pageRequest);
     }
 }

@@ -1,6 +1,7 @@
 package es.unizar.murcy.model.dto;
 
 import es.unizar.murcy.model.Question;
+import es.unizar.murcy.model.Quiz;
 import lombok.*;
 
 import java.util.List;

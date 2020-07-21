@@ -1,6 +1,5 @@
 package es.unizar.murcy.repository;
 
-import es.unizar.murcy.model.EditorRequest;
 import es.unizar.murcy.model.Quiz;
 import es.unizar.murcy.model.Workflow;
 import org.springframework.data.domain.Page;
@@ -8,11 +7,10 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.repository.PagingAndSortingRepository;
 
 import java.util.Collection;
-import java.util.List;
 
 public interface QuizRepositoryPaging extends PagingAndSortingRepository<Quiz, Long> {
 
-    List<Quiz> findQuizzesByApprovedIsTrueAndClosedIsTrueAndDeletedIsFalseAndTitleContainingIgnoreCaseOrApprovedIsTrueAndClosedIsTrueAndDeletedIsFalseAndDescriptionIgnoreCaseContaining(String titleQuery, String descriptionQuery, Pageable pageable);
+    Page<Quiz> findQuizzesByApprovedIsTrueAndClosedIsTrueAndDeletedIsFalseAndTitleContainingIgnoreCaseOrApprovedIsTrueAndClosedIsTrueAndDeletedIsFalseAndDescriptionIgnoreCaseContaining(String titleQuery, String descriptionQuery, Pageable pageable);
 
     Page<Quiz> findQuizzesByOwner_idAndApprovedAndDeletedIsFalseAndTitleContainingIgnoreCase(long id,
                                                                                              boolean approved, String query, Pageable pageable);

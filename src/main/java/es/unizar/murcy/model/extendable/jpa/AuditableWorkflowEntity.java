@@ -13,7 +13,7 @@ import java.util.Objects;
 @Inheritance(strategy = InheritanceType.JOINED)
 @AllArgsConstructor
 @ToString(callSuper = true)
-public class AuditableWorkflowEntity extends AuditableEntity{
+public class AuditableWorkflowEntity extends AuditableEntity {
 
     @ManyToOne(cascade = CascadeType.ALL)
     @Getter

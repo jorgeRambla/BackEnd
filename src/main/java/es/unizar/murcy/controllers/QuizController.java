@@ -262,7 +262,7 @@ public class QuizController {
 
     @CrossOrigin
     @GetMapping("/api/quiz/search")
-    public ResponseEntity<List<SimplifiedQuizDto>> searchQuiz(HttpServletRequest request,
+    public ResponseEntity<PageableCollectionDto<SimplifiedQuizDto>> searchQuiz(HttpServletRequest request,
                                             @RequestParam(value = "page", defaultValue = "0") int page,
                                             @RequestParam(value = "size", defaultValue = "50") int size,
                                             @RequestParam(value = "sortColumn", defaultValue = "title") String sortColumn,
@@ -270,19 +270,13 @@ public class QuizController {
                                             @RequestParam(value = "query", defaultValue = "") String query) {
 
         // For search currently we don't have to track user.
+        Page<Quiz> quizPage = quizService.searchQuizzes(query, page, size, sortColumn, sortType);
 
-        List<Quiz> resultSet;
-        if(sortType.equalsIgnoreCase("asc")) {
-            resultSet = quizService.searchQuizzes(query, PageRequest.of(page, size, Sort.by(sortColumn).ascending()));
-        } else {
-            resultSet = quizService.searchQuizzes(query, PageRequest.of(page, size, Sort.by(sortColumn).descending()));
-        }
+        Collection<Quiz> quizCollection = quizPage.getContent();
+        long totalItems = quizPage.getTotalElements();
 
         return ResponseEntity.status(HttpStatus.OK).body(
-                resultSet.stream()
-                        .map(SimplifiedQuizDto::new)
-                        .collect(Collectors.toList())
-        );
+                new PageableCollectionDto<>(quizCollection.stream().map(SimplifiedQuizDto::buildWithOutQuestions).collect(Collectors.toList()), totalItems));
     }
 
     @CrossOrigin
