@@ -2574,7 +2574,7 @@
         }
       },
       "QuizRequest" : {
-        "required" : [ "description", "publish", "questionIds", "title" ],
+        "required" : [ "description", "ordered", "publish", "questionsIds", "title" ],
         "type" : "object",
         "properties" : {
           "title" : {
@@ -2592,6 +2592,10 @@
               "type" : "integer",
               "format" : "int64"
             }
+          },
+          "ordered" : {
+            "type" : "boolean",
+            "description" : "Questions in the quiz display ordered or not"
           },
           "publish" : {
             "type" : "boolean",
