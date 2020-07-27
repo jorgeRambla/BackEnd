@@ -5,6 +5,7 @@ import es.unizar.murcy.controllers.utilities.AuthUtilities;
 import es.unizar.murcy.exceptions.answer.AnswerBadRequestException;
 import es.unizar.murcy.exceptions.quiz.QuizBadRequestException;
 import es.unizar.murcy.exceptions.quiz.QuizNotFoundException;
+import es.unizar.murcy.exceptions.user.UserUnauthorizedException;
 import es.unizar.murcy.model.*;
 import es.unizar.murcy.model.dto.*;
 import es.unizar.murcy.model.request.AnswerRequest;
@@ -16,8 +17,6 @@ import es.unizar.murcy.service.WorkflowService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -157,8 +156,22 @@ public class QuizController {
 
     @CrossOrigin
     @GetMapping(value = "/api/quiz/{id}/public")
-    public ResponseEntity<SimplifiedQuizDto> fetchQuizByIdPublic(@PathVariable long id) {
-        Quiz quiz = quizService.findByPublishAndId(id).orElseThrow(QuizNotFoundException::new);
+    public ResponseEntity<SimplifiedQuizDto> fetchQuizByIdPublic(HttpServletRequest request , @PathVariable long id) {
+        User requester = authUtilities.newUserMiddlewareCheck(request, User.Rol.USER);
+
+        Quiz quiz = quizService.findById(id).orElseThrow(QuizNotFoundException::new);
+
+        try {
+            authUtilities.filterUserAuthorized(requester, quiz.getOwner(), User.Rol.REVIEWER);
+        } catch (UserUnauthorizedException uae) {
+         if (!quiz.isClosed() || !quiz.isApproved()) {
+             throw new QuizNotFoundException();
+         }
+        }
+
+        if (!quiz.canBePlayed().equals(Boolean.TRUE)) {
+            throw new QuizNotFoundException();
+        }
 
         return ResponseEntity.status(HttpStatus.OK).body(new SimplifiedQuizDto(quiz));
     }
@@ -276,7 +289,7 @@ public class QuizController {
         long totalItems = quizPage.getTotalElements();
 
         return ResponseEntity.status(HttpStatus.OK).body(
-                new PageableCollectionDto<>(quizCollection.stream().map(SimplifiedQuizDto::buildWithOutQuestions).collect(Collectors.toList()), totalItems));
+                new PageableCollectionDto<>(quizCollection.stream().map(SimplifiedQuizDto::buildWithoutQuestions).collect(Collectors.toList()), totalItems));
     }
 
     @CrossOrigin
@@ -291,14 +304,14 @@ public class QuizController {
         return ResponseEntity.status(HttpStatus.OK).body(
                 answerService.findAnswersByQuizId(quiz.getId())
                         .stream()
-                        .map(AnswerDto::new)
+                        .map(item -> new AnswerDto(item, questionService))
                         .collect(Collectors.toList()));
 
     }
 
     @CrossOrigin
     @PostMapping("/api/quiz/{id}/answer")
-    public ResponseEntity create(HttpServletRequest request, @PathVariable long id, @RequestBody AnswerRequest answerRequest) {
+    public ResponseEntity<Long> create(HttpServletRequest request, @PathVariable long id, @RequestBody AnswerRequest answerRequest) {
         User requester = authUtilities.newUserMiddlewareCheck(request, User.Rol.EDITOR);
 
         Quiz quiz = quizService.findById(id).orElseThrow(QuizNotFoundException::new);
@@ -313,6 +326,6 @@ public class QuizController {
 
         answerService.create(answer);
 
-        return ResponseEntity.status(HttpStatus.CREATED).build();
+        return ResponseEntity.status(HttpStatus.CREATED).body(answer.getTotalPoints());
     }
 }

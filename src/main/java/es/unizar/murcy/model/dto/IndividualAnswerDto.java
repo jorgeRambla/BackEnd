@@ -1,6 +1,8 @@
 package es.unizar.murcy.model.dto;
 
 import es.unizar.murcy.model.IndividualAnswer;
+import es.unizar.murcy.service.IndividualAnswerService;
+import es.unizar.murcy.service.QuestionService;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -33,13 +35,13 @@ public class IndividualAnswerDto {
     @Setter
     private List<OptionDto> options;
 
-    public IndividualAnswerDto(IndividualAnswer individualAnswer) {
+    public IndividualAnswerDto(IndividualAnswer individualAnswer, QuestionService questionService) {
         this.id = individualAnswer.getId();
         this.userId = individualAnswer.getUser().getId();
         this.timeInMillis = individualAnswer.getTimeInMillis();
         this.questionId = individualAnswer.getQuestion().getId();
 
-        this.options = individualAnswer.getOptions()
+        this.options = questionService.findOptionsByIdsCollection(individualAnswer.getOptionsIds())
                 .stream()
                 .map(OptionDto::new)
                 .collect(Collectors.toList());

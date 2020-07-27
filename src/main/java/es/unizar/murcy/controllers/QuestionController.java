@@ -238,8 +238,7 @@ public class QuestionController {
         return ResponseEntity.status(HttpStatus.OK).body(
                 individualAnswerService.findIndividualAnswersByQuestionId(id)
                         .stream()
-                        .map(
-                        IndividualAnswerDto::new)
+                        .map(item -> new IndividualAnswerDto(item, questionService))
                         .collect(Collectors.toList()));
     }
 

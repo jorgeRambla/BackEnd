@@ -144,4 +144,10 @@ public class QuestionService {
         questions.sort(Comparator.comparing(item -> ids.indexOf(item.getId())));
         return questions;
     }
+
+    public List<Option> findOptionsByIdsCollection(List<Long> ids) {
+        List<Option> options = optionRepository.findQuestionsByDeletedIsFalseAndIdIn(ids);
+        options.sort(Comparator.comparing(item -> ids.indexOf(item.getId())));
+        return options;
+    }
 }

@@ -55,6 +55,10 @@ public class QuizDto {
     @Setter
     private boolean ordered;
 
+    @Getter
+    @Setter
+    private boolean canBePlayed;
+
     public QuizDto(Quiz quiz){
         this.id = quiz.getId();
         this.title = quiz.getTitle();
@@ -71,5 +75,6 @@ public class QuizDto {
         this.approved = quiz.isApproved();
         this.closed = quiz.isClosed();
         this.ordered = quiz.getQuestionsOrdered() != null && quiz.getQuestionsOrdered();
+        this.canBePlayed = quiz.canBePlayed();
     }
 }

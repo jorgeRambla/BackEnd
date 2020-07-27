@@ -6,6 +6,7 @@ import es.unizar.murcy.model.Answer;
 import es.unizar.murcy.model.User;
 import es.unizar.murcy.model.dto.AnswerDto;
 import es.unizar.murcy.service.AnswerService;
+import es.unizar.murcy.service.QuestionService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -19,12 +20,14 @@ import java.util.stream.Collectors;
 
 public class AnswerController {
 
-    private AuthUtilities authUtilities;
-    private AnswerService answerService;
+    private final AuthUtilities authUtilities;
+    private final AnswerService answerService;
+    private final QuestionService questionService;
 
-    public AnswerController(AuthUtilities authUtilities, AnswerService answerService) {
+    public AnswerController(AuthUtilities authUtilities, AnswerService answerService, QuestionService questionService) {
         this.authUtilities = authUtilities;
         this.answerService = answerService;
+        this.questionService = questionService;
     }
 
     @CrossOrigin
@@ -36,7 +39,7 @@ public class AnswerController {
 
         authUtilities.filterUserAuthorized(requester, answer.getUser(), User.Rol.REVIEWER);
 
-        return ResponseEntity.status(HttpStatus.OK).body(new AnswerDto(answer));
+        return ResponseEntity.status(HttpStatus.OK).body(new AnswerDto(answer, questionService));
     }
 
     @CrossOrigin
@@ -60,7 +63,7 @@ public class AnswerController {
         return ResponseEntity.status(HttpStatus.OK).body(
                 answerService.findAnswersByUser(requester.getId())
                         .stream()
-                        .map(AnswerDto::new)
+                        .map(item -> new AnswerDto(item, questionService))
                         .collect(Collectors.toList()));
     }
 
@@ -74,7 +77,7 @@ public class AnswerController {
         return ResponseEntity.status(HttpStatus.OK).body(
                 answerService.findAnswersByUser(searchedUser.getId())
                         .stream()
-                        .map(AnswerDto::new)
+                        .map(item -> new AnswerDto(item, questionService))
                         .collect(Collectors.toList()));
     }
 }

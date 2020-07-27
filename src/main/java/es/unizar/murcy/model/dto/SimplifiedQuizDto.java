@@ -39,6 +39,14 @@ public class SimplifiedQuizDto {
 
     @Getter
     @Setter
+    private boolean canBePlayed;
+
+    @Getter
+    @Setter
+    private boolean ordered;
+
+    @Getter
+    @Setter
     @JsonInclude(JsonInclude.Include.NON_NULL)
     private List<SimplifiedQuestionDto> questions;
 
@@ -50,10 +58,11 @@ public class SimplifiedQuizDto {
         this.questions = quiz.getQuestions().stream().map(SimplifiedQuestionDto::new).collect(Collectors.toList());
         this.createdDate = quiz.getCreateDate();
         this.lastModifiedDate = quiz.getModifiedDate();
-
+        this.canBePlayed = quiz.canBePlayed();
+        this.ordered = quiz.getQuestionsOrdered() != null && quiz.getQuestionsOrdered();
     }
 
-    public static SimplifiedQuizDto buildWithOutQuestions(Quiz quiz) {
+    public static SimplifiedQuizDto buildWithoutQuestions(Quiz quiz) {
         SimplifiedQuizDto simplifiedQuizDto = new SimplifiedQuizDto();
         simplifiedQuizDto.id = quiz.getId();
         simplifiedQuizDto.title = quiz.getTitle();
@@ -62,6 +71,8 @@ public class SimplifiedQuizDto {
         simplifiedQuizDto.questions = null;
         simplifiedQuizDto.createdDate = quiz.getCreateDate();
         simplifiedQuizDto.lastModifiedDate = quiz.getModifiedDate();
+        simplifiedQuizDto.canBePlayed = quiz.canBePlayed();
+        simplifiedQuizDto.ordered = quiz.getQuestionsOrdered() != null && quiz.getQuestionsOrdered();
 
         return simplifiedQuizDto;
     }

@@ -24,6 +24,7 @@ public class Question extends AuditableWorkflowEntity {
 
     @Getter
     @Setter
+    @Column(length = 512)
     private String title;
 
     @Getter
