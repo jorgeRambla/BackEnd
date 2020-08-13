@@ -89,9 +89,9 @@ public class UserController {
         } else {
             Token token = tokenService.create(new Token(user, UUID.randomUUID().toString(), new Date(System.currentTimeMillis() + Token.DEFAULT_TOKEN_EXPIRATION_TIME)));
             try {
-                mailService.sendTokenConfirmationMail(token.getTokenValue(), user.getEmail());
-            } catch (MailException me) {
-                logger.error("Cannot mail to {}, with exception: {}", user.getUsername(), me.getMessage());
+                mailService.sendConfirmationTokenMail(token.getTokenValue(), user.getEmail(), user.getUsername());
+            } catch (Exception e) {
+                logger.error("Cannot mail to {}, with exception: {}", user.getUsername(), e.getMessage());
 
                 user.setConfirmed(true);
                 userService.update(user);

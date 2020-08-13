@@ -1,24 +1,19 @@
 package es.unizar.murcy.service;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import es.unizar.murcy.client.MailClient;
+import es.unizar.murcy.client.MailRequest;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.core.io.ResourceLoader;
-import org.springframework.mail.javamail.JavaMailSender;
-import org.springframework.mail.javamail.MimeMessageHelper;
-import org.springframework.mail.javamail.MimeMessagePreparator;
 import org.springframework.stereotype.Service;
 
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.nio.charset.StandardCharsets;
+import java.util.AbstractMap;
+import java.util.Map;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Service
 public class MailService {
 
-    @Value("${spring.mail.enable}")
-    private Boolean mailEnabled;
+    private final MailClient mailClient;
 
     @Value("${murcy.config.back-end.application-url}")
     private String currentBackEndURL;
@@ -26,51 +21,24 @@ public class MailService {
     @Value("${murcy.config.front-end.application-url}")
     private String currentFrontEndURL;
 
-    private final JavaMailSender emailSender;
-    private final ResourceLoader resourceLoader;
-
-    private final Logger logger = LoggerFactory.getLogger(MailService.class);
-
-    public MailService(JavaMailSender emailSender, ResourceLoader resourceLoader) {
-        this.emailSender = emailSender;
-        this.resourceLoader = resourceLoader;
+    public MailService(MailClient mailClient) {
+        this.mailClient = mailClient;
     }
 
-    public void sendTokenConfirmationMail(String token, String email) {
-
+    public void sendConfirmationTokenMail(String token, String toEmail, String username) throws Exception {
+        MailRequest mailRequest = new MailRequest();
+        mailRequest.setToEmail(toEmail);
+        mailRequest.setTemplateName("SIGN_UP_CONFIRM_TOKEN");
+        mailRequest.setArguments(Stream.of(
+                    new AbstractMap.SimpleImmutableEntry<>("BACK_END_URL", currentBackEndURL),
+                    new AbstractMap.SimpleImmutableEntry<>("USER", username),
+                    new AbstractMap.SimpleImmutableEntry<>("CONFIRMATION_URL", currentFrontEndURL.concat("?token=").concat(token)),
+                    new AbstractMap.SimpleImmutableEntry<>("MURCY_URL", currentFrontEndURL))
+                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue)));
         try {
-            InputStream  inputStream = resourceLoader.getResource("classpath:templates/confirmation-template.vm").getInputStream();
-            ByteArrayOutputStream result = new ByteArrayOutputStream();
-            byte[] buffer = new byte[1024];
-            int length;
-            while ((length = inputStream.read(buffer)) != -1) {
-                result.write(buffer, 0, length);
-            }
-            String template =  result.toString(StandardCharsets.UTF_8.name());
-            final String finalTemplate = formatTemplate(template, token);
-            if(mailEnabled.equals(Boolean.TRUE)) {
-                MimeMessagePreparator preparation = mimeMessage -> {
-                    MimeMessageHelper message = new MimeMessageHelper(mimeMessage);
-                    message.setTo(email);
-                    message.setSubject("Confirm account");
-                    message.setText(finalTemplate, true);
-                };
-                logger.debug("[FAKE EMAIL] From: {}, body: {}", email, token);
-                emailSender.send(preparation);
-            } else {
-                logger.info("[FAKE EMAIL] From: {}, body: {}", email, token);
-            }
-        } catch (IOException e) {
-            logger.error(e.getMessage());
+            mailClient.sendMail(mailRequest);
+        } catch (Exception e) {
+            throw e;
         }
     }
-
-    private String formatTemplate(String template, String token) {
-        template = template.replace("${blank_gmail}", currentBackEndURL.concat("/blank.gif"));
-        template = template.replace("${logotipo_URL}", currentBackEndURL.concat("/logotype.jpeg"));
-        template = template.replace("${confirmation_URL}", currentFrontEndURL.concat("/confirm-token/").concat(token));
-        template = template.replace(("${MURCY_URL}"), currentFrontEndURL);
-        return template;
-    }
-
 }

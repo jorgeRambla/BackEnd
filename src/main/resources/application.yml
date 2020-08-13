@@ -3,18 +3,6 @@ spring:
     hibernate.ddl-auto: update
   datasource:
     initialization-mode: embedded
-  mail:
-    enable: true
-    host: ${MAIL_SERVER:localhost}
-    port: ${MAIL_SERVER_PORT:25}
-    username: ${MAIL:admin@murcy.es}
-    password: ${MAIL_PASSWORD:passwd123}
-    protocol: ${MAIL_PROTOCOL:smtp}
-    properties:
-      mail:
-        smtp:
-          auth: ${MAIL_AUTH:false}
-          starttls.enable: ${MAIL_TTLS:false}
 
 server:
   error:
@@ -23,6 +11,9 @@ server:
   port: 8080
 
 murcy:
+  mail:
+    uri: ${MAIL_URI:http://localhost:8081}
+    api-key: ${API_KEY:secretapikey}
   config:
     entity.hard-delete: ${HARD_DELETE:false}
     jwt:

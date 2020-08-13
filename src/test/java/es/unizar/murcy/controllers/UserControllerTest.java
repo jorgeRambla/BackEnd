@@ -55,9 +55,6 @@ public class UserControllerTest {
     @Autowired
     private TokenService tokenService;
 
-    @Rule
-    public MailServiceRule mailServiceRule = new MailServiceRule();
-
     private TestRestTemplate restTemplate = new TestRestTemplate();
 
     private ObjectMapper objectMapper = new ObjectMapper();

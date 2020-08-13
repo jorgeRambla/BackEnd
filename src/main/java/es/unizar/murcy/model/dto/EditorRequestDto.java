@@ -1,7 +1,6 @@
 package es.unizar.murcy.model.dto;
 
 import es.unizar.murcy.model.EditorRequest;
-import es.unizar.murcy.model.extendable.jpa.AuditableWorkflowEntity;
 import lombok.*;
 
 @NoArgsConstructor
