@@ -34,7 +34,7 @@ public class Answer extends AuditableEntity {
     @Setter
     private Quiz quiz;
 
-    @OneToMany
+    @OneToMany(cascade = CascadeType.ALL)
     @Getter
     @Setter
     private List<IndividualAnswer> individualAnswers;

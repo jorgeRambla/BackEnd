@@ -40,8 +40,8 @@ public class QuestionTest {
         Question question=new Question();
         User newUser= new User("Test", "testpass", "test@test.com", "Test Test");
         newUser.addRol(User.Rol.USER);
-        question.setUser(newUser);
-        User testUser=question.getUser();
+        question.setOwner(newUser);
+        User testUser=question.getOwner();
         assertEquals(testUser.getUsername(),"Test");
     }
 
@@ -50,8 +50,8 @@ public class QuestionTest {
         Question question=new Question();
         User newUser= new User("Test", "testpass", "test@test.com", "Test Test");
         newUser.addRol(User.Rol.USER);
-        question.setUser(newUser);
-        assertEquals(question.getUser().getUsername(),"Test");
+        question.setOwner(newUser);
+        assertEquals(question.getOwner().getUsername(),"Test");
     }
 
     @Test

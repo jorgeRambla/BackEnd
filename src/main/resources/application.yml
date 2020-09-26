@@ -1,0 +1,56 @@
+spring:
+  jpa:
+    hibernate.ddl-auto: update
+  datasource:
+    initialization-mode: embedded
+
+server:
+  error:
+    whitelabel.enabled: false
+    include-stacktrace: on_trace_param
+  port: 8080
+
+murcy:
+  mail:
+    uri: ${MAIL_URI:http://localhost:8081}
+    api-key: ${API_KEY:secretapikey}
+  config:
+    entity.hard-delete: ${HARD_DELETE:false}
+    jwt:
+      validity:
+        days: ${JWT_DAYS:0}
+        hours: ${JWT_HOURS:5}
+        minutes: ${JWT_MINUTES:0}
+      secret: ${JWT_SECRET:randomjwt}
+    front-end.application-url: ${FRONT_END_URL:http://localhost:4200}
+    back-end.application-url: ${BACK_END_URL:http://localhost:8090}
+    admin:
+      username: ${ADMIN_USERNAME:admin}
+      password: ${ADMIN_PASS:supersecretpassword}
+      email: ${ADMIN_EMAIL:admin@murcy.es}
+---
+spring:
+  profiles: debug
+logging:
+  level:
+    es.unizar.murcy: INFO
+    o.s.b.w.embedded.tomcat.TomcatWebServer: INFO
+    root: ERROR
+---
+spring:
+  profiles: reduce-logging
+logging:
+  level:
+    es.unizar.murcy.controllers: INFO
+    o.s.b.w.embedded.tomcat.TomcatWebServer: INFO
+    root: ERROR
+---
+spring:
+  profiles: dev-logging
+logging:
+  level:
+    o.s.b.w.embedded.tomcat.TomcatWebServer: INFO
+    es.unizar.murcy.service.MailService: DEBUG
+    es.unizar.murcy.controllers: INFO
+    es.unizar.murcy.MurcyApplication: INFO
+    root: ERROR

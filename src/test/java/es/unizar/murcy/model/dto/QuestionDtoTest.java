@@ -7,11 +7,6 @@ import static org.junit.Assert.assertEquals;
 public class QuestionDtoTest {
 
     @Test
-    public void question_DTO_full_constructor() {
-
-    }
-
-    @Test
     public void question_DTO_getters_and_setters() {
         QuestionDto questionDto = new QuestionDto();
 
@@ -42,17 +37,7 @@ public class QuestionDtoTest {
         questionDto.setLastWorkflow(workflowDto);
         assertEquals(workflowDto, questionDto.getLastWorkflow());
 
-        questionDto.setApproved(true);
-        assertEquals(true, questionDto.isApproved());
-
-        questionDto.setClosed(true);
-        assertEquals(true, questionDto.isClosed());
+        questionDto.setPublished(true);
+        assertEquals(true, questionDto.isPublished());
     }
-
-    @Test
-    public void question_DTO_from_entity() {
-
-    }
-
-
 }

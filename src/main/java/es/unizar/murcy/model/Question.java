@@ -11,6 +11,8 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 
+import static javax.persistence.CascadeType.*;
+
 @Entity
 @Table(name = "murcy_question")
 @AllArgsConstructor
@@ -22,12 +24,8 @@ public class Question extends AuditableWorkflowEntity {
 
     @Getter
     @Setter
+    @Column(length = 512)
     private String title;
-
-    @ManyToOne
-    @Getter
-    @Setter
-    private User user;
 
     @Getter
     @Setter
@@ -38,10 +36,7 @@ public class Question extends AuditableWorkflowEntity {
     private Boolean isMultiple;
 
     @OneToMany(fetch = FetchType.EAGER,
-            cascade = {
-                    CascadeType.PERSIST,
-                    CascadeType.REFRESH
-                    })
+            cascade = {ALL})
     @OrderColumn(name = "INDEX")
     @Getter
     @Setter

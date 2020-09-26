@@ -41,7 +41,7 @@ public class IndividualAnswerRequest {
     private boolean isCorrect(Question question) {
         long correctAnswers = question.getOptions().stream().filter(Option::getCorrect).count();
 
-        if(correctAnswers != optionsIds.size()) {
+        if(correctAnswers == optionsIds.size()) {
             return optionsIds
                     .stream()
                     .distinct()
@@ -58,17 +58,18 @@ public class IndividualAnswerRequest {
     }
 
     public IndividualAnswer toEntity(QuestionService questionService) {
-        IndividualAnswer individualAnswer=new IndividualAnswer();
+        IndividualAnswer individualAnswer = new IndividualAnswer();
         Question question = questionService.findById(questionId).orElseThrow(QuestionNotFoundException::new);
 
 
         individualAnswer.setTimeInMillis(this.timeInMillis);
         individualAnswer.setPoints(isCorrect(question) ? 1 : 0);
 
-        individualAnswer.setOptions(
+        individualAnswer.setOptionsIds(
                 question.getOptions()
                         .stream()
                         .filter(option -> optionsIds.contains(option.getId()))
+                        .map(Option::getId)
                         .collect(Collectors.toList()));
 
         return individualAnswer;

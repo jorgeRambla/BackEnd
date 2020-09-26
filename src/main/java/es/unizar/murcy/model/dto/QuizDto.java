@@ -51,12 +51,20 @@ public class QuizDto {
     @Setter
     private List<SimplifiedQuestionDto> questions;
 
+    @Getter
+    @Setter
+    private boolean ordered;
+
+    @Getter
+    @Setter
+    private boolean canBePlayed;
+
     public QuizDto(Quiz quiz){
         this.id = quiz.getId();
         this.title = quiz.getTitle();
         this.description = quiz.getDescription();
-        this.ownerUserName = quiz.getUser().getUsername();
-        this.ownerId = quiz.getUser().getId();
+        this.ownerUserName = quiz.getOwner().getUsername();
+        this.ownerId = quiz.getOwner().getId();
         this.questions = quiz.getQuestions().stream().map(SimplifiedQuestionDto::new).collect(Collectors.toList());
         if(quiz.getWorkflow() != null) {
             this.workflow = new WorkflowDto(quiz.getWorkflow());
@@ -66,5 +74,7 @@ public class QuizDto {
         }
         this.approved = quiz.isApproved();
         this.closed = quiz.isClosed();
+        this.ordered = quiz.getQuestionsOrdered() != null && quiz.getQuestionsOrdered();
+        this.canBePlayed = quiz.canBePlayed();
     }
 }

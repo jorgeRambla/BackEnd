@@ -50,9 +50,6 @@ public class WorkflowControllerTest {
     @Autowired
     private JwtUserDetailsService userDetailsService;
 
-    @Autowired
-    private WorkflowService workflowService;
-
     private TestRestTemplate restTemplate = new TestRestTemplate();
 
     private ObjectMapper objectMapper = new ObjectMapper();
@@ -95,7 +92,7 @@ public class WorkflowControllerTest {
         question.setTitle("title");
         question.setDescription("description");
         question.setIsMultiple(false);
-        question.setUser(reviewerUser);
+        question.setOwner(reviewerUser);
         question.setOptions(optionList);
 
         Workflow workflow = new Workflow();
@@ -103,17 +100,10 @@ public class WorkflowControllerTest {
         workflow.setStatusUser(null);
         workflow.setTitle("Solicitud publicar pregunta");
 
-        workflow = workflowService.create(workflow);
-
         question.setWorkflow(workflow);
         question.setLastWorkflow(workflow);
 
         question = questionService.create(question);
-
-        workflow.addAuditableWorkflowEntity(question);
-
-        workflowService.update(workflow);
-
         this.question = question;
     }
 

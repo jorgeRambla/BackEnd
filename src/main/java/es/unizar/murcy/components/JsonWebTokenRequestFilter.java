@@ -9,7 +9,6 @@ import javax.servlet.http.HttpServletResponse;
 import es.unizar.murcy.service.JwtUserDetailsService;
 import io.jsonwebtoken.MalformedJwtException;
 import io.jsonwebtoken.SignatureException;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -21,11 +20,13 @@ import io.jsonwebtoken.ExpiredJwtException;
 @Component
 public class JsonWebTokenRequestFilter extends OncePerRequestFilter {
 
-    @Autowired
-    private JwtUserDetailsService jwtUserDetailsService;
+    private final JwtUserDetailsService jwtUserDetailsService;
+    private final JsonWebTokenUtil jsonWebTokenUtil;
 
-    @Autowired
-    private JsonWebTokenUtil jsonWebTokenUtil;
+    public JsonWebTokenRequestFilter(JwtUserDetailsService jwtUserDetailsService, JsonWebTokenUtil jsonWebTokenUtil) {
+        this.jwtUserDetailsService = jwtUserDetailsService;
+        this.jsonWebTokenUtil = jsonWebTokenUtil;
+    }
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain)

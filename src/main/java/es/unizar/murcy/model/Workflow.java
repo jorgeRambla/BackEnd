@@ -38,7 +38,7 @@ public class Workflow extends AuditableEntity {
     @Setter
     private String response;
 
-    @OneToOne
+    @OneToOne(cascade = CascadeType.ALL)
     @Getter
     @Setter
     private Workflow nextWorkflow;
@@ -48,7 +48,7 @@ public class Workflow extends AuditableEntity {
     @Setter
     private User statusUser;
 
-    @ManyToMany
+    @ManyToMany(cascade = CascadeType.ALL)
     @Getter
     @Setter
     private Set<AuditableWorkflowEntity> auditableWorkflowEntities;
@@ -70,6 +70,25 @@ public class Workflow extends AuditableEntity {
         this.auditableWorkflowEntities.add(auditableWorkflowEntity);
     }
 
+    public static Workflow draftWorkflow(User requester, AuditableWorkflowEntity entity) {
+        Workflow workflow = new Workflow();
+        workflow.setDescription(null);
+        workflow.setStatusUser(requester);
+        workflow.setTitle(Workflow.DRAFT_MESSAGE);
+        workflow.setResponse(Workflow.DRAFT_MESSAGE);
+        entity.setClosed(true);
+        entity.setApproved(false);
+        if(entity.getLastWorkflow().getStatus().equals(Workflow.Status.APPROVED)){
+            workflow.setStatus(Workflow.Status.DRAFT_FROM_APPROVED);
+        } else if (entity.getLastWorkflow().getStatus().equals(Workflow.Status.DRAFT_FROM_APPROVED)){
+            workflow.setStatus(Workflow.Status.DRAFT_FROM_APPROVED);
+        } else {
+            workflow.setStatus(Workflow.Status.DRAFT);
+        }
+        workflow.addAuditableWorkflowEntity(entity);
+        return workflow;
+    }
+
     @Override
     public boolean equals(Object o) {
         return super.equals(o);
@@ -78,5 +97,9 @@ public class Workflow extends AuditableEntity {
     @Override
     public int hashCode() {
         return Objects.hash(super.hashCode());
+    }
+
+    public void clear() {
+        this.auditableWorkflowEntities.clear();
     }
 }

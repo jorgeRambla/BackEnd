@@ -8,6 +8,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import static junit.framework.TestCase.assertFalse;
@@ -15,6 +16,7 @@ import static junit.framework.TestCase.assertTrue;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = MurcyApplication.class)
+@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 public class UserRepositoryTest {
 
     @Autowired
@@ -33,12 +35,6 @@ public class UserRepositoryTest {
         newConfirmedUser.setConfirmed(true);
         this.confirmedUser = userRepository.save(newConfirmedUser);
     }
-
-    @After
-    public void after() {
-        userRepository.deleteAll();
-    }
-
     @Test
     public void testExistsByUserName() {
         assertTrue(userRepository.existsByUsername(user.getUsername()));
