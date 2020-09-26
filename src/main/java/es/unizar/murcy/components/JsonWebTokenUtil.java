@@ -18,9 +18,17 @@ public class JsonWebTokenUtil implements Serializable {
 
 
     private static final long serialVersionUID = -2550185165626007488L;
-    public static final long JWT_TOKEN_VALIDITY = 5L * 60L * 60L;
 
-    @Value("${jwt.secret}")
+    @Value("${murcy.config.jwt.validity.days:0}")
+    private long jwt_token_validity_day;
+
+    @Value("${murcy.config.jwt.validity.hours:5}")
+    private long jwt_token_validity_hour;
+
+    @Value("${murcy.config.jwt.validity.minutes:0}")
+    private long jwt_token_validity_minute;
+
+    @Value("${murcy.config.jwt.secret}")
     private String secret;
 
     public String getUserNameFromToken(String token) {
@@ -52,12 +60,18 @@ public class JsonWebTokenUtil implements Serializable {
 
     private String doGenerateToken(Map<String, Object> claims, String subject) {
         return Jwts.builder().setClaims(claims).setSubject(subject).setIssuedAt(new Date(System.currentTimeMillis()))
-                .setExpiration(new Date(System.currentTimeMillis() + JWT_TOKEN_VALIDITY * 1000))
+                .setExpiration(new Date(System.currentTimeMillis() + getJsonWebTokenValidityInMillis() * 1000))
                 .signWith(SignatureAlgorithm.HS512, secret).compact();
     }
 
     public Boolean validateToken(String token, UserDetails userDetails) {
         final String username = getUserNameFromToken(token);
         return (username.equals(userDetails.getUsername()) && !isTokenExpired(token));
+    }
+
+    private long getJsonWebTokenValidityInMillis() {
+        return (jwt_token_validity_minute * 60 +
+                jwt_token_validity_hour * 60 * 60 +
+                jwt_token_validity_day * 24 * 60 * 60) * 1000;
     }
 }

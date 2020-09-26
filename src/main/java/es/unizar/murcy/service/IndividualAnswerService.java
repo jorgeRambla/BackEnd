@@ -1,11 +1,13 @@
 package es.unizar.murcy.service;
 
 import es.unizar.murcy.model.IndividualAnswer;
+import es.unizar.murcy.model.Question;
 import es.unizar.murcy.repository.IndividualAnswerRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -14,8 +16,11 @@ import java.util.Optional;
 @Transactional
 public class IndividualAnswerService {
 
-    @Autowired
-    IndividualAnswerRepository individualAnswerRepository;
+    private final IndividualAnswerRepository individualAnswerRepository;
+
+    public IndividualAnswerService(IndividualAnswerRepository individualAnswerRepository) {
+        this.individualAnswerRepository = individualAnswerRepository;
+    }
 
     public List<IndividualAnswer> findAll() {
         return individualAnswerRepository.findIndividualAnswersByDeletedIsFalse();
@@ -45,5 +50,11 @@ public class IndividualAnswerService {
 
     public List<IndividualAnswer> findIndividualAnswersByAnswerId(long answerId) {
         return individualAnswerRepository.findByDeletedIsFalseAndAnswer_id(answerId);
+    }
+
+    public List<IndividualAnswer> findByIdsCollection(List<Long> ids) {
+        List<IndividualAnswer> individualAnswer = individualAnswerRepository.findByDeletedIsFalseAndIdIn(ids);
+        individualAnswer.sort(Comparator.comparing(item -> ids.indexOf(item.getId())));
+        return individualAnswer;
     }
 }

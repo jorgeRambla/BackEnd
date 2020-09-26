@@ -35,7 +35,7 @@ public class EditorRequestServiceTest {
         newUser = userService.create(newUser);
 
         EditorRequest editorRequest = new EditorRequest();
-        editorRequest.setApplicant(newUser);
+        editorRequest.setOwner(newUser);
         editorRequest.setDescription("test");
 
         this.editorRequest = editorRequestService.create(editorRequest);
@@ -43,7 +43,7 @@ public class EditorRequestServiceTest {
 
     @Test
     public void testFindEditorRequestByApplicant() {
-        assertTrue(editorRequestService.findEditorRequestByApplicant(editorRequest.getApplicant()).isPresent());
+        assertTrue(editorRequestService.findEditorRequestByApplicant(editorRequest.getOwner()).isPresent());
     }
 
     @Test
@@ -60,9 +60,9 @@ public class EditorRequestServiceTest {
 
     @Test
     public void testFindByClosedAndApproved() {
-        assertEquals(0, editorRequestService.findByClosedAndApproved(true, true).size());
-        assertEquals(1, editorRequestService.findByClosedAndApproved(false, false).size());
-        assertEquals(0, editorRequestService.findByClosedAndApproved(true, false).size());
-        assertEquals(0, editorRequestService.findByClosedAndApproved(false, true).size());
+        assertEquals(0, editorRequestService.findByClosedAndApproved(true, true).getTotalElements());
+        assertEquals(1, editorRequestService.findByClosedAndApproved(false, false).getTotalElements());
+        assertEquals(0, editorRequestService.findByClosedAndApproved(true, false).getTotalElements());
+        assertEquals(0, editorRequestService.findByClosedAndApproved(false, true).getTotalElements());
     }
 }

@@ -45,11 +45,7 @@ public class QuestionDto {
 
     @Getter
     @Setter
-    private boolean approved;
-
-    @Getter
-    @Setter
-    private boolean closed;
+    private boolean published;
 
     @Getter
     @Setter
@@ -58,8 +54,8 @@ public class QuestionDto {
     public QuestionDto(Question question) {
         this.id = question.getId();
         this.title = question.getTitle();
-        this.ownerUserName = question.getUser().getUsername();
-        this.ownerId = question.getUser().getId();
+        this.ownerUserName = question.getOwner().getUsername();
+        this.ownerId = question.getOwner().getId();
         this.isMultiple = question.getIsMultiple();
         this.description = question.getDescription();
         this.options = question.getOptions().stream().map(OptionDto::new).collect(Collectors.toList());
@@ -69,7 +65,6 @@ public class QuestionDto {
         if(question.getLastWorkflow() != null) {
             this.lastWorkflow = new WorkflowDto(question.getLastWorkflow());
         }
-        this.approved = question.isApproved();
-        this.closed = question.isClosed();
+        this.published = question.isApproved();
     }
 }

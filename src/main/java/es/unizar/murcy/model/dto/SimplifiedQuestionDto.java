@@ -1,6 +1,7 @@
 package es.unizar.murcy.model.dto;
 
 import es.unizar.murcy.model.Question;
+import es.unizar.murcy.model.Quiz;
 import lombok.*;
 
 import java.util.List;
@@ -17,7 +18,7 @@ public class SimplifiedQuestionDto {
 
     @Getter
     @Setter
-    private List<OptionDto> options;
+    private List<SimplifiedOptionDto> options;
 
     @Getter
     @Setter
@@ -36,6 +37,6 @@ public class SimplifiedQuestionDto {
         this.title = question.getTitle();
         this.description = question.getDescription();
         this.isMultiple = question.getIsMultiple();
-        this.options = question.getOptions().stream().map(OptionDto::new).collect(Collectors.toList());
+        this.options = question.getOptions().stream().map(SimplifiedOptionDto::new).collect(Collectors.toList());
     }
 }

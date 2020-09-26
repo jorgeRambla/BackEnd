@@ -55,9 +55,6 @@ public class UserControllerTest {
     @Autowired
     private TokenService tokenService;
 
-    @Rule
-    public MailServiceRule mailServiceRule = new MailServiceRule();
-
     private TestRestTemplate restTemplate = new TestRestTemplate();
 
     private ObjectMapper objectMapper = new ObjectMapper();
@@ -69,6 +66,8 @@ public class UserControllerTest {
     private String editorUserToken;
     private User reviewerUser;
     private String reviewerUserToken;
+    private User adminUser;
+    private String adminUserToken;
     private User unconfirmedUser;
     private Token unconfirmedUserToken;
 
@@ -76,6 +75,7 @@ public class UserControllerTest {
     public void setUp()  {
         User user = new User("testUser", new BCryptPasswordEncoder().encode("test"), "testUser@test.com", "Test Test");
         user.setConfirmed(true);
+        user.addRol(User.Rol.USER);
         this.userUser = userService.create(user);
 
         user = new User("testEditor", new BCryptPasswordEncoder().encode("test"), "testEditor@test.com", "Test Test");
@@ -88,6 +88,11 @@ public class UserControllerTest {
         user.addRol(User.Rol.REVIEWER);
         this.reviewerUser = userService.create(user);
 
+        user = new User("testAdmin", new BCryptPasswordEncoder().encode("test"), "testAdmin@test.com", "Test Test");
+        user.setConfirmed(true);
+        user.addRol(User.Rol.ADMINISTRATOR);
+        this.adminUser = userService.create(user);
+
         user = new User("unconfirmedUser", new BCryptPasswordEncoder().encode("test"), "unconfirmedUser@test.com", "Test Test");
         this.unconfirmedUser = userService.create(user);
         this.unconfirmedUserToken = tokenService.create(new Token(unconfirmedUser, UUID.randomUUID().toString(), new Date(System.currentTimeMillis() + DEFAULT_TOKEN_EXPIRATION_TIME)));
@@ -95,6 +100,7 @@ public class UserControllerTest {
         this.userUserToken = jsonWebTokenUtil.generateToken(userDetailsService.loadUserByUsername(userUser.getUsername()));
         this.editorUserToken = jsonWebTokenUtil.generateToken(userDetailsService.loadUserByUsername(editorUser.getUsername()));
         this.reviewerUserToken = jsonWebTokenUtil.generateToken(userDetailsService.loadUserByUsername(reviewerUser.getUsername()));
+        this.adminUserToken = jsonWebTokenUtil.generateToken(userDetailsService.loadUserByUsername(adminUser.getUsername()));
         this.randomToken = userUserToken.substring(0, userUserToken.length()-3).concat("aaa");
     }
 
@@ -351,7 +357,7 @@ public class UserControllerTest {
     public void test_GET_api_user_info_ID_404_1() {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
-        headers.setBearerAuth(editorUserToken);
+        headers.setBearerAuth(reviewerUserToken);
 
         ResponseEntity response = restTemplate.exchange(URI.create("http://localhost:" + port + "/api/user/info/" + -1), HttpMethod.GET, new HttpEntity<>(headers), Object.class);
 
@@ -390,9 +396,9 @@ public class UserControllerTest {
 
     @Test
     public void test_PUT_api_user_info_ID_404_1() throws Exception {
-        HttpHeaders headers = new HttpHeaders();
+         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
-        headers.setBearerAuth(userUserToken);
+        headers.setBearerAuth(reviewerUserToken);
 
         UpdateUserRequest updateUserRequest = new UpdateUserRequest("newMail@mail.com", "Test test", "testTest", new BCryptPasswordEncoder().encode("newPass"), new String[]{"USER", "EDITOR"});
 
@@ -570,7 +576,7 @@ public class UserControllerTest {
     public void test_PUT_api_user_info_ID_201_6() throws Exception{
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
-        headers.setBearerAuth(reviewerUserToken);
+        headers.setBearerAuth(adminUserToken);
 
         UpdateUserRequest updateUserRequest = new UpdateUserRequest("", "", "", "", new String[]{User.Rol.REVIEWER.name()});
 

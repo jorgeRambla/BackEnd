@@ -12,11 +12,6 @@ import java.util.Objects;
 @ToString(callSuper = true)
 public class EditorRequest extends AuditableWorkflowEntity {
 
-    @ManyToOne
-    @Getter
-    @Setter
-    private User applicant;
-
     @Getter
     @Setter
     private String description;

@@ -1,5 +1,6 @@
 package es.unizar.murcy.model.dto;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import es.unizar.murcy.model.Workflow;
 import lombok.*;
 
@@ -32,14 +33,21 @@ public class WorkflowDto {
 
     @Getter
     @Setter
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     private String statusBy;
 
     @Getter
     @Setter
+    private String descriptionBy;
+
+    @Getter
+    @Setter
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     private String response;
 
     @Getter
     @Setter
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     private WorkflowDto nextWorkflow;
 
     public WorkflowDto(Workflow workflow) {
@@ -51,6 +59,10 @@ public class WorkflowDto {
         if(workflow.getStatusUser() != null) {
             this.statusBy = workflow.getStatusUser().getUsername();
         }
+        workflow.getAuditableWorkflowEntities()
+                .stream()
+                .findFirst()
+                .ifPresent(item -> this.descriptionBy = item.getOwner().getUsername());
         this.response = workflow.getResponse();
         if (workflow.getNextWorkflow() != null) {
             this.nextWorkflow = new WorkflowDto(workflow.getNextWorkflow());

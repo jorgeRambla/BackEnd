@@ -363,6 +363,86 @@
         "tags" : [ "quiz" ],
         "summary" : "Get current user quiz list",
         "description" : "Get current logged user quiz list",
+        "parameters" : [ {
+          "name" : "all",
+          "in" : "query",
+          "description" : "Ignore published filter",
+          "required" : false,
+          "style" : "form",
+          "explode" : true,
+          "schema" : {
+            "type" : "boolean",
+            "default" : false
+          }
+        }, {
+          "name" : "published",
+          "in" : "query",
+          "description" : "Quiz is public",
+          "required" : false,
+          "style" : "form",
+          "explode" : true,
+          "schema" : {
+            "type" : "boolean",
+            "default" : false
+          }
+        }, {
+          "name" : "page",
+          "in" : "query",
+          "description" : "Pagination -> Page number, if page = -1, then return all results in same page",
+          "required" : false,
+          "style" : "form",
+          "explode" : true,
+          "schema" : {
+            "type" : "integer",
+            "format" : "int32",
+            "default" : -1
+          }
+        }, {
+          "name" : "size",
+          "in" : "query",
+          "description" : "Pagination -> Page size, ignored value if page = -1",
+          "required" : false,
+          "style" : "form",
+          "explode" : true,
+          "schema" : {
+            "type" : "integer",
+            "format" : "int32",
+            "default" : 50
+          }
+        }, {
+          "name" : "sortColumn",
+          "in" : "query",
+          "description" : "Pagination -> Sort Column",
+          "required" : false,
+          "style" : "form",
+          "explode" : true,
+          "schema" : {
+            "type" : "string",
+            "default" : "createDate"
+          }
+        }, {
+          "name" : "sortType",
+          "in" : "query",
+          "description" : "Pagination -> Sort Column",
+          "required" : false,
+          "style" : "form",
+          "explode" : true,
+          "schema" : {
+            "type" : "string",
+            "default" : "desc",
+            "enum" : [ "asc", "desc" ]
+          }
+        }, {
+          "name" : "query",
+          "in" : "query",
+          "description" : "Query search",
+          "required" : false,
+          "style" : "form",
+          "explode" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
         "responses" : {
           "200" : {
             "description" : "success",
@@ -405,6 +485,85 @@
           "schema" : {
             "type" : "integer",
             "format" : "int64"
+          }
+        }, {
+          "name" : "all",
+          "in" : "query",
+          "description" : "Ignore published filter",
+          "required" : false,
+          "style" : "form",
+          "explode" : true,
+          "schema" : {
+            "type" : "boolean",
+            "default" : false
+          }
+        }, {
+          "name" : "published",
+          "in" : "query",
+          "description" : "Quiz is public",
+          "required" : false,
+          "style" : "form",
+          "explode" : true,
+          "schema" : {
+            "type" : "boolean",
+            "default" : false
+          }
+        }, {
+          "name" : "page",
+          "in" : "query",
+          "description" : "Pagination -> Page number, if page = -1, then return all results in same page",
+          "required" : false,
+          "style" : "form",
+          "explode" : true,
+          "schema" : {
+            "type" : "integer",
+            "format" : "int32",
+            "default" : -1
+          }
+        }, {
+          "name" : "size",
+          "in" : "query",
+          "description" : "Pagination -> Page size, ignored value if page = -1",
+          "required" : false,
+          "style" : "form",
+          "explode" : true,
+          "schema" : {
+            "type" : "integer",
+            "format" : "int32",
+            "default" : 50
+          }
+        }, {
+          "name" : "sortColumn",
+          "in" : "query",
+          "description" : "Pagination -> Sort Column",
+          "required" : false,
+          "style" : "form",
+          "explode" : true,
+          "schema" : {
+            "type" : "string",
+            "default" : "createDate"
+          }
+        }, {
+          "name" : "sortType",
+          "in" : "query",
+          "description" : "Pagination -> Sort Column",
+          "required" : false,
+          "style" : "form",
+          "explode" : true,
+          "schema" : {
+            "type" : "string",
+            "default" : "desc",
+            "enum" : [ "asc", "desc" ]
+          }
+        }, {
+          "name" : "query",
+          "in" : "query",
+          "description" : "Query search",
+          "required" : false,
+          "style" : "form",
+          "explode" : true,
+          "schema" : {
+            "type" : "string"
           }
         } ],
         "responses" : {
@@ -937,6 +1096,86 @@
         "tags" : [ "question" ],
         "summary" : "Get current user question list",
         "description" : "Get current user question list",
+        "parameters" : [ {
+          "name" : "all",
+          "in" : "query",
+          "description" : "Ignore published filter",
+          "required" : false,
+          "style" : "form",
+          "explode" : true,
+          "schema" : {
+            "type" : "boolean",
+            "default" : false
+          }
+        }, {
+          "name" : "published",
+          "in" : "query",
+          "description" : "Question is public",
+          "required" : false,
+          "style" : "form",
+          "explode" : true,
+          "schema" : {
+            "type" : "boolean",
+            "default" : false
+          }
+        }, {
+          "name" : "page",
+          "in" : "query",
+          "description" : "Pagination -> Page number, if page = -1, then return all results in same page",
+          "required" : false,
+          "style" : "form",
+          "explode" : true,
+          "schema" : {
+            "type" : "integer",
+            "format" : "int32",
+            "default" : -1
+          }
+        }, {
+          "name" : "size",
+          "in" : "query",
+          "description" : "Pagination -> Page size, ignored value if page = -1",
+          "required" : false,
+          "style" : "form",
+          "explode" : true,
+          "schema" : {
+            "type" : "integer",
+            "format" : "int32",
+            "default" : 50
+          }
+        }, {
+          "name" : "sortColumn",
+          "in" : "query",
+          "description" : "Pagination -> Sort Column",
+          "required" : false,
+          "style" : "form",
+          "explode" : true,
+          "schema" : {
+            "type" : "string",
+            "default" : "createDate"
+          }
+        }, {
+          "name" : "sortType",
+          "in" : "query",
+          "description" : "Pagination -> Sort Column",
+          "required" : false,
+          "style" : "form",
+          "explode" : true,
+          "schema" : {
+            "type" : "string",
+            "default" : "desc",
+            "enum" : [ "asc", "desc" ]
+          }
+        }, {
+          "name" : "query",
+          "in" : "query",
+          "description" : "Query search",
+          "required" : false,
+          "style" : "form",
+          "explode" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
         "responses" : {
           "200" : {
             "description" : "questionDto",
@@ -979,6 +1218,75 @@
           "schema" : {
             "type" : "integer",
             "format" : "int64"
+          }
+        }, {
+          "name" : "all",
+          "in" : "query",
+          "description" : "Ignore published filter",
+          "required" : false,
+          "style" : "form",
+          "explode" : true,
+          "schema" : {
+            "type" : "boolean",
+            "default" : false
+          }
+        }, {
+          "name" : "published",
+          "in" : "query",
+          "description" : "Question is public",
+          "required" : false,
+          "style" : "form",
+          "explode" : true,
+          "schema" : {
+            "type" : "boolean",
+            "default" : false
+          }
+        }, {
+          "name" : "page",
+          "in" : "query",
+          "description" : "Pagination -> Page number, if page = -1, then return all results in same page",
+          "required" : false,
+          "style" : "form",
+          "explode" : true,
+          "schema" : {
+            "type" : "integer",
+            "format" : "int32",
+            "default" : -1
+          }
+        }, {
+          "name" : "size",
+          "in" : "query",
+          "description" : "Pagination -> Page size, ignored value if page = -1",
+          "required" : false,
+          "style" : "form",
+          "explode" : true,
+          "schema" : {
+            "type" : "integer",
+            "format" : "int32",
+            "default" : 50
+          }
+        }, {
+          "name" : "sortColumn",
+          "in" : "query",
+          "description" : "Pagination -> Sort Column",
+          "required" : false,
+          "style" : "form",
+          "explode" : true,
+          "schema" : {
+            "type" : "string",
+            "default" : "createDate"
+          }
+        }, {
+          "name" : "sortType",
+          "in" : "query",
+          "description" : "Pagination -> Sort Column",
+          "required" : false,
+          "style" : "form",
+          "explode" : true,
+          "schema" : {
+            "type" : "string",
+            "default" : "desc",
+            "enum" : [ "asc", "desc" ]
           }
         } ],
         "responses" : {
@@ -1523,9 +1831,20 @@
         "summary" : "Get users requests",
         "description" : "Get users request",
         "parameters" : [ {
+          "name" : "all",
+          "in" : "query",
+          "description" : "Ignore closed and approved filter",
+          "required" : false,
+          "style" : "form",
+          "explode" : true,
+          "schema" : {
+            "type" : "boolean",
+            "default" : false
+          }
+        }, {
           "name" : "closed",
           "in" : "query",
-          "description" : "editor request is closed",
+          "description" : "Editor request is closed",
           "required" : false,
           "style" : "form",
           "explode" : true,
@@ -1536,13 +1855,60 @@
         }, {
           "name" : "approved",
           "in" : "query",
-          "description" : "editor request is approved",
+          "description" : "Editor request is approved",
           "required" : false,
           "style" : "form",
           "explode" : true,
           "schema" : {
             "type" : "boolean",
             "default" : false
+          }
+        }, {
+          "name" : "page",
+          "in" : "query",
+          "description" : "Pagination -> Page number, if page = -1, then return all results in same page",
+          "required" : false,
+          "style" : "form",
+          "explode" : true,
+          "schema" : {
+            "type" : "integer",
+            "format" : "int32",
+            "default" : -1
+          }
+        }, {
+          "name" : "size",
+          "in" : "query",
+          "description" : "Pagination -> Page size, ignored value if page = -1",
+          "required" : false,
+          "style" : "form",
+          "explode" : true,
+          "schema" : {
+            "type" : "integer",
+            "format" : "int32",
+            "default" : 50
+          }
+        }, {
+          "name" : "sortColumn",
+          "in" : "query",
+          "description" : "Pagination -> Sort Column",
+          "required" : false,
+          "style" : "form",
+          "explode" : true,
+          "schema" : {
+            "type" : "string",
+            "default" : "createDate"
+          }
+        }, {
+          "name" : "sortType",
+          "in" : "query",
+          "description" : "Pagination -> Sort Column",
+          "required" : false,
+          "style" : "form",
+          "explode" : true,
+          "schema" : {
+            "type" : "string",
+            "default" : "desc",
+            "enum" : [ "asc", "desc" ]
           }
         } ],
         "responses" : {
@@ -1918,10 +2284,7 @@
           "isPublic" : {
             "type" : "boolean"
           },
-          "closed" : {
-            "type" : "boolean"
-          },
-          "approved" : {
+          "published" : {
             "type" : "boolean"
           },
           "workflow" : {
@@ -2211,7 +2574,7 @@
         }
       },
       "QuizRequest" : {
-        "required" : [ "description", "publish", "questionIds", "title" ],
+        "required" : [ "description", "ordered", "publish", "questionsIds", "title" ],
         "type" : "object",
         "properties" : {
           "title" : {
@@ -2229,6 +2592,10 @@
               "type" : "integer",
               "format" : "int64"
             }
+          },
+          "ordered" : {
+            "type" : "boolean",
+            "description" : "Questions in the quiz display ordered or not"
           },
           "publish" : {
             "type" : "boolean",

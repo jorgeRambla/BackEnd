@@ -1,7 +1,9 @@
 package es.unizar.murcy.model.extendable.jpa;
 
+import es.unizar.murcy.model.User;
 import es.unizar.murcy.model.Workflow;
 import lombok.*;
+import org.hibernate.jdbc.Work;
 
 import javax.persistence.*;
 import java.util.Objects;
@@ -11,16 +13,14 @@ import java.util.Objects;
 @Inheritance(strategy = InheritanceType.JOINED)
 @AllArgsConstructor
 @ToString(callSuper = true)
-public class AuditableWorkflowEntity extends AuditableEntity{
+public class AuditableWorkflowEntity extends AuditableEntity {
 
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.ALL)
     @Getter
-    @Setter
     private Workflow workflow;
 
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.ALL)
     @Getter
-    @Setter
     private Workflow lastWorkflow;
 
     @Getter
@@ -34,6 +34,11 @@ public class AuditableWorkflowEntity extends AuditableEntity{
     @Getter
     @Setter
     private String classname;
+
+    @ManyToOne
+    @Getter
+    @Setter
+    private User owner;
 
     public AuditableWorkflowEntity() {
         super();
@@ -49,6 +54,16 @@ public class AuditableWorkflowEntity extends AuditableEntity{
     @Override
     public int hashCode() {
         return Objects.hash(super.hashCode());
+    }
+
+    public void setWorkflow(Workflow workflow) {
+        this.workflow = workflow;
+        workflow.clear();
+        this.workflow.addAuditableWorkflowEntity(this);
+    }
+
+    public void setLastWorkflow(Workflow workflow) {
+        this.lastWorkflow = workflow;
     }
 
 }

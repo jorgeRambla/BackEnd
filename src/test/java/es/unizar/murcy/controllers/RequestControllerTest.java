@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import es.unizar.murcy.components.JsonWebTokenUtil;
 import es.unizar.murcy.model.EditorRequest;
 import es.unizar.murcy.model.User;
+import es.unizar.murcy.model.dto.PageableCollectionDto;
 import es.unizar.murcy.service.JwtUserDetailsService;
 import es.unizar.murcy.service.UserService;
 import org.junit.Before;
@@ -20,7 +21,6 @@ import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import java.net.URI;
-import java.util.Set;
 
 import static org.junit.Assert.assertEquals;
 
@@ -55,6 +55,7 @@ public class RequestControllerTest {
     public void setUp() {
         User user = new User("testUser", new BCryptPasswordEncoder().encode("test"), "testUser@test.com", "Test Test");
         user.setConfirmed(true);
+        user.addRol(User.Rol.USER);
         User userUser = userService.create(user);
 
         user = new User("testEditor", new BCryptPasswordEncoder().encode("test"), "testEditor@test.com", "Test Test");
@@ -94,7 +95,7 @@ public class RequestControllerTest {
 
         EditorRequest editorRequest = new EditorRequest();
         editorRequest.setDescription("Description");
-        editorRequest.setApplicant(editorUser);
+        editorRequest.setOwner(editorUser);
 
         ResponseEntity response = restTemplate.exchange(
                 URI.create("http://localhost:" + port + "/api/request/editor/"),
@@ -112,7 +113,7 @@ public class RequestControllerTest {
 
         EditorRequest editorRequest = new EditorRequest();
         editorRequest.setDescription("Description");
-        editorRequest.setApplicant(editorUser);
+        editorRequest.setOwner(editorUser);
 
         ResponseEntity response = restTemplate.exchange(
                 URI.create("http://localhost:" + port + "/api/request/editor/"),
@@ -139,7 +140,7 @@ public class RequestControllerTest {
 
         EditorRequest editorRequest = new EditorRequest();
         editorRequest.setDescription("Description");
-        editorRequest.setApplicant(editorUser);
+        editorRequest.setOwner(editorUser);
 
         ResponseEntity response = restTemplate.exchange(
                 URI.create("http://localhost:" + port + "/api/request/editor/"),
@@ -157,7 +158,7 @@ public class RequestControllerTest {
 
         EditorRequest editorRequest = new EditorRequest();
         editorRequest.setDescription("Description");
-        editorRequest.setApplicant(editorUser);
+        editorRequest.setOwner(editorUser);
 
         ResponseEntity response = restTemplate.exchange(
                 URI.create("http://localhost:" + port + "/api/request/editor/"),
@@ -175,7 +176,7 @@ public class RequestControllerTest {
 
         EditorRequest editorRequest = new EditorRequest();
         editorRequest.setDescription("Description");
-        editorRequest.setApplicant(editorUser);
+        editorRequest.setOwner(editorUser);
 
         ResponseEntity response = restTemplate.exchange(URI.create("http://localhost:" + port + "/api/request/editor/"),
                 HttpMethod.POST, new HttpEntity<>(objectMapper.writeValueAsString(editorRequest), headers),
@@ -192,7 +193,7 @@ public class RequestControllerTest {
 
         EditorRequest editorRequest = new EditorRequest();
         editorRequest.setDescription("Description");
-        editorRequest.setApplicant(editorUser);
+        editorRequest.setOwner(editorUser);
 
         ResponseEntity response = restTemplate.exchange(
                 URI.create("http://localhost:" + port + "/api/request/editor/"),
@@ -211,7 +212,7 @@ public class RequestControllerTest {
 
         EditorRequest editorRequest = new EditorRequest();
         editorRequest.setDescription("Description");
-        editorRequest.setApplicant(editorUser);
+        editorRequest.setOwner(editorUser);
 
         ResponseEntity response = restTemplate.exchange(
                 URI.create("http://localhost:" + port + "/api/request/editor/"),
@@ -230,7 +231,7 @@ public class RequestControllerTest {
 
         EditorRequest editorRequest = new EditorRequest();
         editorRequest.setDescription("Description");
-        editorRequest.setApplicant(editorUser);
+        editorRequest.setOwner(editorUser);
 
         ResponseEntity response = restTemplate.exchange(
                 URI.create("http://localhost:" + port + "/api/request/editor/"),
@@ -248,7 +249,7 @@ public class RequestControllerTest {
 
         EditorRequest editorRequest = new EditorRequest();
         editorRequest.setDescription("Description");
-        editorRequest.setApplicant(editorUser);
+        editorRequest.setOwner(editorUser);
 
         ResponseEntity response = restTemplate.exchange(
                 URI.create("http://localhost:" + port + "/api/request/editor/list"),
@@ -267,7 +268,7 @@ public class RequestControllerTest {
 
         EditorRequest editorRequest = new EditorRequest();
         editorRequest.setDescription("Description");
-        editorRequest.setApplicant(editorUser);
+        editorRequest.setOwner(editorUser);
 
         ResponseEntity response = restTemplate.exchange(
                 URI.create("http://localhost:" + port + "/api/request/editor/list"),
@@ -285,7 +286,7 @@ public class RequestControllerTest {
 
         EditorRequest editorRequest = new EditorRequest();
         editorRequest.setDescription("Description");
-        editorRequest.setApplicant(editorUser);
+        editorRequest.setOwner(editorUser);
 
         ResponseEntity response = restTemplate.exchange(
                 URI.create("http://localhost:" + port + "/api/request/editor/list"),
@@ -300,12 +301,17 @@ public class RequestControllerTest {
         headers.setContentType(MediaType.APPLICATION_JSON);
         headers.setBearerAuth(reviewerUserToken);
 
-        ResponseEntity response = restTemplate.exchange(URI.create("http://localhost:" + port + "/api/request/editor/list"), HttpMethod.GET, new HttpEntity<>(headers), Object.class);
+        ResponseEntity<Object> response =
+                restTemplate.exchange(
+                        URI.create("http://localhost:" + port + "/api/request/editor/list"),
+                        HttpMethod.GET,
+                        new HttpEntity<>(headers),
+                        Object.class);
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
-        Set<EditorRequest> returnData = objectMapper.readValue(objectMapper.writeValueAsString(response.getBody()), new TypeReference<Set<EditorRequest>>(){});
+        PageableCollectionDto<EditorRequest> returnData = objectMapper.readValue(objectMapper.writeValueAsString(response.getBody()), new TypeReference<PageableCollectionDto<EditorRequest>>(){});
 
-        assertEquals(0, returnData.size());
+        assertEquals(0, returnData.getLength());
     }
 
 }

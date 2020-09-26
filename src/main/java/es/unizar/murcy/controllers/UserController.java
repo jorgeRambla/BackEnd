@@ -9,7 +9,6 @@ import es.unizar.murcy.exceptions.user.validation.UserBadRequestEmailNotValidExc
 import es.unizar.murcy.exceptions.user.validation.UserBadRequestUsernameAlreadyExistsException;
 import es.unizar.murcy.model.Token;
 import es.unizar.murcy.model.User;
-import es.unizar.murcy.model.dto.ErrorMessageDto;
 import es.unizar.murcy.model.dto.JsonWebTokenDto;
 import es.unizar.murcy.model.dto.UserDto;
 import es.unizar.murcy.model.request.JsonWebTokenRequest;
@@ -19,9 +18,11 @@ import es.unizar.murcy.service.JwtUserDetailsService;
 import es.unizar.murcy.service.MailService;
 import es.unizar.murcy.service.TokenService;
 import es.unizar.murcy.service.UserService;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.mail.MailException;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.*;
@@ -36,27 +37,32 @@ import java.util.UUID;
 @RestController
 public class UserController {
 
-    @Autowired
-    private UserService userService;
+    private final UserService userService;
+    private final TokenService tokenService;
+    private final MailService mailService;
+    private final JsonWebTokenUtil jsonWebTokenUtil;
+    private final JwtUserDetailsService jwtUserDetailsService;
+    private final AuthUtilities authUtilities;
 
-    @Autowired
-    private TokenService tokenService;
+    private final Logger logger = LoggerFactory.getLogger(UserController.class);
 
-    @Autowired
-    private MailService mailService;
-
-    @Autowired
-    private JsonWebTokenUtil jsonWebTokenUtil;
-
-    @Autowired
-    private JwtUserDetailsService userDetailsService;
-
-    @Autowired
-    private AuthUtilities authUtilities;
+    public UserController(UserService userService, TokenService tokenService, MailService mailService,
+                          JsonWebTokenUtil jsonWebTokenUtil, JwtUserDetailsService jwtUserDetailsService,
+                          AuthUtilities authUtilities) {
+        this.userService = userService;
+        this.tokenService = tokenService;
+        this.mailService = mailService;
+        this.jsonWebTokenUtil = jsonWebTokenUtil;
+        this.jwtUserDetailsService = jwtUserDetailsService;
+        this.authUtilities = authUtilities;
+    }
 
     @CrossOrigin
     @PostMapping("/api/user")
-    public ResponseEntity create(@RequestBody RegisterUserRequest registerUserRequest) {
+    public ResponseEntity create(@RequestBody RegisterUserRequest registerUserRequest,
+                                 HttpServletRequest request) {
+        final User requester = authUtilities.newUserMiddlewareCheck(request, User.Rol.UNLOGGED);
+
         if(Boolean.FALSE.equals(registerUserRequest.isComplete())) {
             throw new UserBadRequestException();
         }
@@ -76,10 +82,21 @@ public class UserController {
         registerUserRequest.setPassword(new BCryptPasswordEncoder().encode(registerUserRequest.getPassword()));
         User user = userService.create(registerUserRequest.toEntity());
 
-        Token token = tokenService.create(new Token(user, UUID.randomUUID().toString(), new Date(System.currentTimeMillis() + Token.DEFAULT_TOKEN_EXPIRATION_TIME)));
+        if(requester != null && !registerUserRequest.isSendMail() &&
+                authUtilities.hasPermission(requester, User.Rol.ADMINISTRATOR)) {
+            user.setConfirmed(true);
+            userService.update(user);
+        } else {
+            Token token = tokenService.create(new Token(user, UUID.randomUUID().toString(), new Date(System.currentTimeMillis() + Token.DEFAULT_TOKEN_EXPIRATION_TIME)));
+            try {
+                mailService.sendConfirmationTokenMail(token.getTokenValue(), user.getEmail(), user.getUsername());
+            } catch (Exception e) {
+                logger.error("Cannot mail to {}, with exception: {}", user.getUsername(), e.getMessage());
 
-        mailService.sendTokenConfirmationMail(token.getTokenValue(), user.getEmail());
-//        mailService.sendTokenConfirmationMail("test", registerUserRequest.toEntity().getEmail());
+                user.setConfirmed(true);
+                userService.update(user);
+            }
+        }
 
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
@@ -87,75 +104,71 @@ public class UserController {
     @CrossOrigin
     @GetMapping("/api/user/info")
     public ResponseEntity<UserDto> getCurrentUser(HttpServletRequest request) {
-        User user = authUtilities.getUserFromRequest(request);
+        final User requester = authUtilities.newUserMiddlewareCheck(request, User.Rol.USER);
 
-        return ResponseEntity.status(HttpStatus.OK).body(new UserDto(user));
+        return ResponseEntity.status(HttpStatus.OK).body(new UserDto(requester));
     }
 
     @CrossOrigin
     @GetMapping("/api/user/info/{id}")
     public ResponseEntity<UserDto> getUserById(HttpServletRequest request, @PathVariable long id) {
-        User user = authUtilities.getUserFromRequest(request);
+        final User requester = authUtilities.newUserMiddlewareCheck(request, User.Rol.USER);
 
-        User fetchedUser = userService.findUserById(id).orElseThrow(UserNotFoundException::new);
+        final User searchedUser = authUtilities.filterUserAuthorized(requester, id, User.Rol.REVIEWER);
 
+        return ResponseEntity.status(HttpStatus.OK).body(new UserDto(searchedUser));
 
-        if(fetchedUser.getId() == user.getId() || user.getRoles().contains(User.Rol.REVIEWER)) {
-            return ResponseEntity.status(HttpStatus.OK).body(new UserDto(fetchedUser));
-        }
-        throw new UserUnauthorizedException();
     }
 
     @CrossOrigin
     @PutMapping("/api/user/info")
     public ResponseEntity<UserDto> putCurrentUser(HttpServletRequest request,
                                           @RequestBody UpdateUserRequest updateUserRequest) {
-        User user = authUtilities.getUserFromRequest(request);
+        final User requester = authUtilities.newUserMiddlewareCheck(request, User.Rol.USER);
 
-        return putUserById(request, user.getId(), updateUserRequest);
+        return putUserById(request, requester.getId(), updateUserRequest);
     }
 
     @CrossOrigin
     @PutMapping("/api/user/info/{id}")
-    public ResponseEntity<UserDto> putUserById(HttpServletRequest request, @PathVariable long id, @RequestBody UpdateUserRequest updateUserRequest) {
-        User user = authUtilities.getUserFromRequest(request);
+    public ResponseEntity<UserDto> putUserById(HttpServletRequest request,
+                                               @PathVariable long id,
+                                               @RequestBody UpdateUserRequest updateUserRequest) {
+        final User requester = authUtilities.newUserMiddlewareCheck(request, User.Rol.USER);
 
-        User fetchedUser = userService.findUserById(id).orElseThrow(UserNotFoundException::new);
+        User searchedUser = authUtilities.filterUserAuthorized(requester, id, User.Rol.REVIEWER);
 
-        if(user.getId() == id || user.getRoles().contains(User.Rol.REVIEWER)) {
+        if(Boolean.TRUE.equals(isUpdateValid(updateUserRequest.getEmail()))) {
 
-            if(Boolean.TRUE.equals(isUpdateValid(updateUserRequest.getEmail()))) {
-
-                if(Boolean.FALSE.equals(isMailValid(updateUserRequest.getEmail()))) {
-                    throw new UserBadRequestEmailNotValidException();
-                }
-
-                if(!fetchedUser.getEmail().equals(updateUserRequest.getEmail()) && userService.existsByEmail(updateUserRequest.getEmail())) {
-                    throw new UserBadRequestEmailAlreadyExistsException();
-                } else {
-                    fetchedUser.setEmail(updateUserRequest.getEmail());
-                }
+            if(Boolean.FALSE.equals(isMailValid(updateUserRequest.getEmail()))) {
+                throw new UserBadRequestEmailNotValidException();
             }
 
-            if(Boolean.TRUE.equals(isUpdateValid(updateUserRequest.getUsername()))) {
-
-                if(!fetchedUser.getUsername().equals(updateUserRequest.getUsername()) && userService.existsByUsername(updateUserRequest.getUsername())) {
-                    throw new UserBadRequestUsernameAlreadyExistsException();
-                } else {
-                    fetchedUser.setUsername(updateUserRequest.getUsername());
-                }
+            if(!searchedUser.getEmail().equals(updateUserRequest.getEmail()) && userService.existsByEmail(updateUserRequest.getEmail())) {
+                throw new UserBadRequestEmailAlreadyExistsException();
+            } else {
+                searchedUser.setEmail(updateUserRequest.getEmail());
             }
-
-            User updatedUser = updateUserDataAuthorized(updateUserRequest, user, fetchedUser);
-
-            return ResponseEntity.status(HttpStatus.CREATED).body(new UserDto(updatedUser));
         }
-        throw new UserUnauthorizedException();
+
+        if(Boolean.TRUE.equals(isUpdateValid(updateUserRequest.getUsername()))) {
+            if(!searchedUser.getUsername().equals(updateUserRequest.getUsername()) && userService.existsByUsername(updateUserRequest.getUsername())) {
+                throw new UserBadRequestUsernameAlreadyExistsException();
+            } else {
+                searchedUser.setUsername(updateUserRequest.getUsername());
+            }
+        }
+
+        User updatedUser = updateUserDataAuthorized(updateUserRequest, requester, searchedUser);
+
+        return ResponseEntity.status(HttpStatus.CREATED).body(new UserDto(updatedUser));
     }
 
     @CrossOrigin
     @PostMapping(value = "/api/user/login")
     public ResponseEntity<JsonWebTokenDto> createAuthenticationToken(@RequestBody JsonWebTokenRequest jsonWebTokenRequest, HttpServletRequest request) {
+        logger.info("Handle request POST /user/login, username: {{}}", jsonWebTokenRequest.getUsername());
+
         User user = userService.findUserByUserName(jsonWebTokenRequest.getUsername()).orElseThrow(UserForbiddenException::new);
 
         if(Boolean.FALSE.equals(user.getConfirmed())) {
@@ -164,7 +177,7 @@ public class UserController {
 
         authUtilities.authenticate(jsonWebTokenRequest.getUsername(), jsonWebTokenRequest.getPassword());
 
-        final UserDetails userDetails = userDetailsService
+        final UserDetails userDetails = jwtUserDetailsService
                 .loadUserByUsername(jsonWebTokenRequest.getUsername());
 
         final String token = jsonWebTokenUtil.generateToken(userDetails);
@@ -198,7 +211,7 @@ public class UserController {
             finalUser.setPassword(new BCryptPasswordEncoder().encode(updateUserRequest.getPassword()));
         }
 
-        if(user.getRoles().contains(User.Rol.REVIEWER) && updateUserRequest.getRol() != null) {
+        if(authUtilities.hasPermission(user, User.Rol.ADMINISTRATOR) && updateUserRequest.getRol() != null) {
             if(updateUserRequest.getRol().length == 0){
                 updateUserRequest.setRol(new String[]{User.Rol.USER.name()});
             }

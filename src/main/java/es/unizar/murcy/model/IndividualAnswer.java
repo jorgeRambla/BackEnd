@@ -7,8 +7,11 @@ import lombok.Setter;
 import lombok.ToString;
 
 import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 @Entity
 @Table(name = "murcy_individual_answer")
@@ -39,13 +42,21 @@ public class IndividualAnswer extends AuditableEntity {
     @Setter
     private Answer answer;
 
-    @OneToMany
+    @Column(length = 5096)
     @Getter
     @Setter
-    private List<Option> options;
+    private String options;
 
     public IndividualAnswer() {
         super();
+    }
+
+    public List<Long> getOptionsIds() {
+        return Arrays.stream(this.options.split(",")).map(Long::valueOf).collect(Collectors.toList());
+    }
+
+    public void setOptionsIds(List<Long> optionsIds) {
+        this.options = optionsIds.stream().map(String::valueOf).collect(Collectors.joining(","));
     }
 
     @Override

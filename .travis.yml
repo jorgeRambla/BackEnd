@@ -11,8 +11,7 @@ env:
 addons:
   sonarcloud:
     organization: jorgerambla
-    token:
-      secure: "$SONAR_TOKEN"
+    token: "$SONAR_TOKEN"
 script:
 - "./gradlew clean build"
 - "./gradlew test jacocoTestReport"

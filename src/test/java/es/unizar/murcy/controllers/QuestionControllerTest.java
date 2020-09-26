@@ -6,6 +6,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import es.unizar.murcy.components.JsonWebTokenUtil;
 import es.unizar.murcy.model.Question;
 import es.unizar.murcy.model.User;
+import es.unizar.murcy.model.dto.PageableCollectionDto;
 import es.unizar.murcy.model.dto.QuestionDto;
 import es.unizar.murcy.model.request.OptionRequest;
 import es.unizar.murcy.model.request.QuestionRequest;
@@ -282,9 +283,9 @@ public class QuestionControllerTest {
         ResponseEntity response = restTemplate.exchange(URI.create("http://localhost:" + port + "/api/question/list"), HttpMethod.GET, new HttpEntity<>(headers), Object.class);
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
-        List<QuestionDto> returnData = objectMapper.readValue(objectMapper.writeValueAsString(response.getBody()), new TypeReference<List<QuestionDto>>(){});
+        PageableCollectionDto<QuestionDto> returnData = objectMapper.readValue(objectMapper.writeValueAsString(response.getBody()), new TypeReference<PageableCollectionDto<QuestionDto>>(){});
 
-        assertEquals(0, returnData.size());
+        assertEquals(0, returnData.getLength());
     }
 
     @Test
@@ -297,9 +298,9 @@ public class QuestionControllerTest {
         ResponseEntity response = restTemplate.exchange(URI.create("http://localhost:" + port + "/api/question/list"), HttpMethod.GET, new HttpEntity<>(headers), Object.class);
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
-        List<QuestionDto> returnData = objectMapper.readValue(objectMapper.writeValueAsString(response.getBody()), new TypeReference<List<QuestionDto>>(){});
+        PageableCollectionDto<QuestionDto> returnData = objectMapper.readValue(objectMapper.writeValueAsString(response.getBody()), new TypeReference<PageableCollectionDto<QuestionDto>>(){});
 
-        assertEquals(1, returnData.size());
+        assertEquals(1, returnData.getLength());
     }
 
     @Test
@@ -313,9 +314,9 @@ public class QuestionControllerTest {
         ResponseEntity response = restTemplate.exchange(URI.create("http://localhost:" + port + "/api/question/list"), HttpMethod.GET, new HttpEntity<>(headers), Object.class);
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
-        List<QuestionDto> returnData = objectMapper.readValue(objectMapper.writeValueAsString(response.getBody()), new TypeReference<List<QuestionDto>>(){});
+        PageableCollectionDto<QuestionDto> returnData = objectMapper.readValue(objectMapper.writeValueAsString(response.getBody()), new TypeReference<PageableCollectionDto<QuestionDto>>(){});
 
-        assertEquals(1, returnData.size());
+        assertEquals(1, returnData.getLength());
     }
 
     @Test
@@ -361,9 +362,9 @@ public class QuestionControllerTest {
         ResponseEntity response = restTemplate.exchange(URI.create("http://localhost:" + port + "/api/question/list/" + editorUser.getId()), HttpMethod.GET, new HttpEntity<>(headers), Object.class);
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
-        List<QuestionDto> returnData = objectMapper.readValue(objectMapper.writeValueAsString(response.getBody()), new TypeReference<List<QuestionDto>>(){});
+        PageableCollectionDto<QuestionDto> returnData = objectMapper.readValue(objectMapper.writeValueAsString(response.getBody()), new TypeReference<PageableCollectionDto<QuestionDto>>(){});
 
-        assertEquals(0, returnData.size());
+        assertEquals(0, returnData.getLength());
     }
 
     @Test
@@ -376,9 +377,9 @@ public class QuestionControllerTest {
         ResponseEntity response = restTemplate.exchange(URI.create("http://localhost:" + port + "/api/question/list/" + editorUser.getId()), HttpMethod.GET, new HttpEntity<>(headers), Object.class);
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
-        List<QuestionDto> returnData = objectMapper.readValue(objectMapper.writeValueAsString(response.getBody()), new TypeReference<List<QuestionDto>>(){});
+        PageableCollectionDto<QuestionDto> returnData = objectMapper.readValue(objectMapper.writeValueAsString(response.getBody()), new TypeReference<PageableCollectionDto<QuestionDto>>(){});
 
-        assertEquals(1, returnData.size());
+        assertEquals(1, returnData.getLength());
     }
 
     @Test
@@ -392,9 +393,9 @@ public class QuestionControllerTest {
         ResponseEntity response = restTemplate.exchange(URI.create("http://localhost:" + port + "/api/question/list/" + editorUser.getId()), HttpMethod.GET, new HttpEntity<>(headers), Object.class);
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
-        List<QuestionDto> returnData = objectMapper.readValue(objectMapper.writeValueAsString(response.getBody()), new TypeReference<List<QuestionDto>>(){});
+        PageableCollectionDto<QuestionDto> returnData = objectMapper.readValue(objectMapper.writeValueAsString(response.getBody()), new TypeReference<PageableCollectionDto<QuestionDto>>(){});
 
-        assertEquals(1, returnData.size());
+        assertEquals(1, returnData.getLength());
     }
 
     @Test
@@ -408,9 +409,9 @@ public class QuestionControllerTest {
         ResponseEntity response = restTemplate.exchange(URI.create("http://localhost:" + port + "/api/question/list/" + editorUser.getId()), HttpMethod.GET, new HttpEntity<>(headers), Object.class);
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
-        List<QuestionDto> returnData = objectMapper.readValue(objectMapper.writeValueAsString(response.getBody()), new TypeReference<List<QuestionDto>>(){});
+        PageableCollectionDto<QuestionDto> returnData = objectMapper.readValue(objectMapper.writeValueAsString(response.getBody()), new TypeReference<PageableCollectionDto<QuestionDto>>(){});
 
-        assertEquals(1, returnData.size());
+        assertEquals(1, returnData.getLength());
     }
 
     @Test
@@ -461,7 +462,7 @@ public class QuestionControllerTest {
         List<Question> questions = questionService.findAll();
         for(Question question : questions) {
             ResponseEntity response = restTemplate.exchange(URI.create("http://localhost:" + port + "/api/question/" + question.getId()), HttpMethod.GET, new HttpEntity<>(headers), Object.class);
-            if(question.getUser().equals(editorUser)) {
+            if(question.getOwner().equals(editorUser)) {
                 assertEquals(question.getId(), objectMapper.readValue(objectMapper.writeValueAsString(response.getBody()), QuestionDto.class).getId());
                 assertEquals(HttpStatus.OK, response.getStatusCode());
             } else {
@@ -628,7 +629,7 @@ public class QuestionControllerTest {
 
         for(Question question : questions) {
             ResponseEntity response = restTemplate.exchange(URI.create("http://localhost:" + port + "/api/question/" + question.getId()), HttpMethod.PUT, new HttpEntity<>(objectMapper.writeValueAsString(questionRequest), headers), Object.class);
-            if(question.getUser().equals(editorUser)) {
+            if(question.getOwner().equals(editorUser)) {
                 assertEquals(question.getId(), objectMapper.readValue(objectMapper.writeValueAsString(response.getBody()), QuestionDto.class).getId());
                 assertEquals(HttpStatus.CREATED, response.getStatusCode());
             } else {
@@ -683,7 +684,7 @@ public class QuestionControllerTest {
         assertEquals(question.getTitle(), questionDto.getTitle());
         assertEquals(question.getDescription(), questionDto.getDescription());
         assertEquals(question.getIsMultiple(), questionDto.isMultiple());
-        assertEquals(question.getUser().getUsername(), questionDto.getOwnerUserName());
+        assertEquals(question.getOwner().getUsername(), questionDto.getOwnerUserName());
         assertEquals(question.getOptions().size(), questionDto.getOptions().size());
         for(int iterator = 0; iterator < questionDto.getOptions().size(); iterator++) {
             assertEquals(question.getOptions().get(iterator).getTitle(), questionDto.getOptions().get(iterator).getTitle());
@@ -713,7 +714,7 @@ public class QuestionControllerTest {
         assertEquals(question.getTitle(), questionDto.getTitle());
         assertEquals(question.getDescription(), questionDto.getDescription());
         assertEquals(question.getIsMultiple(), questionDto.isMultiple());
-        assertEquals(question.getUser().getUsername(), questionDto.getOwnerUserName());
+        assertEquals(question.getOwner().getUsername(), questionDto.getOwnerUserName());
         assertEquals(question.getOptions().size(), questionDto.getOptions().size());
         for(int iterator = 0; iterator < questionDto.getOptions().size(); iterator++) {
             assertEquals(question.getOptions().get(iterator).getTitle(), questionDto.getOptions().get(iterator).getTitle());
@@ -748,7 +749,7 @@ public class QuestionControllerTest {
         assertEquals(question.getTitle(), questionDto.getTitle());
         assertEquals(question.getDescription(), questionDto.getDescription());
         assertEquals(question.getIsMultiple(), questionDto.isMultiple());
-        assertEquals(question.getUser().getUsername(), questionDto.getOwnerUserName());
+        assertEquals(question.getOwner().getUsername(), questionDto.getOwnerUserName());
         assertEquals(2, questionDto.getOptions().size());
         for(int iterator = 0; iterator < questionDto.getOptions().size(); iterator++) {
             assertNotEquals(question.getOptions().get(iterator).getTitle(), questionDto.getOptions().get(iterator).getTitle());
@@ -779,7 +780,7 @@ public class QuestionControllerTest {
         assertEquals("new", questionDto.getTitle());
         assertEquals(question.getDescription(), questionDto.getDescription());
         assertEquals(question.getIsMultiple(), questionDto.isMultiple());
-        assertEquals(question.getUser().getUsername(), questionDto.getOwnerUserName());
+        assertEquals(question.getOwner().getUsername(), questionDto.getOwnerUserName());
         assertEquals(question.getOptions().size(), questionDto.getOptions().size());
         for(int iterator = 0; iterator < questionDto.getOptions().size(); iterator++) {
             assertEquals(question.getOptions().get(iterator).getTitle(), questionDto.getOptions().get(iterator).getTitle());
@@ -809,7 +810,7 @@ public class QuestionControllerTest {
         assertNotEquals(question.getDescription(), questionDto.getDescription());
         assertEquals("new", questionDto.getDescription());
         assertEquals(question.getIsMultiple(), questionDto.isMultiple());
-        assertEquals(question.getUser().getUsername(), questionDto.getOwnerUserName());
+        assertEquals(question.getOwner().getUsername(), questionDto.getOwnerUserName());
         assertEquals(question.getOptions().size(), questionDto.getOptions().size());
         for(int iterator = 0; iterator < questionDto.getOptions().size(); iterator++) {
             assertEquals(question.getOptions().get(iterator).getTitle(), questionDto.getOptions().get(iterator).getTitle());
@@ -839,7 +840,7 @@ public class QuestionControllerTest {
         assertEquals(question.getTitle(), questionDto.getTitle());
         assertEquals(question.getDescription(), questionDto.getDescription());
         assertEquals(question.getIsMultiple(), questionDto.isMultiple());
-        assertEquals(question.getUser().getUsername(), questionDto.getOwnerUserName());
+        assertEquals(question.getOwner().getUsername(), questionDto.getOwnerUserName());
         assertEquals(question.getOptions().size(), questionDto.getOptions().size());
         for(int iterator = 0; iterator < questionDto.getOptions().size(); iterator++) {
             assertEquals(question.getOptions().get(iterator).getTitle(), questionDto.getOptions().get(iterator).getTitle());
@@ -950,7 +951,7 @@ public class QuestionControllerTest {
 
         for(Question question : questions) {
             ResponseEntity response = restTemplate.exchange(URI.create("http://localhost:" + port + "/api/question/" + question.getId()), HttpMethod.DELETE, new HttpEntity<>(headers), Object.class);
-            if(question.getUser().equals(editorUser)) {
+            if(question.getOwner().equals(editorUser)) {
                 assertEquals(HttpStatus.ACCEPTED, response.getStatusCode());
             } else {
                 assertEquals(HttpStatus.UNAUTHORIZED, response.getStatusCode());

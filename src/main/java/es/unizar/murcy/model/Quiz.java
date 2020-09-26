@@ -18,16 +18,16 @@ public class Quiz extends AuditableWorkflowEntity {
 
     @Getter
     @Setter
+    @Column(length = 512)
     private String title;
 
     @Getter
     @Setter
     private String description;
 
-    @ManyToOne
     @Getter
     @Setter
-    private User user;
+    private Boolean questionsOrdered;
 
     @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     @OrderColumn(name = "INDEX")
@@ -48,5 +48,10 @@ public class Quiz extends AuditableWorkflowEntity {
     @Override
     public int hashCode() {
         return Objects.hash(super.hashCode());
+    }
+
+    public Boolean canBePlayed() {
+        return this.title != null &&
+                this.questions.size() >= 5;
     }
 }

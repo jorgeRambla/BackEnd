@@ -41,6 +41,7 @@ public class Option extends AuditableEntity {
     @Override
     public void delete() {
         setDeleted(true);
-        setDeletionDate(new Date(System.currentTimeMillis() + (24L * 3600L * 1000L) * MAX_DELETION_DATE_DAYS));
+        setDeletionDate(new Date());
+        setForceDeleteDate(new Date(System.currentTimeMillis() + (24L * 3600L * 1000L) * MAX_DELETION_DATE_DAYS));
     }
 }

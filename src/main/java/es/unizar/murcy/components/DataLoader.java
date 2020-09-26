@@ -2,7 +2,6 @@ package es.unizar.murcy.components;
 
 import es.unizar.murcy.model.User;
 import es.unizar.murcy.repository.UserRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
@@ -15,18 +14,16 @@ import java.util.Set;
 @Component
 public class DataLoader implements ApplicationRunner {
 
-    @Autowired
-    private UserRepository userRepository;
+    private final UserRepository userRepository;
 
-    @Value("${murcy.administrator:admin}")
+    @Value("${murcy.config.admin.username}")
     private String adminUsername;
 
-    @Value("${murcy.administrator.password:supersecretpassword}")
+    @Value("${murcy.config.admin.password}")
     private String adminPassword;
 
-    @Value("${murcy.administrator.email:admin@domain.com}")
+    @Value("${murcy.config.admin.email}")
     private String adminEmail;
-
 
     public DataLoader(UserRepository userRepository) {
         this.userRepository = userRepository;

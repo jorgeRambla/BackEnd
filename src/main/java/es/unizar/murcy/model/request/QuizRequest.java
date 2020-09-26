@@ -4,9 +4,8 @@ import es.unizar.murcy.model.Quiz;
 import es.unizar.murcy.service.QuestionService;
 import lombok.*;
 
-import java.util.Optional;
-import java.util.Set;
-import java.util.stream.Collectors;
+import java.util.ArrayList;
+import java.util.List;
 
 @NoArgsConstructor
 @AllArgsConstructor
@@ -23,27 +22,34 @@ public class QuizRequest {
 
     @Getter
     @Setter
-    private Set<Long> questionIds;
+    private List<Long> questionsIds;
+
+    @Getter
+    @Setter
+    private Boolean ordered;
 
     @Getter
     @Setter
     private Boolean publish;
 
     public Boolean isCreateValid() {
-        return this.title != null && !this.title.equals("") && this.questionIds != null && !this.questionIds.isEmpty();
+        if(publish != null && publish.equals(Boolean.TRUE)) {
+            return this.title != null && !this.title.equals("") && this.questionsIds != null && !this.questionsIds.isEmpty();
+        } else {
+            return this.title != null && !this.title.equals("");
+        }
     }
 
     public Quiz toEntity(QuestionService questionService) {
         Quiz quiz = new Quiz();
         quiz.setTitle(this.title);
         quiz.setDescription(this.description);
-        quiz.setQuestions(
-                questionIds
-                        .stream()
-                        .map(questionService::findById)
-                        .filter(Optional::isPresent)
-                        .map(Optional::get)
-                        .collect(Collectors.toList()));
+        quiz.setQuestionsOrdered(this.getOrdered());
+        if(questionsIds != null && !questionsIds.isEmpty()) {
+            quiz.setQuestions(questionService.findByIdsCollection(questionsIds));
+        } else {
+            quiz.setQuestions(new ArrayList<>());
+        }
         return quiz;
     }
 }
